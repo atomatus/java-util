@@ -1,2 +1,2 @@
 # java-util
-Set of utilitaries to help on project development.
+Set of utilities to help on project development.
