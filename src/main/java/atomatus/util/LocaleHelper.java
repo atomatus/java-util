@@ -67,17 +67,6 @@ public final class LocaleHelper {
         return new PopularLocales(args);
     }
 
-    /**
-     * Check if current locale is equals default locale.
-     * @param locale target locale
-     * @return true when target locale is equals default locale.
-     */
-    static boolean isDefaultLocale(Locale locale) {
-        return defaultLocale == locale ||
-                (DEFAULT_COUNTRY.equalsIgnoreCase(locale.getCountry()) &&
-                        DEFAULT_LANGUAGE.equalsIgnoreCase(locale.getLanguage()));
-    }
-
     private static class PopularLocales implements Iterator<Locale> {
 
         static final String[][] localesArgs;
