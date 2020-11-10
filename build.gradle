@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
 }
 
-group 'com.atomatus'
+group 'atomatus'
 version '1.0.0'
 
 repositories {
