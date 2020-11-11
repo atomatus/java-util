@@ -34,7 +34,7 @@ jobs:
       
     - name: Recovering latest version released
       run: |
-        LATEST_VERSION: $(curl -u my_client_id:$TOKEN --silent https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest | grep "tag_name" | awk '{gsub("[^[:digit:]]+","");print($1,$2,$3,$4)}') 
+        LATEST_VERSION=$(curl -u my_client_id:$TOKEN --silent https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest | grep "tag_name" | awk '{gsub("[^[:digit:]]+","");print($1,$2,$3,$4)}') 
         echo "Latest Version Released ${LATEST_VERSION}"
       
     - name: Building, Comparing and Publishing
