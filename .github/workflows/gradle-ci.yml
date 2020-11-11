@@ -33,12 +33,14 @@ jobs:
       run: |
         CURRENT_VERSION=$(./gradlew properties --no-daemon --console=plain -q | grep -oP '(?<=version:\s).*')
         echo "Current Version ${CURRENT_VERSION}"
+        echo ::set-output name=CURRENT_VERSION::${CURRENT_VERSION} 
       
     - name: Recovering latest version released
       if: ${{ success() }}
       run: |
         LATEST_VERSION=$(curl -u my_client_id:$TOKEN --silent https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest | grep -oP '(?<="tag_name":\s").*?(?=")')
         echo "Latest Version Released ${LATEST_VERSION}"
+        echo ::set-output name=LATEST_VERSION::${LATEST_VERSION} 
       env:
         TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token       
     
@@ -46,10 +48,12 @@ jobs:
       if: ${{ success() }}
       run: |        
         unset IS_CURRENT_GT_LATEST
-        echo "${CURRENT_VERSION}"
+        CURRENT_VERSION=${{ steps.vars.outputs.CURRENT_VERSION }}
+        LATEST_VERSION=${{ steps.vars.outputs.LATEST_VERSION }}
+        echo $CURRENT_VERSION
+        echo $LATEST_VERSION
         echo "${CURRENT_VERSION//[^0-9]/}"
-        echo "${LATEST_VERSION}"
-        echo "${LATEST_VERSION//[^0-9]/}"        
+        echo "${LATEST_VERSION//[^0-9]/}"
         
         
     - name: Print
