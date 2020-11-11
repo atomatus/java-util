@@ -30,11 +30,17 @@ jobs:
         echo "Current Version ${CURRENT_VERSION}"
       
     - name: Recovering latest version released
+      if: ${{ always() }}
       run: |
         LATEST_VERSION=$(curl -u my_client_id:$TOKEN --silent https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest | grep -oP '(?<="tag_name":\s").*?(?=")')
         echo "Latest Version Released ${LATEST_VERSION}"
       env:
         TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token       
+
+    - name: Build with Gradle
+      if: ${{ success() }}
+      run: ./gradlew build
+
 
 #     - name: Building, Comparing and Publishing
 #       run: ./gradlew build && if [ $CURRENT_VERSION -gt $LATEST_VERSION ]; then ./gradlew publish; else echo "Current version is not greater than latest version released. Publish operation aborted!"; fi;
