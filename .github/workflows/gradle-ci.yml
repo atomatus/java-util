@@ -50,8 +50,7 @@ jobs:
         echo "${CURRENT_VERSION//[^0-9]/}"
         echo "${LATEST_VERSION}"
         echo "${LATEST_VERSION//[^0-9]/}"        
-        if [ "${CURRENT_VERSION//[^0-9]/}" -gt "${LATEST_VERSION//[^0-9]/}" ]; then IS_CURRENT_GT_LATEST='true'; fi        
-        echo ::set-output name=IS_CURRENT_GT_LATEST::${IS_CURRENT_GT_LATEST}
+        
         
     - name: Print
       if: ${{ success() && steps.vars.outputs.IS_CURRENT_GT_LATEST }}
