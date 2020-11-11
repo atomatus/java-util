@@ -46,12 +46,16 @@ jobs:
       if: ${{ success() }}
       run: |        
         unset IS_CURRENT_GT_LATEST
+        echo "${CURRENT_VERSION}"
+        echo "${CURRENT_VERSION//[^0-9]/}"
+        echo "${LATEST_VERSION}"
+        echo "${LATEST_VERSION//[^0-9]/}"        
         if [ "${CURRENT_VERSION//[^0-9]/}" -gt "${LATEST_VERSION//[^0-9]/}" ]; then IS_CURRENT_GT_LATEST='true'; fi        
-        echo ::set-output name=IS_CURRENT_GT_LATEST::${IS_CURRENT_GT_LATEST}    
+        echo ::set-output name=IS_CURRENT_GT_LATEST::${IS_CURRENT_GT_LATEST}
         
     - name: Print
       if: ${{ success() && steps.vars.outputs.IS_CURRENT_GT_LATEST }}
-      run: echo "Current version (${CURRENT_VERSION}) is greater than latest released (${LATEST_VERSION})"
+      run: echo "Current version (${CURRENT_VERSION}) is greater than latest released version (${LATEST_VERSION})"
 
 #     - name: Building, Comparing and Publishing
 #       run: ./gradlew build && if [ $CURRENT_VERSION -gt $LATEST_VERSION ]; then ./gradlew publish; else echo "Current version is not greater than latest version released. Publish operation aborted!"; fi;
