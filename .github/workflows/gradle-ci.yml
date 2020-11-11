@@ -59,7 +59,7 @@ jobs:
         echo "${{ steps.step_lat_ver.outputs.LATEST_VERSION_INT }}"
         
     - name: Print
-      if: ${{ success()}} && (${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }} > ${{ teps.step_lat_ver.outputs.LATEST_VERSION_INT }}) 
+      if: ${{ success()}} && (${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }} > ${{ steps.step_lat_ver.outputs.LATEST_VERSION_INT }}) 
       run: echo "Current version (${CURRENT_VERSION}) is greater than latest released version (${LATEST_VERSION})"
 
 #     - name: Building, Comparing and Publishing
