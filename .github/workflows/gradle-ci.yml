@@ -63,35 +63,34 @@ jobs:
 
     - name: Get file changes
       if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }}      
-      id: get_file_changes
+      id: step_file_changes
       uses: dorner/file-changes-action@v1.2.0
       with:
         githubToken: ${{ secrets.GITHUB_TOKEN }}
         plaintext: true
+
     - name: Echo file changes
       if: ${{ success() }}
       run: |
-        echo Changed files: ${{ steps.get_file_changes.outputs.files }}
+        echo Changed files: ${{ steps.step_file_changes.outputs.files }}
 
-#     - name: Create Release
-#       id: step_create_release
-#       if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }}
-#       uses: actions/create-release@v1
-#       env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#       with:
-#         tag_name: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }} # ${{ github.ref }}
-#         release_name: Release ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }}
-#         body: |
-#           Changes in this Release
-#             - First Change
-#             - Second Change
-#         draft: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT < 10 }}
-#         prerelease: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT < 10 || steps.step_lat_ver.outputs.LATEST_VERSION_INT < 1 }}
+    - name: Create Release      
+      if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }}
+      uses: actions/create-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }} # ${{ github.ref }}
+        release_name: Release ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }}
+        body: |
+          Changes in this Release
+          ${{ steps.step_file_changes.outputs.files }}
+        draft: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT < 10 }}
+        prerelease: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT < 10 || steps.step_lat_ver.outputs.LATEST_VERSION_INT < 1 }}
           
-#     - name: Publish with Gradle
-#       if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }}
-#       run: ./gradlew build
-#       env:
-#         USERNAME: ${{ github.actor }}
-#         TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Publish with Gradle
+      if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }}
+      run: ./gradlew build
+      env:
+        USERNAME: ${{ github.actor }}
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
