@@ -59,8 +59,8 @@ jobs:
         echo "${{ steps.step_lat_ver.outputs.LATEST_VERSION_INT }}"
         
     - name: Print
-      if: ${{ success()}} && (${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }} > ${{ steps.step_lat_ver.outputs.LATEST_VERSION_INT }}) 
-      run: echo "Current version (${CURRENT_VERSION}) is greater than latest released version (${LATEST_VERSION})"
+      if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }} 
+      run: echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }}) is greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION_INT }})"
 
 #     - name: Building, Comparing and Publishing
 #       run: ./gradlew build && if [ $CURRENT_VERSION -gt $LATEST_VERSION ]; then ./gradlew publish; else echo "Current version is not greater than latest version released. Publish operation aborted!"; fi;
