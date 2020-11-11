@@ -47,7 +47,8 @@ jobs:
     - name: Comparing Versions
       if: ${{ success() }}
       run: |        
-        unset IS_CURRENT_GT_LATEST
+        echo "${{ steps.vars.outputs.CURRENT_VERSION }}"
+        echo "${{ steps.vars.outputs.LATEST_VERSION }}"
         CURRENT_VERSION=${{ steps.vars.outputs.CURRENT_VERSION }}
         LATEST_VERSION=${{ steps.vars.outputs.LATEST_VERSION }}
         echo $CURRENT_VERSION
