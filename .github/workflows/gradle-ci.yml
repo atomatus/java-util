@@ -28,15 +28,15 @@ jobs:
       run: chmod +x gradlew
       
     - name: Getting current version with Gradle
-      run: echo "Current Version ${CURRENT_VERSION}"
-      env:
-        CURRENT_VERSION: $(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{gsub("[^[:digit:]]+","");print($1,$2,$3,$4)}')
+      run: |
+        CURRENT_VERSION=$(./gradlew properties --no-daemon --console=plain -q | grep "^version:" | awk '{gsub("[^[:digit:]]+","");print($1,$2,$3,$4)}')
+        echo "Current Version ${CURRENT_VERSION}"
       
     - name: Recovering latest version released
-      run: echo "Latest Version Released ${LATEST_VERSION}"
-      env: 
+      run: |
         LATEST_VERSION: $(curl -u my_client_id:$TOKEN --silent https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest | grep "tag_name" | awk '{gsub("[^[:digit:]]+","");print($1,$2,$3,$4)}') 
-    
+        echo "Latest Version Released ${LATEST_VERSION}"
+      
     - name: Building, Comparing and Publishing
       run: ./gradlew build && if [ $CURRENT_VERSION -gt $LATEST_VERSION ]; then ./gradlew publish; else echo "Current version is not greater than latest version released. Publish operation aborted!"; fi;
 
