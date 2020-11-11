@@ -29,6 +29,7 @@ jobs:
       run: ./gradlew build
       
     - name: Getting current version with Gradle
+      id: step_curr_ver
       if: ${{ success() }}
       run: |
         CURRENT_VERSION=$(./gradlew properties --no-daemon --console=plain -q | grep -oP '(?<=version:\s).*')
@@ -36,6 +37,7 @@ jobs:
         echo ::set-output name=CURRENT_VERSION::${CURRENT_VERSION} 
       
     - name: Recovering latest version released
+      id: step_lat_ver
       if: ${{ success() }}
       run: |
         LATEST_VERSION=$(curl -u my_client_id:$TOKEN --silent https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest | grep -oP '(?<="tag_name":\s").*?(?=")')
@@ -47,10 +49,10 @@ jobs:
     - name: Comparing Versions
       if: ${{ success() }}
       run: |        
-        echo "${{ steps.vars.outputs.CURRENT_VERSION }}"
-        echo "${{ steps.vars.outputs.LATEST_VERSION }}"
-        CURRENT_VERSION=${{ steps.vars.outputs.CURRENT_VERSION }}
-        LATEST_VERSION=${{ steps.vars.outputs.LATEST_VERSION }}
+        echo "${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}"
+        echo "${{ steps.step_lat_ver.outputs.LATEST_VERSION }}"
+        CURRENT_VERSION=${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}
+        LATEST_VERSION=${{ steps.step_lat_ver.outputs.LATEST_VERSION }}
         echo $CURRENT_VERSION
         echo $LATEST_VERSION
         echo "${CURRENT_VERSION//[^0-9]/}"
