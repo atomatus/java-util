@@ -66,7 +66,7 @@ jobs:
       id: step_file_changes
       uses: dorner/file-changes-action@v1.2.0
       with:
-        githubToken: ${{ secrets.GITHUB_TOKEN }}
+        githubToken: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token       
         plaintext: true
 
     - name: Echo file changes
@@ -93,4 +93,4 @@ jobs:
       run: ./gradlew publish
       env:
         USERNAME: ${{ github.actor }}
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token       
