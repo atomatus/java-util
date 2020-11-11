@@ -46,7 +46,7 @@ jobs:
       if: ${{ success() }}
       run: |        
         unset IS_CURRENT_GT_LATEST
-        if [ $CURRENT_VERSION -gt $LATEST_VERSION ]; then IS_CURRENT_GT_LATEST='true'; fi        
+        if [ "${CURRENT_VERSION//[^0-9]/}" -gt "${LATEST_VERSION//[^0-9]/}" ]; then IS_CURRENT_GT_LATEST='true'; fi        
         echo ::set-output name=IS_CURRENT_GT_LATEST::${IS_CURRENT_GT_LATEST}    
         
     - name: Print
