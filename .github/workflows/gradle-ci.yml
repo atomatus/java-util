@@ -56,7 +56,8 @@ jobs:
         if [ ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }} -gt ${{ steps.step_lat_ver.outputs.LATEST_VERSION_INT }} ]; then 
           echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}) is greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION }})";
         else
-          echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}) is not greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION }}). Publish operation aborted!"
+          echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}) is not greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION }}). Publish operation aborted!";
+        fi; 
         
 #     - name: Print
 #       if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }} 
