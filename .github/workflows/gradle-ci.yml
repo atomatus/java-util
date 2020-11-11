@@ -15,12 +15,16 @@ jobs:
   job_build:
     runs-on: ubuntu-latest       
     steps:
+    - name: Checkout code
     - uses: actions/checkout@v2
+#       with:
+#         fetch-depth: 0
+    
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-                 
+   
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
@@ -35,8 +39,8 @@ jobs:
         CURRENT_VERSION=$(./gradlew properties --no-daemon --console=plain -q | grep -oP '(?<=version:\s).*')
         CURRENT_VERSION_INT="${CURRENT_VERSION//[^0-9]/}"
         echo "Current Version ${CURRENT_VERSION}"
-        echo ::set-output name=CURRENT_VERSION::${CURRENT_VERSION} 
-        echo ::set-output name=CURRENT_VERSION_INT::${CURRENT_VERSION_INT}
+        echo ::set-output name=CURRENT_VERSION::${CURRENT_VERSION:-NotFound} 
+        echo ::set-output name=CURRENT_VERSION_INT::${CURRENT_VERSION_INT:-0}
       
     - name: Recovering latest version released
       id: step_lat_ver
@@ -45,8 +49,8 @@ jobs:
         LATEST_VERSION=$(curl -u my_client_id:$TOKEN --silent https://api.github.com/repos/$GITHUB_REPOSITORY/releases/latest | grep -oP '(?<="tag_name":\s").*?(?=")')
         LATEST_VERSION_INT="${LATEST_VERSION//[^0-9]/}"
         echo "Latest Version Released ${LATEST_VERSION}"
-        echo ::set-output name=LATEST_VERSION::${LATEST_VERSION}
-        echo ::set-output name=LATEST_VERSION_INT::${LATEST_VERSION_INT}
+        echo ::set-output name=LATEST_VERSION::${LATEST_VERSION:-NotFound}
+        echo ::set-output name=LATEST_VERSION_INT::${LATEST_VERSION_INT:-0}
       env:
         TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token       
     
@@ -57,10 +61,33 @@ jobs:
           echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}) is greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION }})";
         else
           echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}) is not greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION }}). Publish operation aborted!";
-        fi; 
+        fi;
 
-#     - name: Building, Comparing and Publishing
-#       run: ./gradlew build && if [ $CURRENT_VERSION -gt $LATEST_VERSION ]; then ./gradlew publish; else echo "Current version is not greater than latest version released. Publish operation aborted!"; fi;
+    - name: Listing Changes from commits pushed
+      if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }}      
+      run: git diff --name-only ${{ github.event.before }} ${{ github.sha }}
+    
+    
+
+#     - name: Create Release
+#       id: step_create_release
+#       if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }}
+#       uses: actions/create-release@v1
+#       env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#       with:
+#         tag_name: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }} # ${{ github.ref }}
+#         release_name: Release ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }}
+#         body: |
+#           Changes in this Release
+#             - First Change
+#             - Second Change
+#         draft: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT < 10 }}
+#         prerelease: ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT < 10 || steps.step_lat_ver.outputs.LATEST_VERSION_INT < 1 }}
+          
+#     - name: Publish with Gradle
+#       if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }}
+#       run: ./gradlew build
 #       env:
 #         USERNAME: ${{ github.actor }}
 #         TOKEN: ${{ secrets.GITHUB_TOKEN }}
