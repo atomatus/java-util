@@ -52,20 +52,15 @@ jobs:
     
     - name: Comparing Versions
       if: ${{ success() }}
-      run: |        
+      run: |    
         if [ ${{ steps.step_curr_ver.outputs.CURRENT_VERSION_INT }} -gt ${{ steps.step_lat_ver.outputs.LATEST_VERSION_INT }} ]; then 
           echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}) is greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION }})";
         else
           echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}) is not greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION }}). Publish operation aborted!";
         fi; 
-        
-#     - name: Print
-#       if: ${{ success() && (steps.step_curr_ver.outputs.CURRENT_VERSION_INT > steps.step_lat_ver.outputs.LATEST_VERSION_INT) }} 
-#       run: echo "Current version (${{ steps.step_curr_ver.outputs.CURRENT_VERSION }}) is greater than latest released version (${{ steps.step_lat_ver.outputs.LATEST_VERSION }})"
 
 #     - name: Building, Comparing and Publishing
 #       run: ./gradlew build && if [ $CURRENT_VERSION -gt $LATEST_VERSION ]; then ./gradlew publish; else echo "Current version is not greater than latest version released. Publish operation aborted!"; fi;
 #       env:
 #         USERNAME: ${{ github.actor }}
 #         TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
