@@ -1,4 +1,4 @@
-package atomatus.util;
+package com.atomatus.util;
 
 import junit.framework.TestCase;
 

@@ -4,7 +4,12 @@ plugins {
 }
 
 group 'com.atomatus'
-version '1.0.4'
+version '1.0.5'
+
+project.ext {
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.8
+}
 
 repositories {
     mavenCentral()
@@ -33,4 +38,8 @@ publishing {
 
 dependencies {
     testImplementation 'junit:junit:4.12'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation ('com.thoughtworks.xstream:xstream:1.4.10'){
+        exclude group: 'xpp3', module: 'xpp3_min'
+    }
 }

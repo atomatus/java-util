@@ -1,4 +1,4 @@
-package atomatus.util;
+package com.atomatus.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;

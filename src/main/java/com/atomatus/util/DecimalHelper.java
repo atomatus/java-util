@@ -1,4 +1,4 @@
-package atomatus.util;
+package com.atomatus.util;
 
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -9,7 +9,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

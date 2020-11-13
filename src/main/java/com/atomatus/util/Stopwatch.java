@@ -1,4 +1,4 @@
-package atomatus.util;
+package com.atomatus.util;
 
 /**
  * Stopwatch to check performance.
