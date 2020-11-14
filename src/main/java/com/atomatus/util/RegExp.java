@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
  * <h1>Regular Expression</h1>
  * Validate trivial types of input text values.
  */
-public class RegExp {
+public final class RegExp {
 
     enum Expressions {
         MAIL("^[\\w-]+(\\.[\\w-]+)*@([\\w-]+\\.)+[a-zA-Z]{2,7}$"),

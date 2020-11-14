@@ -1,6 +1,7 @@
 package com.atomatus.util.security;
 
 import com.atomatus.util.StringUtils;
+import com.atomatus.util.Debug;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -22,10 +23,7 @@ public final class NumberEncryptor {
 	private final boolean hasLog;
 
 	{
-		//noinspection IndexOfReplaceableByContains
-		hasLog = java.lang.management.ManagementFactory.
-				getRuntimeMXBean().
-				getInputArguments().toString().indexOf("jdwp") >= 0;
+		hasLog = Debug.isDebugMode();
 	}
 
 	/**

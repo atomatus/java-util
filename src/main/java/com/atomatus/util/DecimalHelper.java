@@ -1,6 +1,5 @@
 package com.atomatus.util;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
@@ -13,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Helper to analyse and convert wrapper or decimal types to BigDecimal, currency or decimal
+ * Helper to analyze and convert wrapper or decimal types to BigDecimal, currency or decimal
  * by discover Locale automatically or locale set it.
  * @author Carlos Matos
  */
@@ -33,15 +32,6 @@ public final class DecimalHelper {
     }
 
     private DecimalHelper() { }
-
-    private static Object[] toArray(Object arr) {
-        int len = Array.getLength(arr);
-        Object[] objArr = new Object[len];
-        for (int i = 0; i < len; i++) {
-            objArr[i] = Array.get(arr, i);
-        }
-        return objArr;
-    }
 
     /**
      * Check if current String is null, empty or whitespace.
@@ -150,10 +140,12 @@ public final class DecimalHelper {
             }
             return toBigDecimal(Long.parseLong(new String(cArr)));
         } else if(value.getClass().isArray()) {
-            Object[] arr = toArray(value);
-            StringBuilder sb = new StringBuilder();
-            for(Object obj : arr) sb.append(obj);
-            return toBigDecimal(sb.toString());
+            Object[] arr = ArrayHelper.toArray(value);
+            return toBigDecimal(
+                    ArrayHelper.reduce(arr,
+                            StringBuilder::append,
+                            new StringBuilder())
+                            .toString());
         } else {
             return toBigDecimal(value.toString());
         }

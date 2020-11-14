@@ -3,8 +3,10 @@ package com.atomatus.util.macvendors;
 import com.google.gson.annotations.SerializedName;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+import java.io.Serializable;
+
 @SuppressWarnings("unused")
-abstract class Error {
+abstract class Error implements Serializable {
 
     @XStreamAlias("error")
     @SerializedName("error")
