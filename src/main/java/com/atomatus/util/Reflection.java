@@ -1,42 +1,143 @@
 package com.atomatus.util;
 
+import java.io.Closeable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Inflate (create instance or load access for static class) a class by fullName (included package path)
+ * to try manipulate and access it.
+ */
 public abstract class Reflection {
 
     private Reflection() { }
 
+    /**
+     * Check if target class was inflated successfully.
+     * @return true while class is loaded.
+     */
     public abstract boolean inflated();
 
+    /**
+     * Method executed on target inflated class. Might return a
+     * new Reflection within result when target method has a return, otherwise,
+     * return current loaded class that executed it.
+     * @param methodName target method name of current class loaded.
+     * @param args method arguments
+     * @return return current class loaded when method is void,
+     * otherwise, return new reflection for result generated.
+     */
     public abstract Reflection method(String methodName, Object... args);
 
+    /**
+     * Request field from current inflated class.
+     * @param fieldName declared field name
+     * @return current field inflated value.
+     */
+    public abstract Reflection field(String fieldName);
+
+    /**
+     * Deflate current target. When an instance of object, maybe calling {@link Closeable#close()},
+     * {@link HttpURLConnection#disconnect()}, etc. Otherwise for static class is only
+     * unreferenced it.
+     */
+    public abstract void deflate();
+
+    /**
+     * Configure current reflection and chain's generated reflection by it to
+     * self deflate after method return some result or value request.
+     * @return current reflection configured to self deflate.
+     */
+    public abstract Reflection configDeflateAfterReturns();
+
+    /**
+     * Configure current reflection to return a empty reflection or it self (if method is void) when catch an exception.
+     * @return current reflection configured to do not throws exceptions.
+     */
+    public abstract Reflection configNoExceptions();
+
+    /**
+     * Current object loaded as int.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as int.
+     */
     public abstract int valueInt();
 
+    /**
+     * Current object loaded as long.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as long.
+     */
     public abstract long valueLong();
 
+    /**
+     * Current object loaded as float.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as float.
+     */
     public abstract float valueFloat();
 
+    /**
+     * Current object loaded as double.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as double.
+     */
     public abstract double valueDouble();
 
+    /**
+     * Current object loaded as {@link BigDecimal}.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as {@link BigDecimal}.
+     */
     public abstract BigDecimal valueBigDecimal();
 
+    /**
+     * Current object loaded as {@link BigInteger}.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as {@link BigInteger}.
+     */
     public abstract BigInteger valueBigInteger();
 
+    /**
+     * Current object loaded as boolean.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as boolean.
+     */
     public abstract boolean valueBoolean();
 
+    /**
+     * Current object loaded as String.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as String.
+     */
     public abstract String valueString();
 
+    /**
+     * Current object loaded as casted generic type.<br/>
+     * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @return generated value as casted generic type.
+     */
     public abstract <T> T value();
 
     protected static Reflection empty(){
         return new ReflectionImplEmpty();
     }
 
+    /**
+     * Generate a new instance of input class.
+     * @param clazz target class
+     * @param args constructor arguments.
+     * @return instance of target class.
+     * @throws ReflectionException throw this exception when is not possible load class or instance it.
+     */
     public static Object newInstance(Class<?> clazz, Object... args) {
         Objects.requireNonNull(clazz);
         try {
@@ -65,15 +166,31 @@ public abstract class Reflection {
         }
     }
 
+    /**
+     * Inflate (create instance or load access for static class) target class by
+     * fullName and constructor arguments (when is not static class)
+     * @param classFullName target class path
+     * @param args constructor arguments
+     * @return a new reflection inflated for target class.
+     * @throws ReflectionException throw this exception when is not possible load class or inflate it.
+     */
     public static Reflection inflate(String classFullName, Object... args) {
-        ClassLoader loader = Debug.class.getClassLoader();
         try {
+            ClassLoader loader = Reflection.class.getClassLoader();
             return new ReflectionImplInflateClass(loader.loadClass(classFullName), args);
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             throw new ReflectionException(e);
         }
     }
 
+    /**
+     * Try inflate (create instance or load access for static class) target class by
+     * fullName and constructor arguments (when is not static class)
+     * @param classFullName target class path
+     * @param args constructor arguments
+     * @return If success, generate a new reflection inflated for target class, otherwise,
+     * return a empty reflection instance (check in @link {{@link Reflection#inflated()}).
+     */
     public static Reflection tryInflate(String classFullName, Object... args) {
         try {
             return inflate(classFullName, args);
@@ -84,16 +201,20 @@ public abstract class Reflection {
 
     private static final class ReflectionImplInflateClass extends Reflection {
 
-        private final Object obj;
-        private final Class<?> objClass;
+        private Object obj;
+        private Class<?> objClass;
+        private boolean isSelfDeflateAfterReturn;
+        private boolean isThrowException;
 
         public ReflectionImplInflateClass(Class<?> clazz, Object[] args)  {
-            this(newInstance(clazz, args), clazz);
+            this(newInstance(clazz, args), clazz, false);
         }
 
-        private ReflectionImplInflateClass(Object obj, Class<?> objClass) {
+        private ReflectionImplInflateClass(Object obj, Class<?> objClass, boolean isSelfDeflateAfterReturn) {
             this.obj = obj;
             this.objClass = objClass;
+            this.isSelfDeflateAfterReturn = isSelfDeflateAfterReturn;
+            this.isThrowException = true;
         }
 
         @Override
@@ -102,27 +223,88 @@ public abstract class Reflection {
         }
 
         @Override
+        public void deflate() {
+            try {
+                if (obj != null) {
+                    if (obj instanceof Closeable) {
+                        ((Closeable) obj).close();
+                    } else if (obj instanceof HttpURLConnection) {
+                        ((HttpURLConnection) obj).disconnect();
+                    } else if(obj instanceof Collection<?>) {
+                        ((Collection<?>)obj).clear();
+                    } else if(obj instanceof Map<?, ?>) {
+                        ((Map<?, ?>)obj).clear();
+                    } else if(obj.getClass().isArray()) {
+                        ArrayHelper.clear(obj);
+                    }
+                }
+            } catch (Exception ignored) { } finally {
+                obj = null;
+                objClass = null;
+            }
+        }
+
+        @Override
+        public Reflection configNoExceptions() {
+            this.isThrowException = false;
+            return this;
+        }
+
+        @Override
+        public Reflection configDeflateAfterReturns() {
+            this.isSelfDeflateAfterReturn = true;
+            return this;
+        }
+
+        @Override
         public Reflection method(String methodName, Object... args) {
             if(inflated()) {
+                boolean isVoid = false;
                 try {
-                    Class<?>[] arr = args.length > 0 ? ArrayHelper.select(args, Object::getClass) :
-                            new Class<?>[0];
-
-                    Method m = args.length == 0 ? objClass.getMethod(methodName) :
-                            objClass.getMethod(methodName, arr);
+                    Method m = args.length == 0 ? objClass.getMethod(StringUtils.requireNonNullOrWhitespace(methodName)) :
+                            objClass.getMethod(methodName, ArrayHelper.select(args, Object::getClass));
                     m.setAccessible(true);
+                    isVoid = m.getReturnType().equals(Void.TYPE);
                     Object result = m.invoke(Modifier.isStatic(m.getModifiers()) ? null : obj, args);
-                    if(m.getReturnType().equals(Void.TYPE)) {
+                    checkSelfDeflateAfterReturn();
+                    if(isVoid) {
                         return this;
                     } else if(result != null) {
-                        return new ReflectionImplInflateClass(result, result.getClass());
+                        return new ReflectionImplInflateClass(result, result.getClass(), isSelfDeflateAfterReturn);
                     }
                 } catch (Exception e) {
-                    throw new ReflectionException(e);
+                    checkThrowsException(e, isVoid);
                 }
             }
-
             return empty();
+        }
+
+        @Override
+        public Reflection field(String fieldName) {
+            try {
+                Field f = objClass.getDeclaredField(StringUtils.requireNonNullOrWhitespace(fieldName));
+                f.setAccessible(true);
+                Object result = f.get(obj);
+                checkSelfDeflateAfterReturn();
+                return result != null ?
+                        new ReflectionImplInflateClass(result, result.getClass(), isSelfDeflateAfterReturn) :
+                        empty();
+            } catch (Exception e) {
+                return checkThrowsException(e, false);
+            }
+        }
+
+        private Reflection checkThrowsException(Exception e, boolean isReturnSelf) {
+            if(isThrowException) {
+                throw new ReflectionException(e);
+            }
+            return isReturnSelf ? this : empty();
+        }
+
+        private void checkSelfDeflateAfterReturn(){
+            if(isSelfDeflateAfterReturn) {
+                deflate();
+            }
         }
 
         @SuppressWarnings("unchecked")
@@ -142,6 +324,8 @@ public abstract class Reflection {
                     return parseFunc.apply(obj.toString());
                 }
             }
+
+            checkSelfDeflateAfterReturn();
             return defaultValue;
         }
 
@@ -167,7 +351,11 @@ public abstract class Reflection {
 
         @Override
         public BigDecimal valueBigDecimal() {
-            return DecimalHelper.toBigDecimal(obj);
+            try {
+                return DecimalHelper.toBigDecimal(obj);
+            } finally {
+                checkSelfDeflateAfterReturn();
+            }
         }
 
         @Override
@@ -182,23 +370,43 @@ public abstract class Reflection {
 
         @Override
         public String valueString() {
-            return obj == null ? null : obj.toString();
+            try {
+                return obj == null ? null : obj.toString();
+            } finally {
+                checkSelfDeflateAfterReturn();
+            }
         }
 
         @Override
         @SuppressWarnings("unchecked")
         public <T> T value() {
-            return (T) obj;
+            try {
+                return (T) obj;
+            } finally {
+                checkSelfDeflateAfterReturn();
+            }
         }
     }
 
     private static final class ReflectionImplEmpty extends Reflection {
 
         @Override
+        public Reflection configNoExceptions() { return this; }
+
+        @Override
         public boolean inflated() { return false; }
 
         @Override
         public Reflection method(String methodName, Object... args) { return this; }
+
+        @Override
+        public Reflection field(String fieldName) { return this; }
+
+        @Override
+        public void deflate() { }
+
+        @Override
+        public Reflection configDeflateAfterReturns() { return this; }
 
         @Override
         public int valueInt() { return 0; }

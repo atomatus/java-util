@@ -1,6 +1,7 @@
 package com.atomatus.util;
 
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.util.Objects;
 
 /**
@@ -23,6 +24,39 @@ public final class ArrayHelper {
 
     private ArrayHelper() { }
 
+    private static void requireArray(Object arr) {
+        if (!Objects.requireNonNull(arr).getClass().isArray()) {
+            throw new IllegalArgumentException("Object is not an array!");
+        }
+    }
+
+    /**
+     * Remove all elements of target array.
+     * @param arr target array.
+     */
+    public static void clear(Object arr) {
+        requireArray(arr);
+        int len = Array.getLength(arr);
+        for (int i = 0; i < len; i++) {
+            Object aux = Array.get(arr, i);
+            if(aux != null) {
+                if(aux.getClass().isPrimitive()) {
+                    if(aux instanceof Number) {
+                        Array.set(arr, i, 0);
+                    } else if(aux instanceof Boolean) {
+                        Array.set(arr, i, false);
+                    } else if(aux instanceof Character) {
+                        Array.set(arr, i, '\0');
+                    } else {
+                        Array.set(arr, i, null);
+                    }
+                } else {
+                    Array.set(arr, i, null);
+                }
+            }
+        }
+    }
+
     /**
      * Create a new object array from current object (current object referecing a array).
      *
@@ -30,10 +64,7 @@ public final class ArrayHelper {
      * @return object array.
      */
     public static Object[] toArray(Object arr) {
-        Objects.requireNonNull(arr);
-        if (!arr.getClass().isArray()) {
-            throw new IllegalArgumentException("Object is not an array!");
-        }
+        requireArray(arr);
         int len = Array.getLength(arr);
         Object[] objArr = new Object[len];
         for (int i = 0; i < len; i++) {
@@ -51,10 +82,7 @@ public final class ArrayHelper {
      * @return object array.
      */
     public static <E> E[] toArray(Object arr, Class<E> clazzType) {
-        Objects.requireNonNull(arr);
-        if (!arr.getClass().isArray()) {
-            throw new IllegalArgumentException("Object is not an array!");
-        }
+        requireArray(arr);
         int len = Array.getLength(arr);
         E[] objArr = (E[]) Array.newInstance(clazzType, len);
         for (int i = 0; i < len; i++) {
