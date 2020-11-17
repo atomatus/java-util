@@ -44,7 +44,6 @@ public final class MacVendors {
                 (v = vendors.get(macAddress)) == null) {
             try (Response resp = new HttpConnection()
                     .changeReadTimeOut(8000/*8s*/)
-                    .setContentType(HttpConnection.ContentType.JSON)
                     .getContent("https://macvendors.co/api/{0}/json",
                             Parameter.buildQuery(macAddress.toUpperCase()))) {
                 v = resp.parse("result", Vendor.class);
