@@ -15,7 +15,7 @@ import java.util.Date;
  * @author Carlos Matos
  *
  */
-public class DateConverter implements Converter {
+public final class DateConverter implements Converter {
 
 	@Override
 	public boolean canConvert(Class c) {

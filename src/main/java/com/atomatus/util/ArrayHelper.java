@@ -1,7 +1,6 @@
 package com.atomatus.util;
 
 import java.lang.reflect.Array;
-import java.nio.charset.Charset;
 import java.util.Objects;
 
 /**

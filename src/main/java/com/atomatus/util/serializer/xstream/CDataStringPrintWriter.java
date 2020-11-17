@@ -13,7 +13,7 @@ import java.io.Writer;
  * Write as PrettyPrintWriter when debugging otherwise use CompactWriter.
  * @author Carlos Matos
  */
-public class CDataStringPrintWriter extends PrettyPrintWriter {
+public final class CDataStringPrintWriter extends PrettyPrintWriter {
 
 	private boolean isStringClass;
 

@@ -3,6 +3,7 @@ package com.atomatus.util.serializer.xstream;
 import java.math.BigDecimal;
 
 import com.atomatus.util.DecimalHelper;
+import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -14,7 +15,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
  * @author Carlos Matos
  *
  */
-public class BigDecimalConverter implements Converter {
+public final class BigDecimalConverter implements Converter {
 	
 	@Override
 	public boolean canConvert(Class c) {
@@ -29,6 +30,10 @@ public class BigDecimalConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-		return DecimalHelper.toBigDecimal(reader.getValue());
+		try {
+			return DecimalHelper.toBigDecimal(reader.getValue());
+		} catch (Exception e) {
+			throw new ConversionException(e.getMessage(), e);
+		}
 	}
 }

@@ -2,14 +2,20 @@ package com.atomatus.connection.http;
 
 import com.atomatus.connection.http.Parameter.ParameterType;
 import com.atomatus.connection.http.exception.URLConnectionException;
+import com.atomatus.util.Base64;
 import com.atomatus.util.StringUtils;
+import com.atomatus.util.serializer.Serializer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -344,8 +350,17 @@ public class HttpConnection {
 	public enum ContentType {
 		XWWW_FORM_URLENCODED("application/x-www-form-urlencoded"),
 		TEXT("text/plain"),
+		BSON("application/bson"),
+		JAVA_ARCHIVE("application/java-archive"),
+		JAVASCRIPT("application/javascript"),
 		JSON("application/json"),
-		XML("application/xml");
+		LD_JSON("application/ld+json"),
+		OCTET_STREAM("application/octet-stream"),
+		OGG("application/ogg"),
+		PDF("application/pdf"),
+		XHTML_XML("application/xhtml+xml"),
+		XML("application/xml"),
+		ZIP("application/zip");
 
 		final String str;
 
@@ -355,6 +370,43 @@ public class HttpConnection {
 
 		String getValue() {
 			return this.str;
+		}
+
+		public static ContentType fromType(String name) {
+			if(!StringUtils.isNullOrWhitespace(name)) {
+				int fIndex = name.indexOf('/');
+				int lIndex = name.indexOf(';');
+				String part = fIndex != -1 ? name.substring(fIndex + 1,
+						lIndex != -1 ? lIndex : name.length() - 1) : null;
+				for(ContentType type : values()) {
+					String value = type.getValue();
+					if(value.equalsIgnoreCase(name) ||
+							value.substring(value.indexOf('/') + 1).equalsIgnoreCase(part)) {
+						return type;
+					}
+				}
+			}
+			return ContentType.XWWW_FORM_URLENCODED;
+		}
+
+		@Override
+		public String toString() {
+			return str;
+		}
+
+		Serializer.Type getSerializerType(){
+			switch (this) {
+				case BSON:
+					return Serializer.Type.BSON;
+				case JSON:
+					return Serializer.Type.JSON;
+				case XML:
+					return Serializer.Type.XML;
+				case OCTET_STREAM:
+					return Serializer.Type.BASE64;
+				default:
+					throw new UnsupportedOperationException("Content type \""+ this + "\" does not supports serialization!");
+			}
 		}
 	}
 
@@ -737,6 +789,7 @@ public class HttpConnection {
 		int i=0;
 		for(Parameter p : params) {
 			if(p.getType() == type) {
+				p.parseContent(this);
 				result[i++] = p;
 			}
 		}

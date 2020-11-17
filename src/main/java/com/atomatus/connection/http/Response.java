@@ -1,10 +1,12 @@
 package com.atomatus.connection.http;
 
 import com.atomatus.connection.http.exception.URLConnectionException;
+import com.atomatus.util.serializer.Serializer;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.nio.charset.Charset;
 import java.util.Objects;
@@ -70,6 +72,7 @@ public final class Response extends ResponseParameter implements Closeable {
 
 	private boolean success;
 	private HttpConnection.StatusCode statusCode;
+	private HttpConnection.ContentType contentType;
 	private byte[] bytesContent;
 	private byte[] errorBytesContent;
 	private final Object lock;
@@ -174,16 +177,22 @@ public final class Response extends ResponseParameter implements Closeable {
 		checkReadResponse(false);
 	}
 
-	private HttpConnection.StatusCode getStatusCodeLocal(){
+	private HttpConnection.StatusCode getStatusCodeLocal() throws URLConnectionException {
 		if(statusCode == null) {
 			try {
-				statusCode = HttpConnection.StatusCode.valueOf(this.requireConnection().getResponseCode());
+				HttpURLConnection con = this.requireConnection();
+				statusCode = HttpConnection.StatusCode.valueOf(con.getResponseCode());
+				contentType = HttpConnection.ContentType.fromType(con.getContentType());
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				throw new URLConnectionException(e);
 			}
 		}
 
 		return statusCode;
+	}
+
+	private Serializer.Type getSerializerType() throws URLConnectionException {
+		return getContentType().getSerializerType();
 	}
 
 	public byte[] getBytesContent() throws URLConnectionException {
@@ -211,9 +220,36 @@ public final class Response extends ResponseParameter implements Closeable {
 		return statusCode;
 	}
 
+	public HttpConnection.ContentType getContentType() throws URLConnectionException {
+		checkReadResponseOnlyState();
+		return contentType;
+	}
+
 	public boolean isSuccess() throws URLConnectionException {
 		checkReadResponseOnlyState();
 		return success;
+	}
+
+	public <T extends Serializable> T parse(String rootElement, Class<T> type) throws URLConnectionException {
+		checkReadResponseFilling();
+		return success ? Serializer
+				.getInstance(getSerializerType())
+				.deserialize(bytesContent, rootElement, type) : null;
+	}
+
+	public <T extends Serializable> T parseError(String rootElement, Class<T> type) throws URLConnectionException {
+		checkReadResponseFilling();
+		return !success ? Serializer
+				.getInstance(getSerializerType())
+				.deserialize(errorBytesContent, rootElement, type) : null;
+	}
+
+	public <T extends Serializable> T parse(Class<T> type) throws URLConnectionException {
+		return parse(null, type);
+	}
+
+	public <T extends Serializable> T parseError(Class<T> type) throws URLConnectionException {
+		return parseError(null, type);
 	}
 
 	@Override
@@ -221,6 +257,8 @@ public final class Response extends ResponseParameter implements Closeable {
 		this.tryClose(con);
 		this.bytesContent = null;
 		this.errorBytesContent = null;
+		this.statusCode = null;
+		this.contentType = null;
 		this.charset = null;
 	}
 }

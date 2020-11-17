@@ -4,7 +4,7 @@ import com.atomatus.connection.http.HttpConnection;
 import com.atomatus.connection.http.Parameter;
 import com.atomatus.connection.http.Response;
 import com.atomatus.util.RegExp;
-import com.google.gson.Gson;
+import com.atomatus.util.serializer.Serializer;
 
 import java.util.Map;
 import java.util.Objects;
@@ -44,13 +44,11 @@ public final class MacVendors {
                 (v = vendors.get(macAddress)) == null) {
             try (Response resp = new HttpConnection()
                     .changeReadTimeOut(8000/*8s*/)
-                    .setAcceptHttpResponseCode(HttpConnection.StatusCode.HTTP_ACCEPTED)
+                    .setContentType(HttpConnection.ContentType.JSON)
                     .getContent("https://macvendors.co/api/{0}/json",
                             Parameter.buildQuery(macAddress.toUpperCase()))) {
-                if (resp.isSuccess()) {
-                    String json = resp.getContent();
-                    Vendor.Result result = new Gson().fromJson(json, Vendor.Result.class);
-                    v = result.getVendor();
+                v = resp.parse("result", Vendor.class);
+                if(v != null) {
                     vendors.put(macAddress, v);
                     v.requireNonError();
                 }

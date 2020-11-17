@@ -6,9 +6,9 @@ plugins {
 group 'com.atomatus'
 version '1.0.5'
 
-project.ext {
-    sourceCompatibility = 1.6
-    targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 repositories {
@@ -39,7 +39,8 @@ publishing {
 dependencies {
     testImplementation 'junit:junit:4.12'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation ('com.thoughtworks.xstream:xstream:1.4.10'){
+    implementation ('com.thoughtworks.xstream:xstream:1.4.10') {
         exclude group: 'xpp3', module: 'xpp3_min'
     }
+    implementation 'org.mongodb:bson:4.1.1'
 }

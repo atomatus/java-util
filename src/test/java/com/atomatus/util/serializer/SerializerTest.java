@@ -1,23 +1,27 @@
 package com.atomatus.util.serializer;
 
-import com.atomatus.util.macvendors.MacVendors;
-import com.atomatus.util.macvendors.Vendor;
 import junit.framework.TestCase;
 
 public class SerializerTest extends TestCase {
 
     public void testSerialize() {
-        Vendor v0 = MacVendors.getInstance().find("BC:92:6B:FF:FF:FF");
-        assertNotNull(v0);
-        String xml = Serializer.getInstance(Serializer.Type.XML).serialize(v0);
-        Vendor v1 = Serializer.getInstance(Serializer.Type.XML).deserialize(xml);
-        assertNotNull(v1);
+        Example ex0 = Example.getExample();
+        assertNotNull(ex0);
 
-        assertEquals(v0.getMacPrefix(), v1.getMacPrefix());
-        assertEquals(v0.getCompany(), v1.getCompany());
-    }
+        for (Serializer.Type type : Serializer.Type.values()) {
+            Serializer sXml = Serializer.getInstance(type);
+            String xml = sXml.serialize(ex0);
+            Example ex1 =  sXml.deserialize(xml, Example.class);
+            assertNotNull(ex1);
+            assertEquals("From String " + type + " objects not Equals!", ex0, ex1);
+        }
 
-    public void testDeserialize() {
-
+        for (Serializer.Type type : Serializer.Type.values()) {
+            Serializer sXml = Serializer.getInstance(type);
+            byte[] xml = sXml.serializeAsBytes(ex0);
+            Example ex1 = sXml.deserialize(xml, Example.class);
+            assertNotNull(ex1);
+            assertEquals("From ByteArray " + type + " objects not Equals!", ex0, ex1);
+        }
     }
 }

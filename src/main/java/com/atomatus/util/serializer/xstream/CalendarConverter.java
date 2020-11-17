@@ -15,7 +15,7 @@ import java.util.Calendar;
  * @author Carlos Matos
  *
  */
-public class CalendarConverter implements Converter{
+public final class CalendarConverter implements Converter {
 
 	@Override
 	public boolean canConvert(Class c) {

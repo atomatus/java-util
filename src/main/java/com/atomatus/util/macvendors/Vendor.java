@@ -94,13 +94,4 @@ public final class Vendor extends Error {
     public String toString() {
         return company == null ? super.toString() : company;
     }
-
-    static final class Result {
-        @SerializedName("result")
-        private Vendor vendor;
-
-        Vendor getVendor() {
-            return vendor;
-        }
-    }
 }

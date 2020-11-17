@@ -1,7 +1,11 @@
 package com.atomatus.connection.http;
 
+import com.atomatus.util.Debug;
 import com.atomatus.util.StringUtils;
+import com.atomatus.util.WrapperHelper;
+import com.atomatus.util.serializer.Serializer;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
@@ -13,8 +17,9 @@ import java.nio.charset.Charset;
 public class Parameter {
 
 	private final String name;
-	private final Object content;
 	private final ParameterType type;
+	private Object content;
+	private boolean checked;
 
 	public static Parameter buildQuery(Object content) {
 		return new Parameter(null, content, ParameterType.QUERY);
@@ -72,6 +77,29 @@ public class Parameter {
 
 	protected boolean hasName() {
 		return !StringUtils.isNullOrEmpty(name);
+	}
+
+	/**
+	 * Check if content is a HEADER or BODY content, when true check if
+	 * is an object and current connection requests it to send as serialized content-type,
+	 * therefore serialize current content. Otherwise, does not nothing.
+	 * @param con current target connection owner of parameter.
+	 */
+	protected void parseContent(HttpConnection con) {
+		if(content != null && !checked && (checked = true) &&
+				type == ParameterType.BODY &&
+				!WrapperHelper.isWrapper(content)) {
+			if(content instanceof Serializable) {
+				content = Serializer.getInstance(HttpConnection.ContentType
+						.fromType(con.getContentType())
+						.getSerializerType())
+						.serialize((Serializable) content);
+			} else if(Debug.isDebugMode()) {
+				System.err.printf("Parameter (%1$s) of HttpConnection could no be serialized " +
+						"to %2$s because object on content does not " +
+						"implements Serializable interface!\n", name, con.getContentType());
+			}
+		}
 	}
 
 	public ParameterType getType() {
