@@ -4,7 +4,6 @@ import com.atomatus.connection.http.HttpConnection;
 import com.atomatus.connection.http.Parameter;
 import com.atomatus.connection.http.Response;
 import com.atomatus.util.RegExp;
-import com.atomatus.util.serializer.Serializer;
 
 import java.util.Map;
 import java.util.Objects;
