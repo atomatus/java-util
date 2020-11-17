@@ -1,5 +1,8 @@
 package com.atomatus.util.serializer;
 
+import com.atomatus.util.serializer.gson.GsonHelper;
+import com.atomatus.util.serializer.xstream.XStreamHelper;
+
 import java.io.Serializable;
 
 /**
@@ -8,10 +11,25 @@ import java.io.Serializable;
  * {@link Serializer.Type#JSON} or {@link Serializer.Type#XML}.
  * </p>
  * <pre>
- *     Example ex = new Example();
- *     Serializer xml = Serializer.getInstance(Serializer.Type.XML);
- *     String xmlEx = xml.serialize(ex);
- *     ex = xml.deserialize(xmlEx);
+ *     <code>
+ *      Serializer.setupDefaultConfigurationXml(Example.class, xml -> {
+ *            //something rule for xml converter when target is Example.class.
+ *            //ex.:
+ *            xml.omitField(Example.class, "password");
+ *         });
+ *     </code>
+ *     <code>
+ *         Example ex1 = new Example();
+ *         Serializer s = Serializer.getInstance(Serializer.Type.XML);
+ *         String xmlEx = s.serialize(ex1);
+ *         ex1 = s.deserialize(xmlEx);
+ *     </code>
+ *     <code>
+ *         Example ex2 = new Example();
+ *         Serializer s = Serializer.getInstance(Serializer.Type.JSON);
+ *         String jsonEx = s.serialize(ex2);
+ *         ex2 = s.deserialize(jsonEx);
+ *     </code>
  * </pre>
  */
 public abstract class Serializer {
@@ -125,4 +143,26 @@ public abstract class Serializer {
     public final <T extends Serializable> T deserialize(byte[] serialized, Class<T> type) {
         return deserialize(serialized, null, type);
     }
+
+    //region setupDefaultConfigurationXml
+    /**
+     * Configure XML Serializer rule for target class. <br/>
+     * When converter is working with target class consumer action will be fired.
+     * @param targetClass target class (object owned of class are serializing/deserializing)
+     * @param consumer consumer action to affect serializing/deserializing object owned of target class.
+     */
+    public static void setupDefaultConfigurationXml(Class<?> targetClass, XStreamHelper.XStreamConsumer consumer) {
+        XStreamHelper.setupDefaultConfiguration(targetClass, consumer);
+    }
+
+    /**
+     * Configure JSON Serializer rule for target class. <br/>
+     * When converter is working with target class consumer action will be fired.
+     * @param targetClass target class (object owned of class are serializing/deserializing)
+     * @param consumer consumer action to affect serializing/deserializing object owned of target class.
+     */
+    public static void setupDefaultConfigurationJson(Class<?> targetClass, GsonHelper.GsonConsumer consumer) {
+        GsonHelper.setupDefaultConfiguration(targetClass, consumer);
+    }
+    //endregion
 }

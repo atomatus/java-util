@@ -94,18 +94,19 @@ public final class XStreamHelper {
     }
 
     /**
-     * Configure XStream generated from {@link XStreamHelper#getInstance}.
-     * @param consumer consumer to configure instance of XStream.
+     * Configure XML converter rule for target class. <br/>
+     * When any converter is working with any target class consumer action will be fired.
+     * @param consumer consumer action to affect serializing/deserializing for any object.
      */
     public static void setupDefaultConfiguration(XStreamConsumer consumer) {
         setupDefaultConfiguration(XStreamHelper.class, consumer);
     }
 
     /**
-     * Configure XStream generated from {@link XStreamHelper#getInstance}
-     * when target is an object instance of targetClass set.
-     * @param targetClass target class that will fire consumer configuration.
-     * @param consumer consumer to configure instance of XStream to targetClass object.
+     * Configure XML converter rule for target class. <br/>
+     * When converter is working with target class consumer action will be fired.
+     * @param targetClass target class (object owned of class are serializing/deserializing)
+     * @param consumer consumer action to affect serializing/deserializing object owned of target class.
      */
     public static void setupDefaultConfiguration(Class<?> targetClass, XStreamConsumer consumer) {
         consumers.put(Objects.requireNonNull(targetClass), Objects.requireNonNull(consumer));

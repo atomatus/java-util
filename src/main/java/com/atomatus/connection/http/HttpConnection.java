@@ -1,21 +1,20 @@
 package com.atomatus.connection.http;
 
 import com.atomatus.connection.http.Parameter.ParameterType;
+import com.atomatus.connection.http.exception.SecureContextCredentialsException;
 import com.atomatus.connection.http.exception.URLConnectionException;
 import com.atomatus.util.Base64;
 import com.atomatus.util.StringUtils;
 import com.atomatus.util.serializer.Serializer;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.security.KeyStore;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -40,11 +39,13 @@ public class HttpConnection {
 	private Charset charset;
 	private String username, password;
 	private String contentType;
-	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, isUseAuthBase64;
+	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, isUseAuthBase64, useSecureContext;
 
 	private int connectionTimeOut;
 	private int readTimeOut;
 	private StatusCode[] acceptRespCode;
+	private SecureProtocols protocol;
+	private SecureContextCredentials secureContextCredentials;
 
 	/**
 	 * Http Status codes.
@@ -410,6 +411,35 @@ public class HttpConnection {
 		}
 	}
 
+	/**
+	 * Secure protocols for HTTPS connections.
+	 */
+	public enum SecureProtocols {
+		TLS,
+		TLSv1,
+		TLSv1_1,
+		TLSv1_2,
+		TLSv1_3,
+		SSL,
+		SSLv2Hello,
+		SSLv3;
+
+		public boolean isTLS(){
+			switch (this){
+				case TLS:
+				case TLSv1_1:
+				case TLSv1_2:
+					return true;
+				default:
+					return false;
+			}
+		}
+
+		public String getProtocol() {
+			return name().replace('_', '.');
+		}
+	}
+
 	{
 		connectionTimeOut = readTimeOut = 5000;
 		proxyLock = new Object();
@@ -425,16 +455,113 @@ public class HttpConnection {
 		this.acceptRespCode = toArray(StatusCode.list2XX());
 	}
 
+	/**
+	 * Enable proxy usage.
+	 * @return current instance.
+	 */
 	public HttpConnection useProxy() {
 		this.useProxy = true;
 		return this;
 	}
 
+	/**
+	 * Enable basic authentication Bearer.
+	 * @return current instance.
+	 */
 	public HttpConnection useAuthBase64() {
 		this.isUseAuthBase64 = true;
 		return this;
 	}
 
+	/**
+	 * Enable secure context connection (SSL/TLS).
+	 * @return current instance
+	 */
+	public HttpConnection useSecureContext() {
+		this.useSecureContext = true;
+		if(protocol == null) protocol = SecureProtocols.TLS;
+		if(secureContextCredentials == null) secureContextCredentials = SecureContextCredentials.builder().build();
+		return this;
+	}
+
+	/**
+	 * Enable ssl/tls protocol for https connection.
+	 * @param protocol protocol enabled.
+	 * @return current instance.
+	 */
+	public HttpConnection setSecureProtocol(SecureProtocols protocol) {
+		this.protocol = Objects.requireNonNull(protocol);
+		return this;
+	}
+
+	/**
+	 * Secure context credentials to start a SSL/TLS connection.
+	 * @param keystoreFile keystore file full path.
+	 * @param password keystore file password.
+	 * @return current instance.
+	 */
+	public HttpConnection setSecureCredentials(String keystoreFile, String password) {
+		this.secureContextCredentials = SecureContextCredentials.builder()
+				.addClientKeyStore(keystoreFile)
+				.addClientPassword(password)
+				.build();
+		return this;
+	}
+
+	/**
+	 * Secure context credentials to start a SSL/TLS connection.
+	 * @param keystoreFile keystore file full path.
+	 * @return current instance.
+	 */
+	public HttpConnection setSecureCredentials(String keystoreFile) {
+		return setSecureCredentials(keystoreFile, null);
+	}
+
+	/**
+	 * Secure context credentials to start a SSL/TLS connection.
+	 * @param keystore keystore file.
+	 * @param password keystore file password.
+	 * @return current instance.
+	 */
+	public HttpConnection setSecureCredentials(KeyStore keystore, String password) {
+		this.secureContextCredentials = SecureContextCredentials.builder()
+				.addClientKeyStore(keystore)
+				.addClientPassword(password)
+				.build();
+		return this;
+	}
+
+	/**
+	 * Secure context credentials to start a SSL/TLS connection.
+	 * @param keystore keystore file.
+	 * @param trustStore server keystore we trust.
+	 * @param password keystore file password.
+	 * @return current instance.
+	 */
+	public HttpConnection setSecureCredentials(KeyStore keystore, KeyStore trustStore, String password) {
+		this.secureContextCredentials = SecureContextCredentials.builder()
+				.addClientKeyStore(keystore)
+				.addClientPassword(password)
+				.addClientTrustStore(trustStore)
+				.build();
+		return this;
+	}
+
+	/**
+	 * Secure context credentials to start a SSL/TLS connection.
+	 * @param keystore keystore file.
+	 * @return current instance.
+	 */
+	public HttpConnection setSecureCredentials(KeyStore keystore) {
+		return setSecureCredentials(keystore, null);
+	}
+
+	/**
+	 * Set credential for basic or proxy authentication.
+	 * @param username user name.
+	 * @param password user password.
+	 * @return current instance.
+	 */
 	public HttpConnection setCredentials(String username, String password) {
 		Authenticator.setDefault(new ProxyAuthenticator(
 				this.username = StringUtils.requireNonNullOrWhitespace(username, "Authentication: User name not set!"),
@@ -605,6 +732,7 @@ public class HttpConnection {
 				if ((var = this.proxyHostAndPort(url.toString())) != null) {
 					PROXY_HOST = var[0];
 					PROXY_PORT = var[1];
+
 					System.setProperty("http.proxyHost", PROXY_HOST);
 					System.setProperty("http.proxyPort", String.valueOf(PROXY_PORT));
 				} else {
@@ -643,6 +771,19 @@ public class HttpConnection {
 		}
 	}
 
+	private String getBase64Auth() {
+		return "basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes()), charset);
+	}
+
+	private void configSecureContext(HttpURLConnection con) throws SecureContextCredentialsException {
+		if(useSecureContext && con instanceof HttpsURLConnection) {
+			((HttpsURLConnection) con).setSSLSocketFactory(
+					secureContextCredentials
+							.initContext(protocol)
+							.getSocketFactory());
+		}
+	}
+
 	/**
 	 * Open a new Http connection.
 	 * @param url target url
@@ -673,6 +814,7 @@ public class HttpConnection {
 
 		try {
 
+			configSecureContext(con);
 			String agent = System.getProperty("http.agent");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; pt-BR; rv:1.9.2.7; Linux; "
 					+ "U; Android 2.2.1; en-us; Nexus One Build/FRG83) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1 "
@@ -687,8 +829,13 @@ public class HttpConnection {
 			if(isUseAuthBase64) {
 				StringUtils.requireNonNullOrWhitespace(username, "AuthBase64: User name not set or invalid!");
 				StringUtils.requireNonNullOrEmpty(password, "AuthBase64: User name not set or invalid!");
-				con.setRequestProperty("Authorization",
-						"basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes()), charset));
+
+				String base64Auth = getBase64Auth();
+				con.setRequestProperty("Authorization", base64Auth);
+
+				if(useProxy) {
+					con.setRequestProperty("Proxy-Authorization", base64Auth);
+				}
 			}
 
 			if (useProxy) {
@@ -923,7 +1070,7 @@ public class HttpConnection {
 		return this.getResponse(con);
 	}
 
-	public Response get(String url, Parameter... params) throws URLConnectionException {
+	private Response get(String url, Parameter... params) throws URLConnectionException {
 		try {
 			return get(new URL(url), params);
 		} catch (MalformedURLException e) {

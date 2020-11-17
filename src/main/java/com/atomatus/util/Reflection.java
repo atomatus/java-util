@@ -178,7 +178,7 @@ public abstract class Reflection {
         try {
             ClassLoader loader = Reflection.class.getClassLoader();
             return new ReflectionImplInflateClass(loader.loadClass(classFullName), args);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw new ReflectionException(e);
         }
     }
@@ -199,6 +199,39 @@ public abstract class Reflection {
         }
     }
 
+    /**
+     * Try inflate casting from initialized object to target class request.
+     * @param obj target object non null.
+     * @param castClassFullName name of class to do cast.
+     * @return a new reflection inflated for cast class and target object.
+     * @throws ReflectionException throw this exception when is not possible load class or cast it.
+     */
+    public static Reflection cast(Object obj, String castClassFullName) {
+        try {
+            ClassLoader loader = Reflection.class.getClassLoader();
+            return new ReflectionImplInflateClass(Objects.requireNonNull(obj),
+                    loader.loadClass(Objects.requireNonNull(castClassFullName)),
+                    false);
+        } catch (Throwable e) {
+            throw new ReflectionException(e);
+        }
+    }
+
+    /**
+     * Try inflate casting from initialized object to target class by fullName.
+     * @param obj target object non null.
+     * @param castClassFullName name of class to do cast.
+     * @return If success, generate a new reflection inflated for cast target class and object, otherwise,
+     * return a empty reflection instance (check in @link {{@link Reflection#inflated()}).
+     */
+    public static Reflection tryCast(Object obj, String castClassFullName) {
+        try {
+            return cast(obj, castClassFullName);
+        } catch (ReflectionException e) {
+            return empty();
+        }
+    }
+
     private static final class ReflectionImplInflateClass extends Reflection {
 
         private Object obj;
@@ -206,7 +239,7 @@ public abstract class Reflection {
         private boolean isSelfDeflateAfterReturn;
         private boolean isThrowException;
 
-        public ReflectionImplInflateClass(Class<?> clazz, Object[] args)  {
+        private ReflectionImplInflateClass(Class<?> clazz, Object[] args)  {
             this(newInstance(clazz, args), clazz, false);
         }
 
@@ -224,8 +257,12 @@ public abstract class Reflection {
 
         @Override
         public void deflate() {
+            deflate(true);
+        }
+
+        public void deflate(boolean disposing) {
             try {
-                if (obj != null) {
+                if (disposing && obj != null) {
                     if (obj instanceof Closeable) {
                         ((Closeable) obj).close();
                     } else if (obj instanceof HttpURLConnection) {
@@ -266,7 +303,7 @@ public abstract class Reflection {
                     m.setAccessible(true);
                     isVoid = m.getReturnType().equals(Void.TYPE);
                     Object result = m.invoke(Modifier.isStatic(m.getModifiers()) ? null : obj, args);
-                    checkSelfDeflateAfterReturn();
+                    checkSelfDeflateAfterReturn(true);
                     if(isVoid) {
                         return this;
                     } else if(result != null) {
@@ -285,7 +322,7 @@ public abstract class Reflection {
                 Field f = objClass.getDeclaredField(StringUtils.requireNonNullOrWhitespace(fieldName));
                 f.setAccessible(true);
                 Object result = f.get(obj);
-                checkSelfDeflateAfterReturn();
+                checkSelfDeflateAfterReturn(true);
                 return result != null ?
                         new ReflectionImplInflateClass(result, result.getClass(), isSelfDeflateAfterReturn) :
                         empty();
@@ -301,9 +338,9 @@ public abstract class Reflection {
             return isReturnSelf ? this : empty();
         }
 
-        private void checkSelfDeflateAfterReturn(){
+        private void checkSelfDeflateAfterReturn(boolean disposing){
             if(isSelfDeflateAfterReturn) {
-                deflate();
+                deflate(disposing);
             }
         }
 
@@ -325,7 +362,7 @@ public abstract class Reflection {
                 }
             }
 
-            checkSelfDeflateAfterReturn();
+            checkSelfDeflateAfterReturn(false);
             return defaultValue;
         }
 
@@ -354,7 +391,7 @@ public abstract class Reflection {
             try {
                 return DecimalHelper.toBigDecimal(obj);
             } finally {
-                checkSelfDeflateAfterReturn();
+                checkSelfDeflateAfterReturn(true);
             }
         }
 
@@ -373,7 +410,7 @@ public abstract class Reflection {
             try {
                 return obj == null ? null : obj.toString();
             } finally {
-                checkSelfDeflateAfterReturn();
+                checkSelfDeflateAfterReturn(false);
             }
         }
 
@@ -383,7 +420,7 @@ public abstract class Reflection {
             try {
                 return (T) obj;
             } finally {
-                checkSelfDeflateAfterReturn();
+                checkSelfDeflateAfterReturn(false);
             }
         }
     }

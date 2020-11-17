@@ -17,6 +17,10 @@ public final class ArrayHelper {
         A apply(A acc, I i);
     }
 
+    public interface ReducerIndex<A, I> {
+        A apply(A acc, I i, int index);
+    }
+
     public interface Filter<I> {
         boolean accept(I i);
     }
@@ -250,6 +254,43 @@ public final class ArrayHelper {
     public static <I, A extends I> A reduce(I[] args, Reducer<A, I> func) {
         return reduce(args, func, null);
     }
+
+
+    /**
+     * Apply reduce operation.
+     * @param args target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <I> array element type
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <I, A> A reduceI(I[] args, ReducerIndex<A, I> func, A acc) {
+        Objects.requireNonNull(args);
+        Objects.requireNonNull(func);
+        for(int i=0,l=args.length; i < l; i++) {
+            if(i == 0 && acc == null) {
+                //noinspection unchecked
+                acc = (A) args[i];
+            } else {
+                acc = func.apply(acc, args[i], i);
+            }
+        }
+        return acc;
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param args target
+     * @param func reduce function with index
+     * @param <I> array element type
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <I, A extends I> A reduceI(I[] args, ReducerIndex<A, I> func) {
+        return reduceI(args, func, null);
+    }
+
 
     /**
      * Take a count of elements.

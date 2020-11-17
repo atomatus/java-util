@@ -1,7 +1,6 @@
 package com.atomatus.util.serializer.gson;
 
 import com.atomatus.util.Debug;
-import com.atomatus.util.serializer.xstream.XStreamHelper;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -84,18 +83,20 @@ public final class GsonHelper {
     }
 
     /**
-     * Configure Gson generated from {@link GsonHelper#getInstance}.
-     * @param consumer consumer to configure instance of Gson.
+     * Configure JSON converter rule for target class. <br/>
+     * When any converter is working with any target class consumer action will be fired.
+     * @param consumer consumer action to affect serializing/deserializing for any object.
      */
     public static void setupDefaultConfiguration(GsonConsumer consumer) {
-        setupDefaultConfiguration(XStreamHelper.class, consumer);
+        setupDefaultConfiguration(GsonHelper.class, consumer);
     }
 
+
     /**
-     * Configure Gson generated from {@link GsonHelper#getInstance}
-     * when target is an object instance of targetClass set.
-     * @param targetClass target class that will fire consumer configuration.
-     * @param consumer consumer to configure instance of Gson to targetClass object.
+     * Configure JSON converter rule for target class. <br/>
+     * When converter is working with target class consumer action will be fired.
+     * @param targetClass target class (object owned of class are serializing/deserializing)
+     * @param consumer consumer action to affect serializing/deserializing object owned of target class.
      */
     public static void setupDefaultConfiguration(Class<?> targetClass, GsonConsumer consumer) {
         consumers.put(Objects.requireNonNull(targetClass), Objects.requireNonNull(consumer));
