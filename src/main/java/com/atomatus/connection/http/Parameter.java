@@ -80,7 +80,7 @@ public class Parameter {
 	}
 
 	/**
-	 * Check if content is a HEADER or BODY content, when true check if
+	 * Check if content is a BODY content, when true check if
 	 * is an object and current connection requests it to send as serialized content-type,
 	 * therefore serialize current content. Otherwise, does not nothing.
 	 * @param con current target connection owner of parameter.
