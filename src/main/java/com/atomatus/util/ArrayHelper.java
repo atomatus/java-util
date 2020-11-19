@@ -27,9 +27,16 @@ public final class ArrayHelper {
 
     private ArrayHelper() { }
 
-    private static void requireArray(Object arr) {
+    public static void requireArray(Object arr) {
         if (!Objects.requireNonNull(arr).getClass().isArray()) {
             throw new IllegalArgumentException("Object is not an array!");
+        }
+    }
+
+    public static void requireArrayNonNullOrEmpty(Object arr) {
+        requireArray(arr);
+        if(Array.getLength(arr) == 0) {
+            throw new IllegalArgumentException("Array is empty!");
         }
     }
 

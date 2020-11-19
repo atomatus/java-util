@@ -44,6 +44,13 @@ public interface InputDataEvent extends BinderEvent{
 	Long readLong() throws IOException;
 
 	/**
+	 * Get data sent as float.
+	 * @return send data converted to float.
+	 * @throws IOException is not possible read data, connection was closed.
+	 */
+	Float readFloat() throws IOException;
+
+	/**
 	 * Get data sent as double.
 	 * @return send data converted to double.
 	 * @throws IOException is not possible read data, connection was closed.

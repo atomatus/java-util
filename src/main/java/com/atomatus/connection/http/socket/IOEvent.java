@@ -3,6 +3,8 @@ package com.atomatus.connection.http.socket;
 import com.atomatus.connection.http.socket.event.InputEvent;
 import com.atomatus.connection.http.socket.event.OutputEvent;
 import com.atomatus.connection.http.socket.event.ServerListener;
+import com.atomatus.util.ArrayHelper;
+import com.atomatus.util.BufferHelper;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -139,44 +141,44 @@ class IOEvent implements InputEvent, OutputEvent, Closeable {
 		return buffer;		
 	}
 
-	private <T> T parse(Class<T> clazz) throws IOException{
-		byte[] data	= this.readAll();		
-		
-		String str;		
-		if(data.length == 0 || (str = new String(data)).trim().isEmpty()){
-			return null;
-		}
-		
-		return	(T) (
-				clazz == Boolean.class		? Boolean.valueOf(str) 	:
-				clazz == Integer.class		? Integer.valueOf(str) 	:
-				clazz == Long.class			? Long.valueOf(str) 	:
-				clazz == Double.class		? Double.valueOf(str) 	: str);
+	private <T> T parse(ArrayHelper.Function<byte[], T> mount) throws IOException {
+		byte[] arr = this.readAll();
+		return arr.length != 0 ? mount.apply(arr) : null;
+	}
+
+	private <T extends Number> T parseNumber(ArrayHelper.Function<byte[], T> mount) throws IOException {
+		byte[] arr = this.readAll();
+		return arr.length != 0 ? mount.apply(arr) : null;
 	}
 
 	@Override
 	public String readString() throws IOException {
-		return this.parse(String.class);
+		return this.parse(String::new);
 	}
 
 	@Override
 	public Integer readInteger() throws IOException {
-		return this.parse(Integer.class);
+		return this.parseNumber(BufferHelper::toInt);
 	}
 
 	@Override
 	public Boolean readBoolean() throws IOException {
-		return this.parse(Boolean.class);
+		return this.parse(BufferHelper::toBoolean);
 	}
 
 	@Override
 	public Long readLong() throws IOException {
-		return this.parse(Long.class);
+		return this.parseNumber(BufferHelper::toLong);
+	}
+
+	@Override
+	public Float readFloat() throws IOException {
+		return this.parseNumber(BufferHelper::toFloat);
 	}
 
 	@Override
 	public Double readDouble() throws IOException {
-		return this.parse(Double.class);
+		return this.parseNumber(BufferHelper::toDouble);
 	}
 	
 	@Override
@@ -203,27 +205,32 @@ class IOEvent implements InputEvent, OutputEvent, Closeable {
 	
 	@Override
 	public void write(String str) throws IOException {
-		this.write(str.getBytes(charset));
+		this.write(BufferHelper.fromString(str, charset));
 	}
 	
 	@Override
 	public void write(Integer i) throws IOException {
-		this.write(String.valueOf(i));
+		this.write(BufferHelper.fromInt(i));
 	}
 	
 	@Override
 	public void write(Boolean b) throws IOException {
-		this.write(String.valueOf(b));
+		this.write(BufferHelper.fromBoolean(b));
 	}
 	
 	@Override
 	public void write(Long l) throws IOException {
-		this.write(String.valueOf(l));
+		this.write(BufferHelper.fromLong(l));
 	}
-	
+
+	@Override
+	public void write(Float f) throws IOException {
+		this.write(BufferHelper.fromFloat(f));
+	}
+
 	@Override
 	public void write(Double d) throws IOException {
-		this.write(String.valueOf(d));
+		this.write(BufferHelper.fromDouble(d));
 	}
 
 	@Override
