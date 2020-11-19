@@ -188,7 +188,7 @@ public enum AsciiTable {
 	US;
 	//endregion
 
-	public byte getCode() {
+	public byte code() {
 		return (byte) ordinal();
 	}
 }

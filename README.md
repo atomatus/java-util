@@ -1,7 +1,7 @@
 # java-util
 Set of utilities to help in project development.
 
-## HttpConnection
+## Http Connection
 Fully class for http or https connections.
 A simple way to do REST actions like methods get, post, put patch or delete.
 
@@ -75,6 +75,50 @@ Example of action POST with URL Parameter, Query Parameter and Body Parameter
             }
 //url: https://test.com/api/urlParamExample/json?param=queryParamExample
 ```
+
+## Socket Connection
+Simple way for socket Client/Server connection.
+
+Example socket client/server for a serializable object.
+
+```
+final Server s = new Server();
+            s.setServerObjectAdapter(new ServerObjectAdapter() {
+                @Override
+                public void onInputObjectAction(InputObjectEvent evt) {
+                    try {
+                        Vendor v = evt.readObject();
+                        assertEquals(v.getCompany(), "Client Inc");
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onOutputObjectAction(OutputObjectEvent evt) {
+                    try {
+                        Vendor v = new Vendor();
+                        v.setCompany("Server Inc");
+                        evt.writeObject(v);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            s.open();
+
+            try(Client c = new Client(s.getPort())) {
+                Vendor v = new Vendor();
+                v.setCompany("Client Inc");
+                c.writeObject(v);
+                Vendor resp = c.readObject();
+                assertEquals(resp.getCompany(), "Server Inc");
+            }
+
+            s.close();
+```
+
 
 ## MacVendors
 The Fastest way to find vendors by macAddress
