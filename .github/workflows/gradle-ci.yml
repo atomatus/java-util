@@ -28,7 +28,7 @@ jobs:
       
     - name: Build with Gradle
       if: ${{ always() }}
-      run: ./gradlew build --stacktrace
+      run: ./gradlew build
       
     - name: Getting current version with Gradle
       id: step_curr_ver
