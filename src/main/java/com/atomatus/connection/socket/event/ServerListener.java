@@ -1,6 +1,6 @@
-package com.atomatus.connection.http.socket.event;
+package com.atomatus.connection.socket.event;
 
-import com.atomatus.connection.http.socket.Client;
+import com.atomatus.connection.socket.Client;
 
 /**
  * Server I/O Actions listener.<br/>

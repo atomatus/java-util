@@ -1,4 +1,4 @@
-package com.atomatus.connection.http.socket;
+package com.atomatus.connection.socket;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -8,14 +8,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.atomatus.connection.http.socket.Server.IOType;
-import com.atomatus.connection.http.socket.event.InputDataEvent;
-import com.atomatus.connection.http.socket.event.InputEvent;
-import com.atomatus.connection.http.socket.event.InputObjectEvent;
-import com.atomatus.connection.http.socket.event.OutputDataEvent;
-import com.atomatus.connection.http.socket.event.OutputEvent;
-import com.atomatus.connection.http.socket.event.OutputObjectEvent;
-import com.atomatus.connection.http.socket.event.ServerListener;
+import com.atomatus.connection.socket.Server.IOType;
+import com.atomatus.connection.socket.event.InputDataEvent;
+import com.atomatus.connection.socket.event.InputEvent;
+import com.atomatus.connection.socket.event.InputObjectEvent;
+import com.atomatus.connection.socket.event.OutputDataEvent;
+import com.atomatus.connection.socket.event.OutputEvent;
+import com.atomatus.connection.socket.event.OutputObjectEvent;
+import com.atomatus.connection.socket.event.ServerListener;
 
 /**
  * Thread instanciada pelo {@link Server} para comunicacao com socket client.

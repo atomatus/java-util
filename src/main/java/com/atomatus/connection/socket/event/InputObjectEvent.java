@@ -1,4 +1,4 @@
-package com.atomatus.connection.http.socket.event;
+package com.atomatus.connection.socket.event;
 
 import java.io.IOException;
 import java.io.Serializable;

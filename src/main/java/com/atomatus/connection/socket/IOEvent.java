@@ -1,8 +1,8 @@
-package com.atomatus.connection.http.socket;
+package com.atomatus.connection.socket;
 
-import com.atomatus.connection.http.socket.event.InputEvent;
-import com.atomatus.connection.http.socket.event.OutputEvent;
-import com.atomatus.connection.http.socket.event.ServerListener;
+import com.atomatus.connection.socket.event.InputEvent;
+import com.atomatus.connection.socket.event.OutputEvent;
+import com.atomatus.connection.socket.event.ServerListener;
 import com.atomatus.util.ArrayHelper;
 import com.atomatus.util.BufferHelper;
 

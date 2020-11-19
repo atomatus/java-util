@@ -1,4 +1,4 @@
-package com.atomatus.connection.http.socket;
+package com.atomatus.connection.socket;
 
 import java.io.Closeable;
 import java.io.IOException;

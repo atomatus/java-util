@@ -1,4 +1,4 @@
-package com.atomatus.connection.http.socket.event;
+package com.atomatus.connection.socket.event;
 
 /**
  * Read socket data event

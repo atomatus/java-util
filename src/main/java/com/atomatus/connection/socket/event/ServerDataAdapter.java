@@ -1,4 +1,4 @@
-package com.atomatus.connection.http.socket.event;
+package com.atomatus.connection.socket.event;
 
 /**
  * {@link ServerListener} Adapter to I/O of simple datas (wrappers and byte array)

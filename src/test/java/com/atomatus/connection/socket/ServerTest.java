@@ -1,9 +1,7 @@
-package com.atomatus.util.socket;
+package com.atomatus.connection.socket;
 
-import com.atomatus.connection.http.socket.Client;
-import com.atomatus.connection.http.socket.Server;
 import com.atomatus.util.macvendors.Vendor;
-import com.atomatus.connection.http.socket.event.*;
+import com.atomatus.connection.socket.event.*;
 import junit.framework.TestCase;
 
 import java.io.IOException;

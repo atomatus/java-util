@@ -1,4 +1,4 @@
-package com.atomatus.connection.http.socket.event;
+package com.atomatus.connection.socket.event;
 
 /**
  * Use BinderEvent to transport data between {@link InputEvent} and {@link OutputEvent}.

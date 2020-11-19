@@ -1,4 +1,4 @@
-package com.atomatus.connection.http.socket;
+package com.atomatus.connection.socket;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -7,9 +7,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 import com.atomatus.util.AsciiTable;
-import com.atomatus.connection.http.socket.event.ServerDataAdapter;
-import com.atomatus.connection.http.socket.event.ServerListener;
-import com.atomatus.connection.http.socket.event.ServerObjectAdapter;
+import com.atomatus.connection.socket.event.ServerDataAdapter;
+import com.atomatus.connection.socket.event.ServerListener;
+import com.atomatus.connection.socket.event.ServerObjectAdapter;
 
 /**
  * Socket Server connection.
