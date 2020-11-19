@@ -7,9 +7,9 @@ name: 00 - Java CI with Gradle For Build Release and Publish
 
 on:  
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   
 jobs:
   job_build:
