@@ -19,10 +19,17 @@ public final class SystemInfo {
         ARM
     }
 
+    public enum JVMArch {
+        X64,
+        X86,
+        ARM
+    }
+
     private final OS os;
     private final String osName;
     private final String osVersion;
     private final Arch osArch;
+    private final JVMArch jvmArch;
 
     private static transient SystemInfo instance;
 
@@ -35,6 +42,7 @@ public final class SystemInfo {
         this.osVersion  = System.getProperty("os.version");
         this.os         = this.getOS();
         this.osArch     = this.getOSArch();
+        this.jvmArch    = this.getJVMArch();
     }
 
     private OS getOS() {
@@ -57,8 +65,7 @@ public final class SystemInfo {
     private Arch getOSArch(){
         String arch = System.getProperty("os.arch");
         if(!StringUtils.isNullOrEmpty(arch)) {
-            arch = arch.toLowerCase();
-            if(arch.endsWith("64")) {
+            if((arch = arch.toLowerCase()).endsWith("64")) {
                 return arch.contains("amd") ? Arch.AMD64 : Arch.IA64;
             } else if(arch.contains("x86") || (arch.startsWith("i") && arch.endsWith("86"))) {
                 return Arch.X86;
@@ -70,8 +77,22 @@ public final class SystemInfo {
         return Arch.UNKNOWN;
     }
 
+    public JVMArch getJVMArch(){
+        String arch = System.getProperty("sun.arch.data.model");
+        if(!StringUtils.isNullOrEmpty(arch)) {
+            return (arch = arch.toLowerCase()).contains("64") ? JVMArch.X64 :
+                    arch.contains("32") || arch.contains("x86") ? JVMArch.X86 :
+                            JVMArch.ARM;
+        }
+        return JVMArch.ARM;
+    }
+
     public Arch arch() {
         return osArch;
+    }
+
+    public JVMArch jvmArch() {
+        return jvmArch;
     }
 
     public OS os() {
@@ -104,5 +125,18 @@ public final class SystemInfo {
 
     public boolean isWindows() {
         return os == OS.WINDOWS;
+    }
+
+    public String getAppBinPath(){
+        switch (os) {
+            case WINDOWS:
+                return jvmArch == JVMArch.X64 ?
+                        System.getenv("ProgramFiles") :
+                        System.getenv("ProgramFiles") + " (x86)";
+            case LINUX:
+                return "/usr/bin";
+            default:
+                return System.getProperty("user.home");
+        }
     }
 }

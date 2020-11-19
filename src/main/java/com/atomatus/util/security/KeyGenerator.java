@@ -1,20 +1,18 @@
 package com.atomatus.util.security;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class KeyGenerator {
+public final class KeyGenerator {
 
 	private static final int DEFAULT_LEN 	= 6;
 	private static final int DEC_BOUND 		= 10;
-	private static final int HEX_BOUND 		= 16;
+
+	private KeyGenerator() { }
 
 	public static String generateRandomKey(int len, int bound) {
 		StringBuilder builder = new StringBuilder();
-		Random random = new Random();
-		for (int i = 0; i < len; i++) {
-			builder.append(random.nextInt(bound));
-		}
-
+		ThreadLocalRandom random = ThreadLocalRandom.current();
+		for (int i = 0; i < len; i++) builder.append(random.nextInt(bound));
 		return builder.toString();
 	}
 
@@ -27,15 +25,35 @@ public class KeyGenerator {
 	}
 
 	public static String generateRandomKeyHex(int len) {
-		StringBuilder builder = new StringBuilder();
-		Random random = new Random();
-		for (int i = 0; i < len; i++) {
-			builder.append(Integer.toHexString(random.nextInt(HEX_BOUND)));
-		}
-		return builder.toString();
+		return generateRandomKey(len, "0123456789ABCDEF");
 	}
 
 	public static String generateRandomKeyHex() {
 		return generateRandomKeyHex(DEFAULT_LEN);
+	}
+
+	public static String generateRandomKeyAlpha(int len) {
+		return generateRandomKey(len, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+	}
+
+	public static String generateRandomKeyAlphaNumeric(int len) {
+		return generateRandomKey(len, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+	}
+
+	public static String generateRandomKeyAlpha() {
+		return generateRandomKeyAlpha(DEFAULT_LEN);
+	}
+
+	public static String generateRandomKeyAlphaNumeric() {
+		return generateRandomKeyAlphaNumeric(DEFAULT_LEN);
+	}
+
+	private static String generateRandomKey(int len, String args) {
+		ThreadLocalRandom random = ThreadLocalRandom.current();
+		char[] arr = new char[len];
+		for (int i = 0, j = args.length(); i < len; i++) {
+			arr[i] = args.charAt(random.nextInt(j));
+		}
+		return new String(arr);
 	}
 }

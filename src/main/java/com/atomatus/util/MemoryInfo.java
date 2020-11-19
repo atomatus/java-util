@@ -62,7 +62,7 @@ public final class MemoryInfo {
             if (rc.inflated()) {
                 rc.configDeflateAfterReturns()
                         .method("getSystemService", "activity")
-                        .method("getMemoryInfo", rmi.value());
+                        .method("getMemoryInfo", (Object) rmi.value());
 
                 MemoryInfo mi = new MemoryInfo();
                 mi.freeMemoryInBytes = rmi.field("availMem").valueLong();
@@ -70,12 +70,13 @@ public final class MemoryInfo {
                 mi.maxMemoryInBytes = rmi.field("totalMem").valueLong();
                 mi.allocatedMemoryInBytes = mi.totalMemoryInBytes - mi.freeMemoryInBytes;
                 mi.presumableFreeMemoryInBytes = mi.maxMemoryInBytes - mi.allocatedMemoryInBytes;
+                rmi.deflate();
                 return mi;
             } else {
                 throw new ClassCastException("Object (" + context + ") is not an android.content.Context!");
             }
         }
-        throw new UnsupportedOperationException("Was not possible load android.app.ActivityManager.MemoryInfo");
+        throw new UnsupportedOperationException("Was not possible create instance of android.app.ActivityManager.MemoryInfo");
     }
 
     public synchronized static MemoryInfo getInstance(Object context) {

@@ -6,11 +6,10 @@ import com.atomatus.util.Debug;
 import java.util.Arrays;
 import java.util.Random;
 
-
 /**
  * Simple Encryptor for number characters.
  */
-public final class NumberEncryptor {
+class NumberEncryptor extends Encryptor {
 
 	public final static int COUNT					= 3;
 	public final static int GENERATOR_KEY_LENGTH	= 4;
@@ -35,7 +34,9 @@ public final class NumberEncryptor {
 		this.privateKey	= requireValidPrivateKey(privateKey);
 	}
 
-	public NumberEncryptor() { }
+	public NumberEncryptor() {
+		this("1143");//never change it.
+	}
 
 	private String requireValidPrivateKey(String privateKey) {
 		StringUtils.requireNonNullOrEmpty(privateKey);
@@ -47,7 +48,7 @@ public final class NumberEncryptor {
 		return privateKey;
 	}
 
-	private void requireOnlyDigits(String str){
+	protected void requireOnlyDigits(String str){
 		if(str.replaceAll("[0-9]", "").length() > 0){
 			throw new IllegalArgumentException("Use only digits!");
 		}
@@ -224,7 +225,8 @@ public final class NumberEncryptor {
 		return new String[]{result.substring(0, result.length()-GENERATOR_KEY_LENGTH), 
 				result.substring(result.length()-GENERATOR_KEY_LENGTH)};
 	}
-	
+
+	//region Encryptor
 	/**
 	 * Load a privateKey through an encrypted value.
 	 * @param encrypted new private key encrypted.
@@ -285,5 +287,6 @@ public final class NumberEncryptor {
 	public String decrypt(String encrypted) {
 		return this.decryptValue(encrypted)[0];
 	}
-	
+	//endregion
+
 }

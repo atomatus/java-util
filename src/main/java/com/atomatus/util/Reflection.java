@@ -210,8 +210,7 @@ public abstract class Reflection {
         try {
             ClassLoader loader = Reflection.class.getClassLoader();
             return new ReflectionImplInflateClass(Objects.requireNonNull(obj),
-                    loader.loadClass(Objects.requireNonNull(castClassFullName)),
-                    false);
+                    loader.loadClass(Objects.requireNonNull(castClassFullName)));
         } catch (Throwable e) {
             throw new ReflectionException(e);
         }
@@ -240,14 +239,19 @@ public abstract class Reflection {
         private boolean isThrowException;
 
         private ReflectionImplInflateClass(Class<?> clazz, Object[] args)  {
-            this(newInstance(clazz, args), clazz, false);
+            this(newInstance(clazz, args), clazz);
         }
 
-        private ReflectionImplInflateClass(Object obj, Class<?> objClass, boolean isSelfDeflateAfterReturn) {
+        private ReflectionImplInflateClass(Object obj, Class<?> objClass) {
+            this(obj, objClass, false, true);
+        }
+
+        private ReflectionImplInflateClass(Object obj, Class<?> objClass, boolean isSelfDeflateAfterReturn, boolean isThrowException) {
             this.obj = obj;
-            this.objClass = objClass;
+            this.objClass = Objects.requireNonNull(objClass);
             this.isSelfDeflateAfterReturn = isSelfDeflateAfterReturn;
-            this.isThrowException = true;
+            this.isThrowException = isThrowException;
+            this.requireAssignableClassForObjectNonNull();
         }
 
         @Override
@@ -260,7 +264,7 @@ public abstract class Reflection {
             deflate(true);
         }
 
-        public void deflate(boolean disposing) {
+        private void deflate(boolean disposing) {
             try {
                 if (disposing && obj != null) {
                     if (obj instanceof Closeable) {
@@ -307,7 +311,8 @@ public abstract class Reflection {
                     if(isVoid) {
                         return this;
                     } else if(result != null) {
-                        return new ReflectionImplInflateClass(result, result.getClass(), isSelfDeflateAfterReturn);
+                        return new ReflectionImplInflateClass(result, result.getClass(),
+                                isSelfDeflateAfterReturn, isThrowException);
                     }
                 } catch (Exception e) {
                     checkThrowsException(e, isVoid);
@@ -324,16 +329,28 @@ public abstract class Reflection {
                 Object result = f.get(obj);
                 checkSelfDeflateAfterReturn(true);
                 return result != null ?
-                        new ReflectionImplInflateClass(result, result.getClass(), isSelfDeflateAfterReturn) :
+                        new ReflectionImplInflateClass(result, result.getClass(),
+                                isSelfDeflateAfterReturn, isThrowException) :
                         empty();
             } catch (Exception e) {
                 return checkThrowsException(e, false);
             }
         }
 
+        private void requireAssignableClassForObjectNonNull() {
+            if(obj != null && obj.getClass() != objClass && !objClass.isAssignableFrom(obj.getClass())) {
+                checkThrowsException(new ClassCastException(
+                        String.format("Can not cast instance of \"%1$s\" to \"%2$s\"",
+                                obj.getClass(), objClass)),
+                        true);
+            }
+        }
+
         private Reflection checkThrowsException(Exception e, boolean isReturnSelf) {
             if(isThrowException) {
                 throw new ReflectionException(e);
+            } else if(Debug.isDebugMode()) {
+                System.err.printf("Reflection of %1$s caught an error: %2$s\n", objClass, e);
             }
             return isReturnSelf ? this : empty();
         }

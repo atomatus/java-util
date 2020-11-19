@@ -39,7 +39,7 @@ public class HttpConnection {
 	private Charset charset;
 	private String username, password;
 	private String contentType;
-	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, isUseAuthBase64, useSecureContext;
+	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, isUseBasicAuth, useSecureContext;
 
 	private int connectionTimeOut;
 	private int readTimeOut;
@@ -468,8 +468,8 @@ public class HttpConnection {
 	 * Enable basic authentication Bearer.
 	 * @return current instance.
 	 */
-	public HttpConnection useAuthBase64() {
-		this.isUseAuthBase64 = true;
+	public HttpConnection useBasicAuth() {
+		this.isUseBasicAuth = true;
 		return this;
 	}
 
@@ -826,7 +826,7 @@ public class HttpConnection {
 			con.setRequestProperty("Content-Type", this.contentType + "; charset=" + this.charset.name());
 			con.setRequestProperty("Connection", isKeepAlive ? "keep-alive" : "close");
 
-			if(isUseAuthBase64) {
+			if(isUseBasicAuth) {
 				StringUtils.requireNonNullOrWhitespace(username, "AuthBase64: User name not set or invalid!");
 				StringUtils.requireNonNullOrEmpty(password, "AuthBase64: User name not set or invalid!");
 

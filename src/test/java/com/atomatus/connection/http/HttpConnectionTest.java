@@ -19,7 +19,7 @@ public class HttpConnectionTest extends TestCase {
     public void testPostContent() {
         String key;
         try(Response resp = new HttpConnection()
-                .useAuthBase64()
+                .useBasicAuth()
                 .setCredentials("test", "123456")
                 .postContent("https://httpbin.org/post",
                         Parameter.buildBody("param0", key = KeyGenerator.generateRandomKeyHex(10)))) {
