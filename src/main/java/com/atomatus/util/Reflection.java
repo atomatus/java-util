@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Inflate (create instance or load access for static class) a class by fullName (included package path)
+ * Inflate (create an instance or load access for static class) a class by fullName (included package path)
  * to try manipulate and access it.
  */
 public abstract class Reflection {
