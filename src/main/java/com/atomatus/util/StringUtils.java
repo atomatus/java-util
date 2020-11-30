@@ -254,10 +254,10 @@ public final class StringUtils {
         }
 
         int count = 0;
-        int idx = 0;
-        while ((idx = indexOf(text, find, idx)) != -1) {
+        int index = 0;
+        while ((index = indexOf(text, find, index)) != -1) {
             count++;
-            idx += find.length();
+            index += find.length();
         }
         return count;
     }
