@@ -2,6 +2,9 @@ package com.atomatus.util;
 
 import junit.framework.TestCase;
 
+import java.io.File;
+import java.util.Objects;
+
 public class StringUtilsTest extends TestCase {
 
     public void testIsNullOrEmpty() {
@@ -51,4 +54,23 @@ public class StringUtilsTest extends TestCase {
         assertEquals("100",
                 StringUtils.padRight("1", 3, "00"));
     }
+
+
+    public void testA() {
+        File dir = new File("D:\\Users\\Carlos\\Downloads\\logo_sprites\\optimized");
+        String suffix = "-nq8.png";
+        String ext = ".png";
+        for(File f : Objects.requireNonNull(dir.listFiles())) {
+            String name = f.getName();
+            if(name.endsWith(suffix)) {
+                String newName = name.replace(suffix, ext);
+                if(f.renameTo(new File(f.getParent(), newName))) {
+                    System.out.printf("File %1$s renamed to %2$s\n", name, newName);
+                } else {
+                    System.err.printf("File %1$s not renamed!\n", name);
+                }
+            }
+        }
+    }
+
 }

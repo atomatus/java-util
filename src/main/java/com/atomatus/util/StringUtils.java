@@ -237,4 +237,29 @@ public final class StringUtils {
     }
     //endregion
 
+    //region countMatches
+    private static int indexOf(String target, String find, int start) {
+        return target.indexOf(find, start);
+    }
+
+    /**
+     * Counts how many times the find string appears in the larger string (text).
+     * @param text target
+     * @param find find string
+     * @return the number of occurrences, 0 if either String is {@code null}
+     */
+    public static int countMatches(String text, String find) {
+        if(isNullOrEmpty(text) || isNullOrEmpty(find)) {
+            return 0;
+        }
+
+        int count = 0;
+        int idx = 0;
+        while ((idx = indexOf(text, find, idx)) != -1) {
+            count++;
+            idx += find.length();
+        }
+        return count;
+    }
+    //endregion
 }
