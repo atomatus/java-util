@@ -23,6 +23,37 @@ public final class DecimalHelper {
     private static final MathContext DEFAULT_MATH_CONTEXT;
     private static final int DEFAULT_SCALE, MAX_SCALE;
 
+    public static class Info {
+
+        private char decimalSymbol;
+        private char groupSymbol;
+        private String currencySymbol;
+
+        private Info() { }
+
+        public char getDecimalSymbol() {
+            return decimalSymbol;
+        }
+
+        public String getCurrencySymbol() {
+            return currencySymbol;
+        }
+
+        public char getGroupSymbol() {
+            return groupSymbol;
+        }
+
+        private static Info getInstance(Locale locale) {
+            DecimalFormat dFormat           = (DecimalFormat) NumberFormat.getInstance(locale);
+            DecimalFormatSymbols symbols    = dFormat.getDecimalFormatSymbols();
+            Info i = new Info();
+            i.currencySymbol    = symbols.getCurrencySymbol();
+            i.decimalSymbol     = symbols.getDecimalSeparator();
+            i.groupSymbol       = symbols.getGroupingSeparator();
+            return i;
+        }
+    }
+
     static {
         lastLocaleByCurrency    = LocaleHelper.getDefaultLocale();
         CURRENCY_SYMBOL_REGEX   = "(?<=^\\-)([^\\d\\s\\.\\,]+)|(^[^\\d\\s\\.\\,\\-]+)|([^\\d\\s\\.\\-]+$)";
@@ -55,15 +86,10 @@ public final class DecimalHelper {
         Locale candidate  = null;
 
         for (Locale locale : locales) {
-            DecimalFormat dFormat           = (DecimalFormat) NumberFormat.getInstance(locale);
-            DecimalFormatSymbols symbols    = dFormat.getDecimalFormatSymbols();
-            String currencySymbol           = symbols.getCurrencySymbol();
-            char decimalSymbol              = symbols.getDecimalSeparator();
-            char groupSymbol                = symbols.getGroupingSeparator();
-
-            if(!hasSymbol || (currencySymbol != null && currencySymbol.equalsIgnoreCase(curSymbol))){
-                int dsi = value.indexOf(decimalSymbol);
-                int gsi = value.indexOf(groupSymbol);
+            Info i = Info.getInstance(locale);
+            if(!hasSymbol || (i.currencySymbol != null && i.currencySymbol.equalsIgnoreCase(curSymbol))){
+                int dsi = value.indexOf(i.decimalSymbol);
+                int gsi = value.indexOf(i.groupSymbol);
 
                 if(dsi > invalidIndex){
                     if(gsi == invalidIndex) {
@@ -89,6 +115,23 @@ public final class DecimalHelper {
             return Math.min(Math.max(digits, DEFAULT_SCALE), MAX_SCALE);
         }
         return DEFAULT_SCALE;
+    }
+
+    /**
+     * Get informations, about monetary symbols from locale.
+     * @param locale target locale.
+     * @return monetary informations.
+     */
+    public static Info getLocaleInfo(Locale locale) {
+        return Info.getInstance(locale);
+    }
+
+    /**
+     * Get informations, about monetary symbols from current locale.
+     * @return monetary informations.
+     */
+    public static Info getLocaleInfo() {
+        return Info.getInstance(lastLocaleByCurrency);
     }
 
     /**
