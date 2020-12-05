@@ -262,7 +262,6 @@ public final class ArrayHelper {
         return reduce(args, func, null);
     }
 
-
     /**
      * Apply reduce operation.
      * @param args target
@@ -297,7 +296,6 @@ public final class ArrayHelper {
     public static <I, A extends I> A reduceI(I[] args, ReducerIndex<A, I> func) {
         return reduceI(args, func, null);
     }
-
 
     /**
      * Take a count of elements.
@@ -352,6 +350,98 @@ public final class ArrayHelper {
                 }
             }
             return true;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     * @param <I> element type
+     */
+    public static <I> void reverse(I[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            I aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
+    public static void reverse(short[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            short aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
+    public static void reverse(int[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            int aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
+    public static void reverse(long[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            long aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
+    public static void reverse(byte[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            byte aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
+    public static void reverse(float[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            float aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
+    public static void reverse(double[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            double aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
         }
     }
 }
