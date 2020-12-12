@@ -3,6 +3,8 @@ package com.atomatus.util;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Objects;
 
 public class DateHelperTest extends TestCase {
 
@@ -30,4 +32,20 @@ public class DateHelperTest extends TestCase {
                 fullDate.get(Calendar.SECOND), onlyTime.get(Calendar.SECOND));
     }
 
+    @SuppressWarnings("deprecation")
+    public void testDiff() {
+        Date initialDate = new Date(2020, Calendar.OCTOBER, 31, 15, 30, 0);
+        Date finalDate = new Date(2021, Calendar.NOVEMBER, 24, 16, 35, 47);
+
+        DateHelper.TimeDiff diff = DateHelper.getInstance().diff(initialDate, finalDate);
+        assertEquals(1, diff.getYear());
+        assertEquals(0, diff.getMonth());
+        assertEquals(24, diff.getDay());
+        assertEquals(1, diff.getHour());
+        assertEquals(5, diff.getMin());
+        assertEquals(47, diff.getSec());
+
+        System.out.println(diff.formatTime());
+        System.out.println(diff.formatTimeShort());
+    }
 }
