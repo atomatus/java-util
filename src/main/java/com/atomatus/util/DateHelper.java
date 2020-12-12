@@ -346,6 +346,16 @@ public final class DateHelper {
         return df.format(date);
     }
 
+    public String getFormattedDate(Date date, String pattern, TimeZone timeZone) {
+        SimpleDateFormat sdf = new SimpleDateFormat(pattern, LocaleHelper.getDefaultLocale());
+        sdf.setTimeZone(timeZone == null ? sdf.getTimeZone() : timeZone);
+        return sdf.format(date);
+    }
+
+    public String getFormattedDate(Date date, String pattern) {
+        return getFormattedDate(date, pattern, TimeZone.getDefault());
+    }
+
     public String getFullDate(String date, Locale locale){
         return getFormattedDate(date, locale, FormatMode.FULL);
     }
