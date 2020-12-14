@@ -402,13 +402,38 @@ public final class DecimalHelper {
      * Convert any common number object to any common number type to cents.<br/>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
+     * @param newScale new scale precision.
+     * @param clazz result class type.
+     * @param <T> target value type
+     * @param <R> result value type
+     * @return result value generated from conversion of target origin value to cents.
+     */
+    public static <T, R> R toCents(T value, int newScale, Class<R> clazz) {
+        return multiply(value, clazz, DecimalHelper.ONE_HUNDRED, newScale, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Convert any common number object to any common number type to cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
      * @param clazz result class type.
      * @param <T> target value type
      * @param <R> result value type
      * @return result value generated from conversion of target origin value to cents.
      */
     public static <T, R> R toCents(T value, Class<R> clazz) {
-        return multiply(value, clazz, DecimalHelper.ONE_HUNDRED, 0, RoundingMode.UNNECESSARY);
+        return multiply(value, clazz, DecimalHelper.ONE_HUNDRED, DEFAULT_SCALE, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Convert any common number object to BigDecimal in cents.
+     * @param value target value
+     * @param newScale new scale precision.
+     * @param <T> target type
+     * @return result value generated from conversion of target origin value to cents.
+     */
+    public static <T> BigDecimal toCents(T value, int newScale) {
+        return toCents(value, newScale, BigDecimal.class);
     }
 
     /**
@@ -425,11 +450,35 @@ public final class DecimalHelper {
      * Convert any common number object to any common number type.<br/>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
+     * @param newScale new scale precision.
+     * @param <T> result value type
+     * @return result value generated from conversion of target origin value to cents.
+     */
+    public static <T> int toCentsAsInt(T value, int newScale) {
+        return toCents(value, newScale, Integer.class);
+    }
+
+    /**
+     * Convert any common number object to any common number type.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
      * @param <T> result value type
      * @return result value generated from conversion of target origin value to cents.
      */
     public static <T> int toCentsAsInt(T value) {
-        return toCents(value, Integer.class);
+        return toCents(value, DEFAULT_SCALE, Integer.class);
+    }
+
+    /**
+     * Convert any common number object to any common number type.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param newScale new scale precision.
+     * @param <T> result value type
+     * @return result value generated from conversion of target origin value to cents.
+     */
+    public static <T> long toCentsAsLong(T value, int newScale) {
+        return toCents(value, newScale, Long.class);
     }
 
     /**

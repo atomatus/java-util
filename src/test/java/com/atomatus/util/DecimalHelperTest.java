@@ -36,5 +36,11 @@ public class DecimalHelperTest extends TestCase {
                 DecimalHelper.toBigDecimal(BigInteger.valueOf(Integer.MAX_VALUE)),
                 DecimalHelper.toBigDecimal(Integer.MAX_VALUE),
                 DecimalHelper.toBigDecimal((long) Integer.MAX_VALUE));
+
+         long cents = DecimalHelper.toCentsAsLong(fromStr);
+         assertEquals(135467L, cents);
+         BigDecimal cash = DecimalHelper.fromCents(cents);
+         assertEquals(cash, fromStr);
+
     }
 }
