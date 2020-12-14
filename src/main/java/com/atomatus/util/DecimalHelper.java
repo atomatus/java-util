@@ -18,6 +18,9 @@ import java.util.regex.Pattern;
  */
 public final class DecimalHelper {
 
+    public static final BigDecimal ZERO, ONE, TEN, ONE_HUNDRED, ONE_THOUSAND,
+            ONE_TENTH, ONE_HUNDREDTH, ONE_THOUSANDTH;
+
     private static Locale lastLocaleByCurrency;
     private static final String CURRENCY_SYMBOL_REGEX;
     private static final MathContext DEFAULT_MATH_CONTEXT;
@@ -60,6 +63,15 @@ public final class DecimalHelper {
         DEFAULT_MATH_CONTEXT    = MathContext.DECIMAL128;
         DEFAULT_SCALE           = 2;
         MAX_SCALE               = 3;
+
+        ZERO                    = BigDecimal.ZERO;
+        TEN                     = BigDecimal.TEN;
+        ONE                     = BigDecimal.ONE;
+        ONE_HUNDRED             = new BigDecimal(100);
+        ONE_THOUSAND            = new BigDecimal(1000);
+        ONE_TENTH               = new BigDecimal("0.1");
+        ONE_HUNDREDTH           = new BigDecimal("0.01");
+        ONE_THOUSANDTH          = new BigDecimal("0.001");
     }
 
     private DecimalHelper() { }
