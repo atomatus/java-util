@@ -8,6 +8,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -356,4 +357,133 @@ public final class DecimalHelper {
     public static String toDecimal(BigDecimal value) {
         return toDecimal(value, lastLocaleByCurrency);
     }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T fromBigDecimal(BigDecimal value, Class<T> clazz) {
+        Objects.requireNonNull(value);
+        Objects.requireNonNull(clazz);
+        if(clazz == BigDecimal.class) {
+            return (T) value;
+        } else if(clazz == BigInteger.class) {
+            return (T) value.toBigInteger();
+        } else if(clazz == String.class) {
+            return (T) toDecimal(value);
+        } else if(clazz == Integer.class) {
+            return (T) Integer.valueOf(value.intValue());
+        } else if(clazz == Long.class) {
+            return (T) Long.valueOf(value.longValue());
+        } else if(clazz == Short.class) {
+            return (T) Short.valueOf(value.shortValue());
+        } else if(clazz == Float.class) {
+            return (T) Float.valueOf(value.floatValue());
+        } else if(clazz == Double.class) {
+            return (T) Double.valueOf(value.doubleValue());
+        } else if(clazz == Boolean.class) {
+            return (T) Boolean.valueOf(value.intValue() == 1);
+        } else {
+            throw new UnsupportedOperationException("Request class \""+clazz.getName()+"\" is not a number type!");
+        }
+    }
+
+    private static <T, R> R multiply(T value, Class<R> clazz, BigDecimal multiplicand) {
+        if(Objects.requireNonNull(value) instanceof BigDecimal) {
+            return fromBigDecimal(((BigDecimal)value)
+                    .multiply(multiplicand), clazz);
+        } else {
+            return fromBigDecimal(toBigDecimal(value)
+                    .multiply(multiplicand), clazz);
+        }
+    }
+
+    /**
+     * Convert any common number object to any common number type to cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param clazz result class type.
+     * @param <T> target value type
+     * @param <R> result value type
+     * @return result value generated from conversion of target origin value to cents.
+     */
+    public static <T, R> R toCents(T value, Class<R> clazz) {
+        return multiply(value, clazz, DecimalHelper.ONE_HUNDRED);
+    }
+
+    /**
+     * Convert any common number object to BigDecimal in cents.
+     * @param value target value
+     * @param <T> target type
+     * @return result value generated from conversion of target origin value to cents.
+     */
+    public static <T> BigDecimal toCents(T value) {
+        return toCents(value, BigDecimal.class);
+    }
+
+    /**
+     * Convert any common number object to any common number type.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param <T> result value type
+     * @return result value generated from conversion of target origin value to cents.
+     */
+    public static <T> int toCentsAsInt(T value) {
+        return toCents(value, Integer.class);
+    }
+
+    /**
+     * Convert any common number object to any common number type.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param <T> result value type
+     * @return result value generated from conversion of target origin value to cents.
+     */
+    public static <T> long toCentsAsLong(T value) {
+        return toCents(value, Long.class);
+    }
+
+    /**
+     * Convert any common number object to any common number type from cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param clazz result class type.
+     * @param <T> target value type
+     * @param <R> result value type
+     * @return result value generated from conversion of target origin value from cents.
+     */
+    public static <T, R> R fromCents(T value, Class<R> clazz) {
+        return multiply(value, clazz, DecimalHelper.ONE_HUNDREDTH);
+    }
+
+    /**
+     * Convert any common number object to any common number type from cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param <T> result target value type
+     * @return result value generated from conversion of target origin value from cents.
+     */
+    public static <T> BigDecimal fromCents(T value) {
+        return fromCents(value, BigDecimal.class);
+    }
+
+    /**
+     * Convert any common number object to any common number type from cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param <T> result target value type
+     * @return result value generated from conversion of target origin value from cents.
+     */
+    public static <T> int fromCentsAsInt(T value) {
+        return fromCents(value, Integer.class);
+    }
+
+    /**
+     * Convert any common number object to any common number type from cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param <T> result target value type
+     * @return result value generated from conversion of target origin value from cents.
+     */
+    public static <T> long fromCentsAsLong(T value) {
+        return fromCents(value, Long.class);
+    }
+
 }
