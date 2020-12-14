@@ -3,6 +3,7 @@ package com.atomatus.util;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -385,13 +386,15 @@ public final class DecimalHelper {
         }
     }
 
-    private static <T, R> R multiply(T value, Class<R> clazz, BigDecimal multiplicand) {
+    private static <T, R> R multiply(T value, Class<R> clazz, BigDecimal multiplicand, int scale, RoundingMode roundingMode) {
         if(Objects.requireNonNull(value) instanceof BigDecimal) {
             return fromBigDecimal(((BigDecimal)value)
-                    .multiply(multiplicand), clazz);
+                    .multiply(multiplicand)
+                    .setScale(scale, roundingMode), clazz);
         } else {
             return fromBigDecimal(toBigDecimal(value)
-                    .multiply(multiplicand), clazz);
+                    .multiply(multiplicand)
+                    .setScale(scale, roundingMode), clazz);
         }
     }
 
@@ -405,7 +408,7 @@ public final class DecimalHelper {
      * @return result value generated from conversion of target origin value to cents.
      */
     public static <T, R> R toCents(T value, Class<R> clazz) {
-        return multiply(value, clazz, DecimalHelper.ONE_HUNDRED);
+        return multiply(value, clazz, DecimalHelper.ONE_HUNDRED, 0, RoundingMode.UNNECESSARY);
     }
 
     /**
@@ -444,13 +447,39 @@ public final class DecimalHelper {
      * Convert any common number object to any common number type from cents.<br/>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
+     * @param newScale new scale precision.
+     * @param clazz result class type.
+     * @param <T> target value type
+     * @param <R> result value type
+     * @return result value generated from conversion of target origin value from cents.
+     */
+    public static <T, R> R fromCents(T value, int newScale, Class<R> clazz) {
+        return multiply(value, clazz, DecimalHelper.ONE_HUNDREDTH, newScale, RoundingMode.HALF_EVEN);
+    }
+
+    /**
+     * Convert any common number object to any common number type from cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
      * @param clazz result class type.
      * @param <T> target value type
      * @param <R> result value type
      * @return result value generated from conversion of target origin value from cents.
      */
     public static <T, R> R fromCents(T value, Class<R> clazz) {
-        return multiply(value, clazz, DecimalHelper.ONE_HUNDREDTH);
+        return fromCents(value, DEFAULT_SCALE, clazz);
+    }
+
+    /**
+     * Convert any common number object to any common number type from cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param newScale new scale precision.
+     * @param <T> result target value type
+     * @return result value generated from conversion of target origin value from cents.
+     */
+    public static <T> BigDecimal fromCents(T value, int newScale) {
+        return fromCents(value, BigDecimal.class).setScale(newScale, RoundingMode.HALF_EVEN);
     }
 
     /**
@@ -461,7 +490,19 @@ public final class DecimalHelper {
      * @return result value generated from conversion of target origin value from cents.
      */
     public static <T> BigDecimal fromCents(T value) {
-        return fromCents(value, BigDecimal.class);
+        return fromCents(value, DEFAULT_SCALE);
+    }
+
+    /**
+     * Convert any common number object to any common number type from cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param newScale new scale precision.
+     * @param <T> result target value type
+     * @return result value generated from conversion of target origin value from cents.
+     */
+    public static <T> int fromCentsAsInt(T value, int newScale) {
+        return fromCents(value, newScale, Integer.class);
     }
 
     /**
@@ -472,7 +513,19 @@ public final class DecimalHelper {
      * @return result value generated from conversion of target origin value from cents.
      */
     public static <T> int fromCentsAsInt(T value) {
-        return fromCents(value, Integer.class);
+        return fromCents(value, DEFAULT_SCALE, Integer.class);
+    }
+
+    /**
+     * Convert any common number object to any common number type from cents.<br/>
+     * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
+     * @param value target origin value to be converted to result type.
+     * @param newScale new scale precision.
+     * @param <T> result target value type
+     * @return result value generated from conversion of target origin value from cents.
+     */
+    public static <T> long fromCentsAsLong(T value, int newScale) {
+        return fromCents(value, newScale, Long.class);
     }
 
     /**
@@ -485,5 +538,4 @@ public final class DecimalHelper {
     public static <T> long fromCentsAsLong(T value) {
         return fromCents(value, Long.class);
     }
-
 }
