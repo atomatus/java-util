@@ -24,17 +24,17 @@ public class Client extends IOEvent implements Closeable {
     private int readTimeout;
     
     /**
-     * Construtor.<br/>
+     * Construtor.<br>
      * build connection using parameters.
      * @param address target address DNS or TCP/IP.
      * @param port target port openned waiting connection.
+     * @param timeout attempt connection timeout.
      * @param readTimeout read timeout.
 	 * @param autoFlush when true, sent data for each request, otherwhise wait for flush() method request or and close connection.
      * @param openConnection open connection when generate instance, otherwhise wait for open() method request.
-     * @throws UnknownHostException host is not valid
      * @throws IOException is not possible get input/output stream or open connection.
      */
-    public Client(String address, int port, int timeout, int readTimeout, boolean autoFlush, boolean openConnection) throws UnknownHostException, IOException{    	
+    public Client(String address, int port, int timeout, int readTimeout, boolean autoFlush, boolean openConnection) throws IOException{
         this.address		= address;
         this.port       	= port;
         this.timeout		= timeout;
@@ -47,19 +47,18 @@ public class Client extends IOEvent implements Closeable {
     }
     
     /**
-     * Constructor to build and open connection.<br/>
+     * Constructor to build and open connection.<br>
      * For this constructor, will set autoFlush and openConnection on constructor how true.
      * @param address target address DNS or TCP/IP.
      * @param port target socket port.
-     * @throws UnknownHostException host is not valid
      * @throws IOException is not possible get input/output stream or open connection.
      */
-    public Client(String address, int port) throws UnknownHostException, IOException {
+    public Client(String address, int port) throws IOException {
     	this(address, port, DEFAULT_CONNECTION_TIME_OUT, DEFAULT_READ_TIME_OUT, true, true);
 	}
 
     /**
-     * Constructor to build and open connection.<br/>
+     * Constructor to build and open connection.<br>
      * For this constructor, will set autoFlush and openConnection on constructor how true,
      * and set address how localhost.
      * @param port target socket port.
@@ -71,7 +70,7 @@ public class Client extends IOEvent implements Closeable {
     }
 
     /**
-     * Get print stream.<br/>
+     * Get print stream.<br>
      * <i>Use for printers.</i>
      * @return new print stream
      * @throws IOException throws when is not possible open stream.
@@ -83,6 +82,7 @@ public class Client extends IOEvent implements Closeable {
     
     /**
      * Get socket.
+     * @return client socket
      */
     public Socket getSocket(){
     	return socket;
@@ -90,6 +90,7 @@ public class Client extends IOEvent implements Closeable {
     
     /**
      * Target socket address.
+     * @return socket address value
      */
     public String getAddress(){
     	return address;
@@ -97,6 +98,7 @@ public class Client extends IOEvent implements Closeable {
     
     /**
      * Target socket port.
+     * @return socket port value.
      */
     public int getPort(){
     	return port;  
@@ -104,6 +106,7 @@ public class Client extends IOEvent implements Closeable {
 
     /**
      * Read timeout in millis.
+     * @return timeout in millis value.
      */
     public int getReadTimeout() {
 		return readTimeout;
@@ -143,10 +146,9 @@ public class Client extends IOEvent implements Closeable {
     
     /**
      * Open connection.
-     * @throws UnknownHostException host is not valid
      * @throws IOException is not possible get input/output stream or open connection.
      */
-    public final void open() throws UnknownHostException, IOException {
+    public final void open() throws IOException {
     	if(!isClosed()){
     		throw new RuntimeException("Conexao ja esta aberta!");
     	}

@@ -12,106 +12,6 @@ public final class DateHelper {
     private static final String FUSE_REGEX;
     private static final DateHelper instance;
 
-    public static class TimeDiff {
-        private long totalMilliss, totalSec, totalMin, totalHour, totalDay, totalMonth, totalYear;
-        private int milliss, sec, min, hour, day, month, year;
-
-        private TimeDiff() { }
-
-        public long getMilliss() {
-            return milliss;
-        }
-
-        public int getSec() {
-            return sec;
-        }
-
-        public int getMin() {
-            return min;
-        }
-
-        public int getHour() {
-            return hour;
-        }
-
-        public int getDay() {
-            return day;
-        }
-
-        public int getMonth() {
-            return month;
-        }
-
-        public int getYear() {
-            return year;
-        }
-
-        public long getTotalMilliss() {
-            return totalMilliss;
-        }
-
-        public long getTotalSec() {
-            return totalSec;
-        }
-
-        public long getTotalMin() {
-            return totalMin;
-        }
-
-        public long getTotalHour() {
-            return totalHour;
-        }
-
-        public long getTotalDay() {
-            return totalDay;
-        }
-
-        public long getTotalMonth() {
-            return totalMonth;
-        }
-
-        public long getTotalYear() {
-            return totalYear;
-        }
-
-        private String formatTime(boolean isShort) {return String.format(LocaleHelper.getDefaultLocale(),
-                hour <= 0 ? min <= 0 ? "%3$02dsec" :
-                        isShort ? "%2$02dmin" : "%2$02dmin %3$02dsec" :
-                        isShort ? "%1dh%2$02dmin" : "%1dh %2$02dmin %3$02dsec", hour, min, sec);
-        }
-
-        public String formatTime() {
-            return formatTime(false);
-        }
-
-        public String formatTimeShort() {
-            return formatTime(true);
-        }
-
-        private static TimeDiff diff(long totalMilliss) {
-            TimeDiff td = new TimeDiff();
-            td.totalMilliss = totalMilliss;
-            td.totalSec     = td.totalMilliss / 1000L;
-            td.totalMin     = td.totalSec     / 60L;
-            td.totalHour    = td.totalMin     / 60L;
-            td.totalDay     = td.totalHour    / 24L;
-            td.totalMonth   = td.totalDay     / 30L;
-            td.totalYear    = td.totalMonth   / 12L;
-
-            td.milliss      = (int) td.totalMilliss   % 1000;
-            td.sec          = (int) td.totalSec       % 60;
-            td.min          = (int) td.totalMin       % 60;
-            td.hour         = (int) td.totalHour      % 24;
-
-            td.day          = (int) (td.totalDay      % 365) % 30;
-            td.month        = (int) td.totalMonth     % 12;
-            td.year         = (int) td.totalYear;
-
-            return td;
-        }
-
-    }
-
     private enum FormatMode {
         FULL,
         DATE,
@@ -394,20 +294,6 @@ public final class DateHelper {
 
     public String getSmallTime(String date) {
         return getSmallTime(date, LocaleHelper.getDefaultLocale());
-    }
-    //endregion
-
-    //region Diff Date
-    /**
-     * Difference between two dates.
-     * @param initialDate initial date, may be lower date.
-     * @param finalDate final date, may be larger date.
-     * @return diff result between dates.
-     */
-    public TimeDiff diff(Date initialDate, Date finalDate) {
-        long diffInMillis = Objects.requireNonNull(finalDate).getTime() -
-                Objects.requireNonNull(initialDate).getTime();
-        return TimeDiff.diff(diffInMillis);
     }
     //endregion
 }

@@ -11,6 +11,7 @@ public interface InputObjectEvent extends BinderEvent{
 
 	/**
 	 * Get serialized data sent (client/server).
+	 * @param <T> value type.
 	 * @return deserialized object cast.
 	 * @throws IOException is not possible read data from socket, connection is closed.
 	 * @throws ClassNotFoundException when target class not found.

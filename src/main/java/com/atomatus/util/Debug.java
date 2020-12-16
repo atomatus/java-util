@@ -11,6 +11,7 @@ public final class Debug {
 
     /**
      * Check if current instance is running in debug mode.
+     * @return true to inform that debug mode is enabled
      */
     public static synchronized boolean isDebugMode() {
         if(debugMode == null) {

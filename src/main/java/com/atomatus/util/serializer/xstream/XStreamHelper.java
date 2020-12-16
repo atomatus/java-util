@@ -94,7 +94,7 @@ public final class XStreamHelper {
     }
 
     /**
-     * Configure XML converter rule for target class. <br/>
+     * Configure XML converter rule for target class. <br>
      * When any converter is working with any target class consumer action will be fired.
      * @param consumer consumer action to affect serializing/deserializing for any object.
      */
@@ -103,7 +103,7 @@ public final class XStreamHelper {
     }
 
     /**
-     * Configure XML converter rule for target class. <br/>
+     * Configure XML converter rule for target class. <br>
      * When converter is working with target class consumer action will be fired.
      * @param targetClass target class (object owned of class are serializing/deserializing)
      * @param consumer consumer action to affect serializing/deserializing object owned of target class.

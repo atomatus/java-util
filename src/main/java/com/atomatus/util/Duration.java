@@ -1,7 +1,5 @@
 package com.atomatus.util;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -12,68 +10,114 @@ import java.util.Date;
  */
 public final class Duration {
 
-	private long totalMillis;
-	private long totalSecond;
-	private long totalMinute;
-	private long totalHour;
-	private int totalDays;
-	private int second;
-	private int minute;
-	private int hour;
+	private long totalMilliss, totalSec, totalMin, totalHour, totalDay, totalMonth, totalYear;
+	private int milliss, sec, min, hour, day, month, year;
 	private boolean isEmpty;
 
 	private Duration() { isEmpty = true; }
 
-	public long getTotalMillis() {
-		return totalMillis;
+	public boolean isEmpty() {
+		return isEmpty;
 	}
 
-	public long getTotalSecond() {
-		return totalSecond;
+	public long getMilliss() {
+		return milliss;
 	}
 
-	public long getTotalMinute() {
-		return totalMinute;
+	public int getSec() {
+		return sec;
 	}
 
-	public long getTotalHour() {
-		return totalHour;
-	}
-
-	public int getTotalDays() {
-		return totalDays;
-	}
-
-	public int getSecond() {
-		return second;
-	}
-
-	public int getMinute() {
-		return minute;
+	public int getMin() {
+		return min;
 	}
 
 	public int getHour() {
 		return hour;
 	}
 
-	public boolean isEmpty() {
-		return isEmpty;
+	public int getDay() {
+		return day;
 	}
 
-	/**
-	 * Print time short.
-	 * @return formatted value in 00H00M
-	 */
-	public String printTimeShort() {
-		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dH%2$02dM", hour, minute);
+	public int getMonth() {
+		return month;
+	}
+
+	public int getYear() {
+		return year;
+	}
+
+	public long getTotalMilliss() {
+		return totalMilliss;
+	}
+
+	public long getTotalSec() {
+		return totalSec;
+	}
+
+	public long getTotalMin() {
+		return totalMin;
+	}
+
+	public long getTotalHour() {
+		return totalHour;
+	}
+
+	public long getTotalDay() {
+		return totalDay;
+	}
+
+	public long getTotalMonth() {
+		return totalMonth;
+	}
+
+	public long getTotalYear() {
+		return totalYear;
+	}
+
+	private String printTimeSec() {
+		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dS", sec);
+	}
+
+	private String printTimeMinSec() {
+		if(min <= 0){
+			return printTimeSec();
+		}
+
+		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dMin%2$02ds", min, sec);
 	}
 
 	/**
 	 * Print time.
-	 * @return formatted value in 00H00M00S
+	 * @return formatted value in 00H00M00S, 00M00S or 00S
 	 */
 	public String printTime() {
-		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dH%2$02dM%3$02dS", hour, minute, second);
+		if(hour <= 0) {
+			return printTimeMinSec();
+		}
+
+		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dH%2$02dM%3$02dS", hour, min, sec);
+	}
+
+	/**
+	 * Print time short.
+	 * @return formatted value in 00H00Min, 00Min00S or 00S
+	 */
+	public String printTimeShort() {
+		if(hour <= 0) {
+			return printTimeMinSec();
+		}
+
+		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dH%2$02dM", hour, min);
+	}
+
+	/**
+	 * Print time full.
+	 * @return formatted value in 00H00M00S
+	 */
+	public String printTimeFull() {
+		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dH%2$02dM%3$02dS", hour, min, sec);
 	}
 
 	/**
@@ -81,7 +125,7 @@ public final class Duration {
 	 * @return formatted value in 00D00H00M00S
 	 */
 	public String printFull() {
-		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dD%2$02dH%3$02dM%4$02dS", totalDays, hour, minute, second);
+		return String.format(LocaleHelper.getDefaultLocale(), "%1$02dD%2$02dH%3$02dM%4$02dS", totalDay, hour, min, sec);
 	}
 
 	/**
@@ -91,20 +135,24 @@ public final class Duration {
 	 * @return an instance of Duration with diff result.
 	 */
 	public static Duration diff(long oldTime, long newTime) {
+		Duration d	   = new Duration();
+		d.totalMilliss = newTime - oldTime;
+		d.totalSec     = d.totalMilliss / 1000L;
+		d.totalMin     = d.totalSec     / 60L;
+		d.totalHour    = d.totalMin     / 60L;
+		d.totalDay     = d.totalHour    / 24L;
+		d.totalMonth   = d.totalDay     / 30L;
+		d.totalYear    = d.totalMonth   / 12L;
 
-		Duration d = new Duration();
+		d.milliss      = (int) d.totalMilliss   % 1000;
+		d.sec          = (int) d.totalSec       % 60;
+		d.min          = (int) d.totalMin       % 60;
+		d.hour         = (int) d.totalHour      % 24;
 
-		d.totalMillis	= newTime - oldTime;
-		d.totalSecond	= d.totalMillis / 1000;
-		d.totalMinute	= d.totalSecond / 60;
-		d.totalHour		= d.totalHour 	/ 60;
-		d.totalDays 	= (int) (d.totalMillis / (24 * 60 * 60 * 1000));
-
-		d.second 		= (int) (d.totalSecond % 60);
-		d.minute 		= (int) (d.totalMinute % 60);
-		d.hour 			= (int) (d.totalHour 	% 24);
-		d.isEmpty		= false;
-
+		d.day          = (int) (d.totalDay      % 365) % 30;
+		d.month        = (int) d.totalMonth     % 12;
+		d.year         = (int) d.totalYear;
+		d.isEmpty	   = false;
 		return d;
 	}
 
@@ -172,8 +220,8 @@ public final class Duration {
 	 * @param newDateTime date time in string
 	 * @return an instance of Duration with diff result.
 	 */
-	public static Duration diff(String newDateTime) throws ParseException {
-		return diff(DateFormat.getInstance().parse(newDateTime));
+	public static Duration diff(String newDateTime) {
+		return diff(DateHelper.getInstance().parseDate(newDateTime));
 	}
 
 	/**

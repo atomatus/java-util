@@ -5,7 +5,7 @@ import com.atomatus.util.StringUtils;
 import java.util.Objects;
 
 /**
- * Encryptor.<br/>
+ * Encryptor.<br>
  * Construct an encryptor using Builder mode.
  * <p>
  * Request builder from method {@link Encryptor#builder()},

@@ -65,64 +65,65 @@ public abstract class Reflection {
     public abstract Reflection configNoExceptions();
 
     /**
-     * Current object loaded as int.<br/>
+     * Current object loaded as int.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
      * @return generated value as int.
      */
     public abstract int valueInt();
 
     /**
-     * Current object loaded as long.<br/>
+     * Current object loaded as long.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
      * @return generated value as long.
      */
     public abstract long valueLong();
 
     /**
-     * Current object loaded as float.<br/>
+     * Current object loaded as float.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
      * @return generated value as float.
      */
     public abstract float valueFloat();
 
     /**
-     * Current object loaded as double.<br/>
+     * Current object loaded as double.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
      * @return generated value as double.
      */
     public abstract double valueDouble();
 
     /**
-     * Current object loaded as {@link BigDecimal}.<br/>
+     * Current object loaded as {@link BigDecimal}.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
      * @return generated value as {@link BigDecimal}.
      */
     public abstract BigDecimal valueBigDecimal();
 
     /**
-     * Current object loaded as {@link BigInteger}.<br/>
+     * Current object loaded as {@link BigInteger}.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
      * @return generated value as {@link BigInteger}.
      */
     public abstract BigInteger valueBigInteger();
 
     /**
-     * Current object loaded as boolean.<br/>
+     * Current object loaded as boolean.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
      * @return generated value as boolean.
      */
     public abstract boolean valueBoolean();
 
     /**
-     * Current object loaded as String.<br/>
+     * Current object loaded as String.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
      * @return generated value as String.
      */
     public abstract String valueString();
 
     /**
-     * Current object loaded as casted generic type.<br/>
+     * Current object loaded as casted generic type.<br>
      * <i>Obs.: call it when desire recover a method result after execute it.</i>
+     * @param <T> value type.
      * @return generated value as casted generic type.
      */
     public abstract <T> T value();

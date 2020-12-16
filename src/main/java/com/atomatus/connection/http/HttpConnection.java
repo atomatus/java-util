@@ -588,6 +588,7 @@ public class HttpConnection {
 	/**
 	 * Update charset
 	 * @param charset new charset
+	 * @return current http connection reference.
 	 */
 	public HttpConnection setCharset(Charset charset) {
 		this.charset = Objects.requireNonNull(charset);
@@ -605,6 +606,7 @@ public class HttpConnection {
 	/**
 	 * Set content type
 	 * @param contentType new content type
+	 * @return current http connection reference.
 	 */
 	public HttpConnection setContentType(String contentType) {
 		this.contentType = StringUtils.requireNonNullOrWhitespace(contentType);
@@ -614,6 +616,7 @@ public class HttpConnection {
 	/**
 	 * Set content type
 	 * @param contentType new content type
+	 * @return current http connection reference.
 	 */
 	public HttpConnection setContentType(ContentType contentType) {
 		this.contentType = contentType.getValue();
@@ -623,6 +626,7 @@ public class HttpConnection {
 	/**
 	 * Set charset by name.
 	 * @param charsetName charset name
+	 * @return current http connection reference.
 	 */
 	public HttpConnection setCharsetForName(String charsetName) {
 		this.charset = Charset.forName(charsetName);
@@ -632,6 +636,7 @@ public class HttpConnection {
 	/**
 	 * Update connection timeout
 	 * @param connectionTimeOut timeout in millis
+	 * @return current http connection reference.
 	 */
 	public HttpConnection changeConnectionTimeOut(int connectionTimeOut) {
 		this.connectionTimeOut = connectionTimeOut;
@@ -641,6 +646,7 @@ public class HttpConnection {
 	/**
 	 * Update read response timeout
 	 * @param readTimeOut timeout in millis
+	 * @return current http connection reference.
 	 */
 	public HttpConnection changeReadTimeOut(int readTimeOut) {
 		this.readTimeOut = readTimeOut;
@@ -649,6 +655,7 @@ public class HttpConnection {
 
 	/**
 	 * Check if is keep alive session.
+	 * @return inform whether keep session alive.
 	 */
 	public boolean isKeepAlive() {
 		return this.isKeepAlive;
@@ -657,6 +664,7 @@ public class HttpConnection {
 	/**
 	 * Set keep alive (session).
 	 * @param isKeepAlive true for keep alive.
+	 * @return current http connection reference.
 	 */
 	public HttpConnection setKeepAlive(boolean isKeepAlive) {
 		this.isKeepAlive = isKeepAlive;
@@ -675,6 +683,7 @@ public class HttpConnection {
 	 * Set wheter have to reuse cookies ({@link CookieManager}) between requests,
 	 * must when desire keep session.
 	 * @param isUseCookieBetweenRequest true for use cookis between request.
+	 * @return current http connection reference.
 	 */
 	public HttpConnection setUseCookieBetweenRequest(boolean isUseCookieBetweenRequest) {
 		this.isUseCookieBetweenRequest = isUseCookieBetweenRequest;
@@ -684,6 +693,7 @@ public class HttpConnection {
 	/**
 	 * Set http response code to be accept how sucess response.
 	 * @param code http response code.
+	 * @return current http connection reference.
 	 */
 	public HttpConnection setAcceptHttpResponseCode(StatusCode code) {
 		if(!containsHttpResponseCode(code)) {
@@ -746,7 +756,7 @@ public class HttpConnection {
 	}
 
 	/**
-	 * Clear proxy properties.<br/>
+	 * Clear proxy properties.<br>
 	 * <i>This method will be always called after close connection.
 	 * Prevent conflits with another connections.</i>
 	 */
@@ -1255,6 +1265,7 @@ public class HttpConnection {
 	/**
 	 * Send parameters data
 	 * @param url target url
+	 * @param params optional parameters
 	 * @return response with post result.
 	 * @throws URLConnectionException throws when some connection error is found.
 	 */
@@ -1265,7 +1276,7 @@ public class HttpConnection {
 	/**
 	 * Update data (PUT Method)
 	 * @param url target url
-	 * @param params parameters
+	 * @param params optional parameters
 	 * @return response with put result.
 	 * @throws URLConnectionException throws when some connection error is found.
 	 */
@@ -1287,7 +1298,7 @@ public class HttpConnection {
 	/**
 	 * Delete data (DELETE Method)
 	 * @param url target url
-	 * @param params parameters
+	 * @param params optional parameters
 	 * @return response with result.
 	 * @throws URLConnectionException throws when some connection error is found.
 	 */
@@ -1298,6 +1309,7 @@ public class HttpConnection {
 	/**
 	 * Send parameters data
 	 * @param url target url
+	 * @param params optional parameters
 	 * @return response with post result.
 	 * @throws URLConnectionException throws when some connection error is found.
 	 */
@@ -1308,7 +1320,7 @@ public class HttpConnection {
 	/**
 	 * Update data (PUT Method)
 	 * @param url target url
-	 * @param params parameters
+	 * @param params optional parameters
 	 * @return response with put result.
 	 * @throws URLConnectionException throws when some connection error is found.
 	 */

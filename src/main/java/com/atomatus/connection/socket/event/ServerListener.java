@@ -3,7 +3,7 @@ package com.atomatus.connection.socket.event;
 import com.atomatus.connection.socket.Client;
 
 /**
- * Server I/O Actions listener.<br/>
+ * Server I/O Actions listener.<br>
  * <b>Warning:</b>
  * <p>
  * 	<i>

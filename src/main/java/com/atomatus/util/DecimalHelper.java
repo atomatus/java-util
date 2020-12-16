@@ -399,7 +399,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type to cents.<br/>
+     * Convert any common number object to any common number type to cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param newScale new scale precision.
@@ -413,7 +413,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type to cents.<br/>
+     * Convert any common number object to any common number type to cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param clazz result class type.
@@ -447,7 +447,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type.<br/>
+     * Convert any common number object to any common number type.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param newScale new scale precision.
@@ -459,7 +459,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type.<br/>
+     * Convert any common number object to any common number type.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param <T> result value type
@@ -470,7 +470,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type.<br/>
+     * Convert any common number object to any common number type.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param newScale new scale precision.
@@ -482,7 +482,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type.<br/>
+     * Convert any common number object to any common number type.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param <T> result value type
@@ -493,7 +493,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type from cents.<br/>
+     * Convert any common number object to any common number type from cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param newScale new scale precision.
@@ -507,7 +507,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type from cents.<br/>
+     * Convert any common number object to any common number type from cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param clazz result class type.
@@ -520,7 +520,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type from cents.<br/>
+     * Convert any common number object to any common number type from cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param newScale new scale precision.
@@ -532,7 +532,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type from cents.<br/>
+     * Convert any common number object to any common number type from cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param <T> result target value type
@@ -543,7 +543,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type from cents.<br/>
+     * Convert any common number object to any common number type from cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param newScale new scale precision.
@@ -555,7 +555,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type from cents.<br/>
+     * Convert any common number object to any common number type from cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param <T> result target value type
@@ -566,7 +566,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type from cents.<br/>
+     * Convert any common number object to any common number type from cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param newScale new scale precision.
@@ -578,7 +578,7 @@ public final class DecimalHelper {
     }
 
     /**
-     * Convert any common number object to any common number type from cents.<br/>
+     * Convert any common number object to any common number type from cents.<br>
      * <i>Common number types: Short, Integer, Long, Float, Double, BigInteger or BigDecimal.</i>
      * @param value target origin value to be converted to result type.
      * @param <T> result target value type

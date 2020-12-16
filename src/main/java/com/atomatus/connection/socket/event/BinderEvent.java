@@ -21,6 +21,7 @@ public interface BinderEvent {
 	
 	/**
 	 * Inform if use stop byte to identify end of transport.
+	 * @return true to inform that current event use stop byte.
 	 */
 	boolean isUseStopByte();
 	

@@ -12,7 +12,7 @@ import java.io.Serializable;
  * </p>
  * <pre>
  *     <code>
- *      Serializer.setupDefaultConfigurationXml(Example.class, xml -> {
+ *      Serializer.setupDefaultConfigurationXml(Example.class, xml -&gt; {
  *            //something rule for xml converter when target is Example.class.
  *            //ex.:
  *            xml.omitField(Example.class, "password");
@@ -146,7 +146,7 @@ public abstract class Serializer {
 
     //region setupDefaultConfigurationXml
     /**
-     * Configure XML Serializer rule for target class. <br/>
+     * Configure XML Serializer rule for target class. <br>
      * When converter is working with target class consumer action will be fired.
      * @param targetClass target class (object owned of class are serializing/deserializing)
      * @param consumer consumer action to affect serializing/deserializing object owned of target class.
@@ -156,7 +156,7 @@ public abstract class Serializer {
     }
 
     /**
-     * Configure JSON Serializer rule for target class. <br/>
+     * Configure JSON Serializer rule for target class. <br>
      * When converter is working with target class consumer action will be fired.
      * @param targetClass target class (object owned of class are serializing/deserializing)
      * @param consumer consumer action to affect serializing/deserializing object owned of target class.

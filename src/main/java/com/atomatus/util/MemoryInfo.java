@@ -20,7 +20,7 @@ public final class MemoryInfo {
         TOTAL,
 
         /**
-         * Maximum amount of memory the JVM will attempt to use.<br/>
+         * Maximum amount of memory the JVM will attempt to use.<br>
          * Obs.: This will return Long.MAX_VALUE if there is no preset limit
          */
         MAX,

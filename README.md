@@ -329,7 +329,7 @@ str = StringUtils.join(",", 0, 1, 2, 3);
 ```
 
 ## Reflection
-Access objects by reflection.<br/>
+Access objects by reflection.<br>
 Inflate (create an instance or load access for static class) a class by fullName (included package path) 
 to try manipulate and access it.
 

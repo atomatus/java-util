@@ -85,7 +85,7 @@ public final class SNTPClient {
     }
     
     /**
-     * Request global date time on server ({@link SNTPClient#servers()}) available.<br/>
+     * Request global date time on server ({@link SNTPClient#servers()}) available.<br>
      * <i>Each attempt have a default timeout of 5 seconds.</i>
      * @return when true, got global date time successfully, otherwhise failed.
 	 * @throws IllegalArgumentException throws exception when host or timeout is invalid.
@@ -95,7 +95,7 @@ public final class SNTPClient {
     }
     
     /**
-	 * Request global date time on server ({@link SNTPClient#servers()}) available.<br/>
+	 * Request global date time on server ({@link SNTPClient#servers()}) available.<br>
      * @param timeout request timeout in millis.
 	 * @return when true, got global date time successfully, otherwhise failed.
 	 * @throws IllegalArgumentException throws exception when host or timeout is invalid.
@@ -110,7 +110,7 @@ public final class SNTPClient {
     }
 
 	/**
-	 * Request global date time on server ({@link SNTPClient#servers()}) available.<br/>
+	 * Request global date time on server ({@link SNTPClient#servers()}) available.<br>
 	 * @param host SNTP global time server address.
 	 * @param timeout request timeout in millis.
 	 * @return when true, got global date time successfully, otherwhise failed.
