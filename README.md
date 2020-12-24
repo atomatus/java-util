@@ -1,7 +1,7 @@
-# java-util
+# ☕ java-util
 Set of utilities to help in project development.
 
-## Http Connection
+## 🌐 Http Connection
 Fully class for http or https connections.
 A simple way to do REST actions like methods get, post, put patch or delete.
 
@@ -76,7 +76,7 @@ Example of action POST with URL Parameter, Query Parameter and Body Parameter
 //url: https://test.com/api/urlParamExample/json?param=queryParamExample
 ```
 
-## Socket Connection
+## 🔌 Socket Connection
 Simple way for socket Client/Server connection.
 
 Example socket client/server for a serializable object.
@@ -120,7 +120,7 @@ final Server s = new Server();
 ```
 
 
-## MacVendors
+## 🤝 MacVendors
 The Fastest way to find vendors by macAddress
 
 ```
@@ -128,7 +128,7 @@ The Fastest way to find vendors by macAddress
 Vendor v = MacVendors.getInstance().find("BC:92:6B:FF:FF:FF");
 ```
 
-## Security
+## 🔒 Security
 Encryptors types and helper for random key generator.
 
 ```
@@ -165,7 +165,7 @@ System.out.println(KeyGenerator.generateRandomKeyAlphaNumeric())
 
 ``Q8E5W2G8BP``
 
-## Serializer
+## 📝 Serializer
 Serialize and deserialize objects for Object Base64, BSON, JSON or XML.
 
 ```
@@ -184,7 +184,7 @@ Serializer.setupDefaultConfigurationXml(Example.class, x -> {
 });
 ```
 
-## ArrayHelper
+## ⛓ 👊 ArrayHelper
 Helper to analyze, manipulate and convert array objects.
 
 ```
@@ -236,7 +236,7 @@ arr = ArrayHelper.jump(arr, 2);
 //arr = [3]
 ```
 
-## Decimal Helper
+## ∑ $ 👊 Decimal Helper
 Helper to analyze and convert wrapper or decimal types to BigDecimal, currency or decimal
 by discover Locale automatically or locale set it.
 
@@ -266,7 +266,7 @@ String decimal = Decimal.Helper.toDecimal(bd, Locale.US);
 //decimal = 12.40
 ```
 
-## Date Helper
+## 📅 👊 Date Helper
 Helper to parse and convert String date formatted to Date or Calendar.
 
 ```
@@ -275,7 +275,7 @@ Date date = DateHelper.getInstance().parseDate("19/11/2020");
 Date date = DateHelper.getInstance().parseDate("11:46");
 ```
 
-## Memory Info
+## 🧠 Memory Info
 Information about memory, free, allocated, total...
 
 ```
@@ -285,7 +285,7 @@ mi.getKBytes(MemoryInfo.Amount.FREE); //free memory in KB.
 mi.getMBytes(MemoryInfo.Amount.FREE); //free memory in MB.
 ```
 
-## SNTP Client
+## 🕑 SNTP Client
 Discovery current date time online for your location
 
 ```
@@ -301,7 +301,7 @@ if(sntp.request(/*timeout in millis*/)) {
 }
 ```
 
-## String Utils
+## ⛓ String Utils
 Join strings, check and request string input not empty or not whitespace.
 
 ```
@@ -328,7 +328,7 @@ str = StringUtils.join(",", 0, 1, 2, 3);
 //str = "0, 1, 2, 3"
 ```
 
-## Reflection
+## 🔥 Reflection
 Access objects by reflection.<br>
 Inflate (create an instance or load access for static class) a class by fullName (included package path) 
 to try manipulate and access it.
@@ -360,7 +360,7 @@ Reflection r    = Reflection.cast(obj, java.lang.String");
 boolean found   = r.method("indexOf", "test").valueInt() > 0;
 ```
 
-## Debug
+## 🔍 📋 Debug
 Check if current code is running in debug mode
 
 ```
