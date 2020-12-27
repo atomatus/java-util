@@ -2,6 +2,9 @@ package com.atomatus.util;
 
 import junit.framework.TestCase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StringUtilsTest extends TestCase {
 
     public void testIsNullOrEmpty() {
@@ -50,6 +53,28 @@ public class StringUtilsTest extends TestCase {
 
         assertEquals("100",
                 StringUtils.padRight("1", 3, "00"));
+    }
+
+    public void testJoin() {
+        String sep = ", ";
+        String s0  = StringUtils.join(sep, 0, '1', 2, 2.1f, 2.2d, "3", "45", Long.MAX_VALUE, Boolean.FALSE,
+                new char[]{ 'C', 'H', 'A', 'R' });
+
+        List<Object> aux = new ArrayList<>();
+        aux.add(0);
+        aux.add('1');
+        aux.add(2);
+        aux.add(2.1f);
+        aux.add(2.2d);
+        aux.add("3");
+        aux.add("45");
+        aux.add(Long.MAX_VALUE);
+        aux.add(Boolean.FALSE);
+        aux.add(new char[]{ 'C', 'H', 'A', 'R' });
+
+        String s1  = StringUtils.join(sep, aux);
+
+        assertEquals(s0, s1);
     }
 
 }

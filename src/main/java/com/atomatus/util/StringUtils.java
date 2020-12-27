@@ -74,8 +74,31 @@ public final class StringUtils {
     //endregion
 
     //region join
-    @SafeVarargs
-    public static <T> String join(String prefix, String suffix, String sep, T... args) {
+    private static void appendValueForJoin(StringBuilder sb, Object value) {
+        if(value == null) {
+            sb.append("null");
+        } else if(value instanceof CharSequence) {
+            sb.append((CharSequence) value);
+        } else if(value instanceof Character) {
+            sb.append(((Character) value).charValue());
+        } else if(value instanceof char[]) {
+            sb.append((char[]) value);
+        } else if(value instanceof Integer || value instanceof Short) {
+            sb.append(((Number) value).intValue());
+        } else if(value instanceof Long) {
+            sb.append(((Long) value).longValue());
+        } else if(value instanceof Float) {
+            sb.append(((Float) value).floatValue());
+        } else if(value instanceof Double) {
+            sb.append(((Double) value).doubleValue());
+        } else if(value instanceof Boolean) {
+            sb.append(((Boolean) value).booleanValue());
+        } else {
+            sb.append(value);
+        }
+    }
+
+    public static String join(String prefix, String suffix, String sep, Object... args) {
         requireNonNull(sep, "Separator can not be null!");
         StringBuilder sb = new StringBuilder();
 
@@ -87,7 +110,7 @@ public final class StringUtils {
             if(i > 0) {
                 sb.append(sep);
             }
-            sb.append(args[i]);
+            appendValueForJoin(sb, args[i]);
         }
 
         if(!isNullOrEmpty(suffix)) {
@@ -97,8 +120,35 @@ public final class StringUtils {
         return sb.toString();
     }
 
-    @SafeVarargs
-    public static <T> String join(String sep, T... args) {
+    public static <T> String join(String prefix, String suffix, String sep, Iterable<T> args) {
+        requireNonNull(sep, "Separator can not be null!");
+        StringBuilder sb = new StringBuilder();
+
+        if(!isNullOrEmpty(prefix)) {
+            sb.append(prefix);
+        }
+
+        boolean useSep = false;
+        for(T t : args) {
+            if(useSep) {
+                sb.append(sep);
+            }
+            appendValueForJoin(sb, t);
+            useSep = true;
+        }
+
+        if(!isNullOrEmpty(suffix)) {
+            sb.append(suffix);
+        }
+
+        return sb.toString();
+    }
+
+    public static String join(String sep, Object... args) {
+        return join(null, null, sep, args);
+    }
+
+    public static <T> String join(String sep, Iterable<T> args) {
         return join(null, null, sep, args);
     }
     //endregion
