@@ -26,6 +26,9 @@ import java.util.zip.InflaterInputStream;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue"})
 public class HttpConnection {
 
+	public static final String SCHEME_HTTP  = "http://";
+	public static final String SCHEME_HTTPS = "https://";
+
 	private static final int BUFFER_LENGTH = 2048;
 
 	private static CookieManager cookieManager;

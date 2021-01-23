@@ -73,6 +73,30 @@ public final class StringUtils {
     }
     //endregion
 
+    //region startsWithIgnoreCase/endsWithIgnoreCase
+    public static boolean startsWithIgnoreCase(String str, String prefix) {
+        if(str == null) {
+            throw new NullPointerException("Target String is null!");
+        } else if(prefix == null) {
+            throw new NullPointerException("Prefix String is null!");
+        }
+
+        return str.regionMatches(true, 0, prefix, 0, prefix.length());
+
+    }
+
+    public static boolean endsWithIgnoreCase(String str, String suffix) {
+        if(str == null) {
+            throw new NullPointerException("Target String is null!");
+        } else if(suffix == null) {
+            throw new NullPointerException("Suffix String is null!");
+        }
+
+        int suffixLength = suffix.length();
+        return str.regionMatches(true, str.length() - suffixLength, suffix, 0, suffixLength);
+    }
+    //endregion
+
     //region join
     private static void appendValueForJoin(StringBuilder sb, Object value) {
         if(value == null) {

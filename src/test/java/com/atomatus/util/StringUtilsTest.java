@@ -77,4 +77,14 @@ public class StringUtilsTest extends TestCase {
         assertEquals(s0, s1);
     }
 
+    public void testStartsWithIgnoreCase() {
+        assertTrue(StringUtils.startsWithIgnoreCase("TESTE", "TES"));
+        assertFalse(StringUtils.startsWithIgnoreCase("TESTE", "TTES"));
+    }
+
+    public void testEndsWithIgnoreCase() {
+        assertTrue(StringUtils.endsWithIgnoreCase("TESTANDO", "ANDO"));
+        assertFalse(StringUtils.endsWithIgnoreCase("TESTANDO", "ANTO"));
+    }
+
 }
