@@ -68,6 +68,43 @@ public final class ArrayHelper {
     }
 
     /**
+     * Retrieve index of target element.
+     * @param arr target array
+     * @param e target element
+     * @param start start index to search
+     * @param end end length to search
+     * @param <E> element type
+     * @return index of element, or -1 when not found.
+     */
+    public static <E> int indexOf(E[] arr, E e, int start, int end) {
+        if (e == null) {
+            for (int i = start; i < end; i++) {
+                if (arr[i] == null) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = start; i < end; i++) {
+                if (e.equals(arr[i])) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Retrieve index of target element.
+     * @param arr target array
+     * @param e target element
+     * @param <E> element type
+     * @return index of element, or -1 when not found.
+     */
+    public static <E> int indexOf(E[] arr, E e) {
+        return indexOf(Objects.requireNonNull(arr), e, 0, arr.length);
+    }
+
+    /**
      * Create a new object array from current object (current object referecing a array).
      *
      * @param arr target object.

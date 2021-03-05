@@ -154,14 +154,19 @@ public abstract class Reflection {
                 }
             } else if(cons.length > 0) {
                 Constructor<?> found = ArrayHelper.first(cons,
-                        c -> c.isAccessible() && c.getParameterCount() == 0);
+                        c -> c.getParameterCount() == 0);
                 if(found != null) {
+                    try {
+                        found.setAccessible(true);
+                    } catch (SecurityException ignored) {
+                        return null; //no one accessible.
+                    }
                     return found.newInstance();
                 } else {
                     return null; // no one accessible.
                 }
             }
-            return clazz.newInstance();
+            return clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new ReflectionException(e);
         }
@@ -229,6 +234,21 @@ public abstract class Reflection {
             return cast(obj, castClassFullName);
         } catch (ReflectionException e) {
             return empty();
+        }
+    }
+
+    /**
+     * Initilize Reflection to access self object field and methods.
+     * @param obj target object non null.
+     * @return a new reflection inflated for cast class and target object.
+     * @throws ReflectionException throw this exception when is not possible load reflection.
+     */
+    public static Reflection self(Object obj) {
+        try {
+            return new ReflectionImplInflateClass(Objects.requireNonNull(obj),
+                    obj.getClass());
+        } catch (Throwable e) {
+            throw new ReflectionException(e);
         }
     }
 
