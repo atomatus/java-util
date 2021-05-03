@@ -28,6 +28,7 @@ abstract class SecureContextCredentialsParams implements Closeable {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected void finalize() throws Throwable {
         super.finalize();
         close();

@@ -336,4 +336,22 @@ public final class StringUtils {
         return count;
     }
     //endregion
+
+    //region split by size
+
+    /**
+     * Split current string by defined limit size.
+     * @param target target string
+     * @param size max size for each new string value.
+     * @return splitted strings.
+     */
+    public static String[] splitBySize(String target, int size) {
+        String[] arr = new String[0];
+        for(int i=0, l = target.length(); i < l; i += size) {
+            String e = target.substring(i, Math.min(l, i + size));
+            arr = ArrayHelper.add(arr, e);
+        }
+        return arr;
+    }
+    //endregion
 }

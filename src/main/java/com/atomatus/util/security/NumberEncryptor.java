@@ -112,7 +112,7 @@ class NumberEncryptor extends Encryptor {
 	 * @return hex value or null
 	 */
 	private String convertToHex(String block, int length){
-		return length < 1 ? null : Long.toHexString(new Long(block.substring(0, length)));
+		return length < 1 ? null : Long.toHexString(Long.parseLong(block.substring(0, length)));
 	}
 	
 	/**
