@@ -13,13 +13,13 @@ public class TextTableTest extends TestCase {
                 .from(new Object[][] {
                         { "id", "First Name", "Last Name", "Age", "Profile" },
 
-                        { 1, "Sheldon ", "Cooper", 40, "Possui um temperamento arrogante, chegando a pensar que so apareceria alguem mais inteligente que ele apos centenas de anos." },
+                        { 1, "Sheldon", "Cooper", 40, "Possui um temperamento arrogante, chegando a pensar que so apareceria alguem mais inteligente que ele apos centenas de anos." },
 
                         { 2, "Leonard", "Hofstadter", 40, "Um fisico experimental que recebeu seu doutorado quando ele tinha 24 anos de idade." },
 
                         { 3, "Howard", "Wolowitz", 42, "Um engenheiro espacial do Instituto de Tecnologia da California do departamento de Fisica Aplicada com mestrado em Engenharia." },
 
-                        { 4, "Rajesh ", "Koothrappali", "", "Originalmente de Nova Delhi, trabalha no departamento de Fisica na Caltech como astrofisico." } })
+                        { 4, "Rajesh", "Koothrappali", "", "Originalmente de Nova Delhi, trabalha no departamento de Fisica na Caltech como astrofisico." } })
                 .lineSeparator()
                 .maxWidth(35)
                 .build();
@@ -28,11 +28,13 @@ public class TextTableTest extends TestCase {
                 .Builder()
                 .columns(new String[] { "id", "First Name", "Last Name", "Age", "Profile" })
                 .rows(new Object[][] {
-                        { 1, "Sheldon ", "Cooper", 40, "Possui um temperamento arrogante, chegando a pensar que so apareceria alguem mais inteligente que ele apos centenas de anos." },
+                        { 1, "Sheldon", "Cooper", 40, "Possui um temperamento arrogante, chegando a pensar que so apareceria alguem mais inteligente que ele apos centenas de anos." },
                         { 2, "Leonard", "Hofstadter", 40, "Um fisico experimental que recebeu seu doutorado quando ele tinha 24 anos de idade." },
                         { 3, "Howard", "Wolowitz", 42, "Um engenheiro espacial do Instituto de Tecnologia da California do departamento de Fisica Aplicada com mestrado em Engenharia." },
-                        { 4, "Rajesh ", "Koothrappali", "", "Originalmente de Nova Delhi, trabalha no departamento de Fisica na Caltech como astrofisico." }
+                        { 4, "Rajesh", "Koothrappali", "", "Originalmente de Nova Delhi, trabalha no departamento de Fisica na Caltech como astrofisico." }
                 })
+                .lineSeparator()
+                .maxWidth(35)
                 .build();
 
         tt2 = new TextTable
@@ -42,10 +44,12 @@ public class TextTableTest extends TestCase {
                 .column("Last Name")
                 .column("Age")
                 .column("Profile")
-                .row(new Object[] { 1, "Sheldon ", "Cooper", 40, "Possui um temperamento arrogante, chegando a pensar que so apareceria alguem mais inteligente que ele apos centenas de anos." })
+                .row(new Object[] { 1, "Sheldon", "Cooper", 40, "Possui um temperamento arrogante, chegando a pensar que so apareceria alguem mais inteligente que ele apos centenas de anos." })
                 .row(new Object[] { 2, "Leonard", "Hofstadter", 40, "Um fisico experimental que recebeu seu doutorado quando ele tinha 24 anos de idade." })
                 .row(new Object[] { 3, "Howard", "Wolowitz", 42, "Um engenheiro espacial do Instituto de Tecnologia da California do departamento de Fisica Aplicada com mestrado em Engenharia." })
-                .row(new Object[] { 4, "Rajesh ", "Koothrappali", "", "Originalmente de Nova Delhi, trabalha no departamento de Fisica na Caltech como astrofisico." })
+                .row(new Object[] { 4, "Rajesh", "Koothrappali", "", "Originalmente de Nova Delhi, trabalha no departamento de Fisica na Caltech como astrofisico." })
+                .lineSeparator()
+                .maxWidth(35)
                 .build();
 
         tt3 = new TextTable
@@ -59,6 +63,8 @@ public class TextTableTest extends TestCase {
                 .row().cell(2).cell("Leonard").cell("Hofstadter").cell(40).cell("Um fisico experimental que recebeu seu doutorado quando ele tinha 24 anos de idade.")
                 .row().cell(3).cell("Howard").cell("Wolowitz").cell(42).cell("Um engenheiro espacial do Instituto de Tecnologia da California do departamento de Fisica Aplicada com mestrado em Engenharia.")
                 .row().cell(4).cell("Rajesh").cell("Koothrappali").cell("").cell("Originalmente de Nova Delhi, trabalha no departamento de Fisica na Caltech como astrofisico.")
+                .lineSeparator()
+                .maxWidth(35)
                 .build();
 
     }
