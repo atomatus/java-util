@@ -13,10 +13,10 @@ public abstract class TextTable implements Closeable {
      */
     public static class Builder {
 
-        private String[] cols;
+        private String[] cols, labels;
         private Object[][] rows, table;
         private int maxWidth, width, cellIndex;
-        private boolean alignLeft, separator;
+        private boolean alignLeft, separator, noWrap;
 
         public Builder() {
             alignLeft = true;
@@ -157,6 +157,20 @@ public abstract class TextTable implements Closeable {
         }
 
         /**
+         * Add labels to display how first column of table.
+         * @param labels labels values, identify each row value by column
+         * @return current builder.
+         */
+        public Builder label(String[] labels) {
+            if(Objects.requireNonNull(labels).length == 0) {
+                throw new IndexOutOfBoundsException();
+            }
+
+            this.labels = labels;
+            return this;
+        }
+
+        /**
          * Max allowed line width.
          * @param maxWidth vany positive value.
          * @return current builder.
@@ -164,6 +178,17 @@ public abstract class TextTable implements Closeable {
         public Builder maxWidth(int maxWidth) {
             if(maxWidth <= 0) throw new IndexOutOfBoundsException();
             this.maxWidth = maxWidth;
+            return this;
+        }
+
+        /**
+         * Enable no wrap line, so when max width set and cell
+         * value is largest then it, will be replaced
+         * remaining text to "..." (ellipsis).
+         * @return current builder.
+         */
+        public Builder noWrap(){
+            this.noWrap = true;
             return this;
         }
 
@@ -201,35 +226,45 @@ public abstract class TextTable implements Closeable {
         public TextTable build() {
             try {
                 if(table == null) {
-                    table = new Object[this.rows.length + 1][];
-                    System.arraycopy(rows, 0, table, 1, rows.length);
-                    table[0] = cols;
+                    int colOffset = cols != null ? 1 : 0;
+                    int rowsCount = rows != null ? rows.length : 0;
+
+                    table = new Object[rowsCount + colOffset][];
+
+                    if(rowsCount > 0) {
+                        System.arraycopy(rows, 0, table, colOffset, rows.length);
+                    }
+
+                    if(colOffset > 0) {
+                        table[0] = cols;
+                    }
                 }
+
                 return new SimpleTextTable(
                         table,
+                        labels,
                         maxWidth,
                         alignLeft,
-                        separator);
+                        separator,
+                        noWrap);
             } finally {
-                this.rows  = null;
-                this.cols  = null;
-                this.table = null;
-                this.width = cellIndex = 0;
+                this.rows   = null;
+                this.cols   = null;
+                this.labels = null;
+                this.table  = null;
+                this.width  = cellIndex = 0;
             }
         }
     }
 
     protected Object[][] table;
-    protected final int maxWidth;
     protected final boolean isAlignLeft;
     protected final boolean isSeparator;
 
     protected TextTable(Object[][] table,
-                        int maxWidth,
                         boolean alignLeft,
                         boolean separator) {
         this.table       = table;
-        this.maxWidth    = maxWidth;
         this.isAlignLeft = alignLeft;
         this.isSeparator = separator;
     }
@@ -255,15 +290,43 @@ final class SimpleTextTable extends TextTable {
     private Map<Integer, Integer> rowCounts;
 
     public SimpleTextTable(Object[][] table,
+                           String[] labels,
                            int maxWidth,
                            boolean alignLeft,
-                           boolean separator) {
-        super(table, maxWidth, alignLeft, separator);
-        formatTableMaxWidthCell();
+                           boolean separator,
+                           boolean noWrap) {
+        super(table, alignLeft, separator);
+        formatTableAddLabels(labels);
+        formatTableMaxWidthCell(maxWidth, noWrap);
+        formatTableMaxWidthCellNoWrap(maxWidth, noWrap);
     }
 
-    private void formatTableMaxWidthCell() {
-        if(maxWidth == 0){
+    private void formatTableAddLabels(String[] labels) {
+        if(labels != null && table != null && table.length > 0) {
+            if(table.length < labels.length) {
+                String[] aux = labels;
+                labels = new String[table.length];
+                System.arraycopy(aux, 0, labels, 0, labels.length);
+            } else if(table.length > labels.length) {
+                String[] aux = labels;
+                labels = new String[table.length];
+                System.arraycopy(aux, 0, labels, 0, aux.length);
+                for(int i=aux.length, l=labels.length; i < l; i++) {
+                    labels[i] = "";
+                }
+            }
+
+            for(int i=0, l=table.length; i < l; i++) {
+                Object[] aux = table[i];
+                table[i] = new Object[aux.length + 1];
+                System.arraycopy(aux, 0, table[i], 1, aux.length);
+                table[i][0] = labels[i];
+            }
+        }
+    }
+
+    private void formatTableMaxWidthCell(int maxWidth, boolean noWrap) {
+        if(table == null || maxWidth == 0 || noWrap){
             return;
         }
 
@@ -310,6 +373,53 @@ final class SimpleTextTable extends TextTable {
         }
 
         this.table = finalTable;
+    }
+
+    private void formatTableMaxWidthCellNoWrap(int maxWidth, boolean noWrap) {
+        if(table == null || maxWidth == 0 || !noWrap) {
+            return;
+        }
+
+        String ellipsis = "...";
+        int diff = maxWidth + ellipsis.length();
+        for(int i=0, l=table.length; i < l; i++) {
+            for (int j = 0, k = table[i] != null ? table[i].length : 0; j < k; j++) {
+                Object cell = table[i][j];
+                if(cell instanceof String) {
+                    String str = (String) cell;
+
+                    if(str.length() < maxWidth){
+                        continue;
+                    }
+
+                    str = str.substring(0, diff) + ellipsis;
+                    table[i][j] = str;
+                } else if(cell instanceof StringBuilder) {
+                    StringBuilder sb = (StringBuilder) cell;
+
+                    if(sb.length() < maxWidth) {
+                        continue;
+                    }
+
+                    sb.delete(diff, sb.length()).append(ellipsis);
+                } else if(cell instanceof StringBuffer) {
+                    StringBuffer sb = (StringBuffer) cell;
+
+                    if(sb.length() < maxWidth) {
+                        continue;
+                    }
+
+                    sb.delete(diff, sb.length()).append(ellipsis);
+                } else {
+                    String str = cell.toString();
+                    if(str.length() > maxWidth) {
+                        str = str.substring(0, diff) + ellipsis;
+                        table[i][j] = str;
+                    }
+                }
+            }
+        }
+
     }
 
     private Map<Integer, Integer> getColumnLengths() {
@@ -387,5 +497,6 @@ final class SimpleTextTable extends TextTable {
         super.close();
         this.format = null;
         this.columnLengths = null;
+        this.rowCounts = null;
     }
 }

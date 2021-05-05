@@ -22,6 +22,8 @@ public class TextTableTest extends TestCase {
                         { 4, "Rajesh", "Koothrappali", "", "Originalmente de Nova Delhi, trabalha no departamento de Fisica na Caltech como astrofisico." } })
                 .lineSeparator()
                 .maxWidth(35)
+                //.noWrap()
+                //.label(new String[] { "", "1", "2", "3", "4", "5" })
                 .build();
 
         tt1 = new TextTable
