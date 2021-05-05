@@ -388,7 +388,7 @@ final class SimpleTextTable extends TextTable {
                 if(cell instanceof String) {
                     String str = (String) cell;
 
-                    if(str.length() < maxWidth){
+                    if(str.length() < diff){
                         continue;
                     }
 
@@ -397,7 +397,7 @@ final class SimpleTextTable extends TextTable {
                 } else if(cell instanceof StringBuilder) {
                     StringBuilder sb = (StringBuilder) cell;
 
-                    if(sb.length() < maxWidth) {
+                    if(sb.length() < diff) {
                         continue;
                     }
 
@@ -405,14 +405,14 @@ final class SimpleTextTable extends TextTable {
                 } else if(cell instanceof StringBuffer) {
                     StringBuffer sb = (StringBuffer) cell;
 
-                    if(sb.length() < maxWidth) {
+                    if(sb.length() < diff) {
                         continue;
                     }
 
                     sb.delete(diff, sb.length()).append(ellipsis);
                 } else {
                     String str = cell.toString();
-                    if(str.length() > maxWidth) {
+                    if(str.length() > diff) {
                         str = str.substring(0, diff) + ellipsis;
                         table[i][j] = str;
                     }
