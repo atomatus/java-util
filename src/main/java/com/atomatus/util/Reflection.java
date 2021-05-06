@@ -261,7 +261,7 @@ public abstract class Reflection {
      */
     private static <T extends AccessibleObject> void setAccessible(T obj) {
         try {
-            WarningState.getInstance().disable();
+            WarningLoggerState.getInstance().disable();
             boolean access = false;
 
             try {
@@ -282,89 +282,7 @@ public abstract class Reflection {
         } catch (Exception e1) {
             throw new RuntimeException(e1);
         } finally {
-            WarningState.getInstance().reenable();
-        }
-    }
-
-    /**
-     * Java Warning logger when build and test app.
-     */
-    private static final class WarningState {
-
-        private static final WarningState instance;
-        private final Object locker;
-
-        private transient Object unsafe, logger;
-        private transient Long offset;
-        private transient Class<?> loggerClass;
-        private transient Method staticFieldOffset, getObjectVolatile, putObjectVolatile;
-
-        public static WarningState getInstance() {
-            return instance;
-        }
-
-        static {
-            instance = new WarningState();
-        }
-
-        private WarningState() {
-            locker = new Object();
-        }
-
-        private void loadValues() throws NoSuchFieldException, IllegalAccessException,
-                ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
-            if(unsafe == null || staticFieldOffset == null || getObjectVolatile == null || putObjectVolatile == null) {
-                Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-                Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
-                theUnsafe.setAccessible(true);
-
-                staticFieldOffset = unsafeClass.getMethod("staticFieldOffset", Field.class);
-                getObjectVolatile = unsafeClass.getMethod("getObjectVolatile", Object.class, long.class);
-                putObjectVolatile = unsafeClass.getMethod("putObjectVolatile", Object.class, long.class, Object.class);
-
-                unsafe = theUnsafe.get(null);
-                loggerClass = null;
-            }
-
-            if(loggerClass == null) {
-                loggerClass = Class.forName("jdk.internal.module.IllegalAccessLogger");
-                offset = null;
-            }
-
-            if(offset == null) {
-                Field logger = loggerClass.getDeclaredField("logger");
-                offset = (Long) staticFieldOffset.invoke(unsafe, logger);
-            }
-        }
-
-        /**
-         * Disable warning logger.
-         */
-        void disable() {
-            synchronized (locker) {
-                try{
-                    if(logger == null) {
-                        loadValues();
-                        logger = getObjectVolatile.invoke(unsafe, loggerClass, offset);
-                        putObjectVolatile.invoke(unsafe, loggerClass, offset, null);
-                    }
-                }catch (Exception ignored) { }
-            }
-        }
-
-        /**
-         * Reenable warning logger.
-         */
-        void reenable() {
-            synchronized (locker) {
-                try{
-                    if(logger != null) {
-                        loadValues();
-                        putObjectVolatile.invoke(unsafe, loggerClass, offset, logger);
-                        logger = null;
-                    }
-                } catch (Exception ignored) { }
-            }
+            WarningLoggerState.getInstance().reenable();
         }
     }
 

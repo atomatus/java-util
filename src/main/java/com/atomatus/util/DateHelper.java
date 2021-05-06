@@ -10,8 +10,12 @@ import java.util.regex.Pattern;
 /**
  * <strong>Date Helper</strong>
  * <p>
- *     To help to parse and converte date time toanother time zone, location,
+ *     To help to parse and convert date time to another time zone, location,
  *     convert any date time string format to Calendar or Date object.
+ * </p>
+ * <p>
+ *     Allow to generate a string date, time, or date and time, following the locale
+ *     format and time zone. So the same date or calendar can be formatted to Locale.US, Locale.UK, etc.
  * </p>
  * @author Carlos Matos
  */
@@ -20,6 +24,9 @@ public final class DateHelper {
     private static final String FUSE_REGEX;
     private static final DateHelper instance;
 
+    /**
+     * Format mode.
+     */
     private enum FormatMode {
         FULL,
         DATE,
@@ -46,7 +53,7 @@ public final class DateHelper {
     //region Current Date TimeZone
 
     /**
-     * Default format date time string to time zone and locale.
+     * Default format current date time string to time zone and locale.
      * @param timeZone target time zone
      * @param locale target locale
      * @return date time string value format.
@@ -56,7 +63,8 @@ public final class DateHelper {
     }
 
     /**
-     * Default format date time string to time zone and default locale.
+     * Default format current date time string to time zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
      * @param timeZone target time zone
      * @return date time string value format.
      */
@@ -64,26 +72,65 @@ public final class DateHelper {
         return getDate(timeZone, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Generate a short date format to current date, time zone and locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @param timeZone target time zone.
+     * @param locale target locale
+     * @return short date format.
+     */
     public String getSmallDate(TimeZone timeZone, Locale locale){
         return getSmallDate(new Date(), timeZone, locale);
     }
 
+    /**
+     * Generate a short date format to current date, time zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @param timeZone target time zone.
+     * @return short date format.
+     */
     public String getSmallDate(TimeZone timeZone) {
         return getSmallDate(timeZone, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Generate a time format to current date, time zone and locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @param timeZone target time zone.
+     * @param locale target locale
+     * @return default time format.
+     */
     public String getTime(TimeZone timeZone, Locale locale){
         return getTime(new Date(), timeZone, locale);
     }
 
+    /**
+     * Generate a time format to current date, time zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and default locale rule.</i>
+     * @param timeZone target time zone.
+     * @return default time format.
+     */
     public String getTime(TimeZone timeZone) {
         return getTime(timeZone, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Generate a time format to current date, time zone and locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @param timeZone target time zone.
+     * @param locale target locale
+     * @return short time format.
+     */
     public String getSmallTime(TimeZone timeZone, Locale locale){
         return getSmallTime(new Date(), timeZone, locale);
     }
 
+    /**
+     * Generate a time format to current date, time zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and default locale rule.</i>
+     * @param timeZone target time zone.
+     * @return short time format.
+     */
     public String getSmallTime(TimeZone timeZone) {
         return getSmallTime(timeZone, LocaleHelper.getDefaultLocale());
     }
@@ -91,86 +138,201 @@ public final class DateHelper {
     //endregion
 
     //region Current Date Default TimeZone
+    /**
+     * Default format date time string to current date, time zone and locale.
+     * @param locale target locale
+     * @return date time string value format.
+     */
     public String getDate(Locale locale){
         return getDate(TimeZone.getDefault(), locale);
     }
 
+    /**
+     * Default format date time string to current date, time zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @return date time string value format.
+     */
     public String getDate(){
         return getDate(LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Generate a short date format to current date, time zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @param locale target locale
+     * @return short date format.
+     */
     public String getSmallDate(Locale locale){
         return getSmallDate(TimeZone.getDefault(), locale);
     }
 
+    /**
+     * Generate a short date format to current date, zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @return short date format.
+     */
     public String getSmallDate(){
         return getSmallDate(LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Generate a time format to current date, time zone and locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @param locale target locale
+     * @return default time format.
+     */
     public String getTime(Locale locale){
         return getTime(TimeZone.getDefault(), locale);
     }
 
+    /**
+     * Generate a time format to current date, time zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and default locale rule.</i>
+     * @return default time format.
+     */
     public String getTime(){
         return getTime(LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Generate a time format to current date, time zone and locale targets.<br>
+     * <i>The format will be choose by time zone and locale rule.</i>
+     * @param locale target locale
+     * @return short time format.
+     */
     public String getSmallTime(Locale locale){
         return getSmallTime(TimeZone.getDefault(), locale);
     }
 
+    /**
+     * Generate a time format to current date, time zone and default locale targets.<br>
+     * <i>The format will be choose by time zone and default locale rule.</i>
+     * @return short time format.
+     */
     public String getSmallTime(){
         return getSmallTime(LocaleHelper.getDefaultLocale());
     }
     //endregion
 
     //region Any Date
+    /**
+     * Default format date time string from input date, time zone and locale.
+     * @param date target date
+     * @param timeZone target time zone
+     * @param locale target locale
+     * @return date time string value format.
+     */
     public String getDate(Date date, TimeZone timeZone, Locale locale){
         return getFormattedDate(date, timeZone, locale, FormatMode.DATE);
     }
 
+    /**
+     * Default format date time string from input date, time zone and locale.
+     * @param date target date
+     * @param timeZone target time zone
+     * @param locale target locale
+     * @return small date format.
+     */
     public String getSmallDate(Date date, TimeZone timeZone, Locale locale){
         return getFormattedDate(date, timeZone, locale, FormatMode.SMALL_DATE);
     }
 
+    /**
+     * Default format date time string from input date, time zone and locale.
+     * @param date target date
+     * @param timeZone target time zone
+     * @param locale target locale
+     * @return time format.
+     */
     public String getTime(Date date, TimeZone timeZone, Locale locale){
         return getFormattedDate(date, timeZone, locale, FormatMode.TIME);
     }
 
+    /**
+     * Default format date time string from input date, time zone and locale.
+     * @param date target date
+     * @param timeZone target time zone
+     * @param locale target locale
+     * @return small time format.
+     */
     public String getSmallTime(Date date, TimeZone timeZone, Locale locale){
         return getFormattedDate(date, timeZone, locale, FormatMode.SMALL_TIME);
     }
     //endregion
 
     //region Any Date Default TimeZone
+    /**
+     * Default format date time string from input date and locale.
+     * @param date target date
+     * @param locale target locale
+     * @return date time format.
+     */
     public String getDate(Date date, Locale locale){
         return getDate(date, TimeZone.getDefault(), locale);
     }
 
+    /**
+     * Default format date time string from input date, using current time zone and locale.
+     * @param date target date
+     * @return date time format.
+     */
     public String getDate(Date date){
         return getDate(date, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Default format date string from input date and locale.
+     * @param date target date
+     * @param locale target locale
+     * @return small date format.
+     */
     public String getSmallDate(Date date, Locale locale){
         return getSmallDate(date, TimeZone.getDefault(), locale);
     }
 
+    /**
+     * Default format date string from input date, using current time zone and locale.
+     * @param date target date
+     * @return small date format.
+     */
     public String getSmallDate(Date date){
         return getSmallDate(date, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Default format time string from input date and locale.
+     * @param date target date
+     * @param locale target locale
+     * @return time format.
+     */
     public String getTime(Date date, Locale locale){
         return getTime(date, TimeZone.getDefault(), locale);
     }
 
+    /**
+     * Default format time string from input date and default locale.
+     * @param date target date
+     * @return time format.
+     */
     public String getTime(Date date){
         return getTime(date, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Default format small time string from input date and locale.
+     * @param date target date
+     * @param locale target locale
+     * @return small time format.
+     */
     public String getSmallTime(Date date, Locale locale) {
         return getSmallTime(date, TimeZone.getDefault(), locale);
     }
 
+    /**
+     * Default format time string from input date and default locale.
+     * @param date target date
+     * @return small time format.
+     */
     public String getSmallTime(Date date){
         return getSmallTime(date, LocaleHelper.getDefaultLocale());
     }
@@ -196,6 +358,12 @@ public final class DateHelper {
         return parseDate(date, timeZone, 0 , patterns);
     }
 
+    /**
+     * Parse and convert target date, date and time
+     * or only time string (<i>in any most format commonly knowledge</i>) to object Date.
+     * @param date target string date, date and time or only time <i>in any most format commonly knowledge</i>.
+     * @return object date generated from date/date and time/time string
+     */
     public Date parseDate(String date) {
         Matcher matcher = Pattern.compile(FUSE_REGEX).matcher(Objects.requireNonNull(date));
         TimeZone timeZone = TimeZone.getDefault();
@@ -229,16 +397,41 @@ public final class DateHelper {
         }
     }
 
+    /**
+     * Parse and convert target date, date and time
+     * or only time string (<i>in any most format commonly knowledge</i>) to object Calendar.
+     * @param date target string date, date and time or only time <i>in any most format commonly knowledge</i>.
+     * @return object calendar generated from date/date and time/time string
+     */
     public Calendar parseCalendar(String date){
         Calendar cal = Calendar.getInstance();
         cal.setTime(parseDate(date));
         return cal;
     }
 
+    /**
+     * Apply date format to target string date (as date, date and time or only time <i>in any most format commonly knowledge</i>).
+     * The format to be applied is defined in FormatMode parameter and follow the locale format rule.
+     * @param date target string date, date and time or only time <i>in any most format commonly knowledge</i>.
+     * @param locale target locale
+     * @param mode format mode
+     * @return date formated to, full date and time, only date, only time, small date or small time
+     * following the Locale rule for each format.
+     */
     private String getFormattedDate(String date, Locale locale, FormatMode mode) {
         return getFormattedDate(parseDate(Objects.requireNonNull(date)), null, locale, mode);
     }
 
+    /**
+     * Apply date format to target string date (as date, date and time or only time <i>in any most format commonly knowledge</i>).
+     * The format to be applied is defined in FormatMode parameter and follow the time zone and locale format rule.
+     * @param date target string date, date and time or only time <i>in any most format commonly knowledge</i>.
+     * @param timeZone target time zone
+     * @param locale target locale
+     * @param mode format mode
+     * @return date formated to, full date and time, only date, only time, small date or small time
+     * following the Locale and time zone rule for each format.
+     */
     private String getFormattedDate(Date date, TimeZone timeZone, Locale locale, FormatMode mode) {
         Objects.requireNonNull(date);
         Objects.requireNonNull(locale);
@@ -270,52 +463,120 @@ public final class DateHelper {
         return df.format(date);
     }
 
+    /**
+     * Format target object date using pattern and time zone defined.
+     * @param date date object
+     * @param pattern date format pattern
+     * @param timeZone time zone
+     * @return date formated to pattern following the current locale and time zone.
+     */
     public String getFormattedDate(Date date, String pattern, TimeZone timeZone) {
         SimpleDateFormat sdf = new SimpleDateFormat(pattern, LocaleHelper.getDefaultLocale());
         sdf.setTimeZone(timeZone == null ? sdf.getTimeZone() : timeZone);
         return sdf.format(date);
     }
 
+    /**
+     * Format target object date using pattern and default time zone defined.
+     * @param date date object
+     * @param pattern date format pattern
+     * @return date formated to pattern following the current locale and time zone.
+     */
     public String getFormattedDate(Date date, String pattern) {
         return getFormattedDate(date, pattern, TimeZone.getDefault());
     }
 
+    /**
+     * Format target object date to full date and time format using pattern of target locale.
+     * @param date date object.
+     * @param locale target locale.
+     * @return date formated to pattern of locale.
+     */
     public String getFullDate(String date, Locale locale){
         return getFormattedDate(date, locale, FormatMode.FULL);
     }
 
+    /**
+     * Format target object date to full date and time format using pattern of current locale.
+     * @param date date object.
+     * @return date formated to pattern of locale.
+     */
     public String getFullDate(String date) {
         return getFullDate(date, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Format target object date to date format using pattern of target locale.
+     * @param date date object.
+     * @param locale target locale.
+     * @return date formated to pattern of locale.
+     */
     public String getDate(String date, Locale locale){
         return getFormattedDate(date, locale, FormatMode.DATE);
     }
 
+    /**
+     * Format target object date to date format using pattern of current locale.
+     * @param date date object.
+     * @return date formated to pattern of locale.
+     */
     public String getDate(String date) {
         return getDate(date, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Format target object date to small date format using pattern of target locale.
+     * @param date date object.
+     * @param locale target locale.
+     * @return small date formated to pattern of locale.
+     */
     public String getSmallDate(String date, Locale locale){
         return getFormattedDate(date, locale, FormatMode.SMALL_DATE);
     }
 
+    /**
+     * Format target object date to small date format using pattern of current locale.
+     * @param date date object.
+     * @return small date formated to pattern of locale.
+     */
     public String getSmallDate(String date) {
         return getSmallDate(date, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Format target object date to time format using pattern of target locale.
+     * @param date date object.
+     * @param locale target locale.
+     * @return time formated to pattern of locale.
+     */
     public String getTime(String date, Locale locale){
         return getFormattedDate(date, locale, FormatMode.TIME);
     }
 
+    /**
+     * Format target object date to time format using pattern of current locale.
+     * @param date date object.
+     * @return time formated to pattern of locale.
+     */
     public String getTime(String date) {
         return getTime(date, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Format target object date to small time format using pattern of target locale.
+     * @param date date object.
+     * @param locale target locale.
+     * @return small time formated to pattern of locale.
+     */
     public String getSmallTime(String date, Locale locale){
         return getFormattedDate(date, locale, FormatMode.SMALL_TIME);
     }
 
+    /**
+     * Format target object date to small time format using pattern of current locale.
+     * @param date date object.
+     * @return small time formated to pattern of locale.
+     */
     public String getSmallTime(String date) {
         return getSmallTime(date, LocaleHelper.getDefaultLocale());
     }
