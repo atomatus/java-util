@@ -294,10 +294,10 @@ public abstract class Reflection {
         private static final WarningState instance;
         private final Object locker;
 
-        private transient sun.misc.Unsafe unsafe;
+        private transient Object unsafe, logger;
         private transient Long offset;
         private transient Class<?> loggerClass;
-        private transient Object logger;
+        private transient Method staticFieldOffset, getObjectVolatile, putObjectVolatile;
 
         public static WarningState getInstance() {
             return instance;
@@ -311,11 +311,18 @@ public abstract class Reflection {
             locker = new Object();
         }
 
-        private void loadValues() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
-            if(unsafe == null) {
-                Field theUnsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+        private void loadValues() throws NoSuchFieldException, IllegalAccessException,
+                ClassNotFoundException, NoSuchMethodException, InvocationTargetException {
+            if(unsafe == null || staticFieldOffset == null || getObjectVolatile == null || putObjectVolatile == null) {
+                Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+                Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
                 theUnsafe.setAccessible(true);
-                unsafe = (sun.misc.Unsafe) theUnsafe.get(null);
+
+                staticFieldOffset = unsafeClass.getMethod("staticFieldOffset", Field.class);
+                getObjectVolatile = unsafeClass.getMethod("getObjectVolatile", Object.class, long.class);
+                putObjectVolatile = unsafeClass.getMethod("putObjectVolatile", Object.class, long.class, Object.class);
+
+                unsafe = theUnsafe.get(null);
                 loggerClass = null;
             }
 
@@ -326,7 +333,7 @@ public abstract class Reflection {
 
             if(offset == null) {
                 Field logger = loggerClass.getDeclaredField("logger");
-                offset = unsafe.staticFieldOffset(logger);
+                offset = (Long) staticFieldOffset.invoke(unsafe, logger);
             }
         }
 
@@ -338,8 +345,8 @@ public abstract class Reflection {
                 try{
                     if(logger == null) {
                         loadValues();
-                        logger = unsafe.getObjectVolatile(loggerClass, offset);
-                        unsafe.putObjectVolatile(loggerClass, offset, null);
+                        logger = getObjectVolatile.invoke(unsafe, loggerClass, offset);
+                        putObjectVolatile.invoke(unsafe, loggerClass, offset, null);
                     }
                 }catch (Exception ignored) { }
             }
@@ -353,7 +360,7 @@ public abstract class Reflection {
                 try{
                     if(logger != null) {
                         loadValues();
-                        unsafe.putObjectVolatile(loggerClass, offset, logger);
+                        putObjectVolatile.invoke(unsafe, loggerClass, offset, logger);
                         logger = null;
                     }
                 } catch (Exception ignored) { }
