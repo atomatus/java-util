@@ -135,7 +135,7 @@ Encryptors types and helper for random key generator.
 //example encryptor build.
 Encryptor e = Encryptor.builder()
           		.type(Type.CIPHER)//CIPHER, NUMERIC, NUMERIC_MATRIX
-          		.key("01234567890QWERTYUIOP1") //if numeric, key have to be numbers only.
+          		.key("01234567890QWERTYUIOP1") //if numeric, key must be numbers only.
           		.build();
 
 String result   = e.encrypt("target");
@@ -356,7 +356,7 @@ boolean b = Reflection.tryInflate("android.os.Debug")
 ```
 //cast object to access method and fields
 Object obj      = "simple test";
-Reflection r    = Reflection.cast(obj, java.lang.String");
+Reflection r    = Reflection.cast(obj, "java.lang.String");
 boolean found   = r.method("indexOf", "test").valueInt() > 0;
 ```
 
