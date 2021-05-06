@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * <strong>Encryptor</strong><br>
- * <i>Construct an encryptor using Builder mode.</i><br/>
+ * <i>Construct an encryptor using Builder mode.</i><br>
  * <p>
  * Request builder from method {@link Encryptor#builder()},
  * choose a type ({@link Builder#type(Type)}) and might set a private key ({@link Builder#key(String)}),

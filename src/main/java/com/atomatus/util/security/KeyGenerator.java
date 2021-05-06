@@ -3,7 +3,7 @@ package com.atomatus.util.security;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * <strong>Key Generator</strong><br/>
+ * <strong>Key Generator</strong><br>
  * <p>
  *     Final class within static methods to help to generate
  *     random keys by length and type.

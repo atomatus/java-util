@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * <strong>Regular Expression</strong><br/>
+ * <strong>Regular Expression</strong><br>
  * <i>Validate trivial types of input text values.</i>
  */
 public final class RegExp {

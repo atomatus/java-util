@@ -98,7 +98,7 @@ public final class MemoryInfo {
     }
 
     /**
-     * Instance of memory info without context.<br/>
+     * Instance of memory info without context.<br>
      * <i>Warning: If using in Android, use {@link #getInstance(Object)} passing Context of activity.</i>
      * @return instance of memory info.
      */

@@ -26,9 +26,9 @@ public class Parameter {
 	 * Build a query parameter no name.
 	 * </p>
 	 * <p>
-	 * Query parameters are a defined set of parameters attached to the end of a url.<br/>
+	 * Query parameters are a defined set of parameters attached to the end of a url.<br>
 	 * They are extensions of the URL that are used to help define specific content or
-	 * actions based on the data being passed.<br/>
+	 * actions based on the data being passed.<br>
 	 * To append query params to the end of a URL, a '? ' Is added followed immediately by
 	 * a query parameter or inner url separated for '/' (slash) char.
 	 * </p>
@@ -44,9 +44,9 @@ public class Parameter {
 	 * Build a query named parameter.
 	 * </p>
 	 * <p>
-	 * Query parameters are a defined set of parameters attached to the end of a url.<br/>
+	 * Query parameters are a defined set of parameters attached to the end of a url.<br>
 	 * They are extensions of the URL that are used to help define specific content or
-	 * actions based on the data being passed.<br/>
+	 * actions based on the data being passed.<br>
 	 * To append query params to the end of a URL, a '? ' Is added followed immediately by
 	 * a query parameter or inner url separated for '/' (slash) char.
 	 * </p>
@@ -100,9 +100,9 @@ public class Parameter {
 	 */
 	public enum ParameterType {
 		/**
-		 * Query parameters are a defined set of parameters attached to the end of a url.<br/>
+		 * Query parameters are a defined set of parameters attached to the end of a url.<br>
 		 * They are extensions of the URL that are used to help define specific content or
-		 * actions based on the data being passed.<br/>
+		 * actions based on the data being passed.<br>
 		 * To append query params to the end of a URL, a '? ' Is added followed immediately by
 		 * a query parameter.
 		 */
