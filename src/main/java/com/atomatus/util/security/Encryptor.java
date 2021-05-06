@@ -9,8 +9,8 @@ import java.util.Objects;
  * <i>Construct an encryptor using Builder mode.</i><br>
  * <p>
  * Request builder from method {@link Encryptor#builder()},
- * choose a type ({@link Builder#type(Type)}) and might set a private key ({@link Builder#key(String)}),
- * then call {@link Builder#build()}} to build encryptor.
+ * choose a type ({@link Encryptor.Builder#type(Type)}) and might set a private key ({@link Encryptor.Builder#key(String)}),
+ * then call {@link Encryptor.Builder#build()}} to build encryptor.
  * </p>
  * <i>Obs.: choose type is required, but if do not chosse a private key, a default key will be used for type.</i>
  * <p>Example:</p>
