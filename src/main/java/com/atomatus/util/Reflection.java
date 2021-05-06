@@ -286,6 +286,9 @@ public abstract class Reflection {
         }
     }
 
+    /**
+     * Java Warning logger when build and test app.
+     */
     private static final class WarningState {
 
         private static final WarningState instance;
@@ -327,6 +330,9 @@ public abstract class Reflection {
             }
         }
 
+        /**
+         * Disable warning logger.
+         */
         void disable() {
             synchronized (locker) {
                 try{
@@ -339,6 +345,9 @@ public abstract class Reflection {
             }
         }
 
+        /**
+         * Reenable warning logger.
+         */
         void reenable() {
             synchronized (locker) {
                 try{

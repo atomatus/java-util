@@ -405,7 +405,7 @@ public class HttpConnection {
 	}
 
 	/**
-	 * <strong>Content Type</strong><br/>
+	 * <strong>Content Type</strong><br>
 	 * <p>
 	 *    In responses, a Content-Type header tells the client what the content type of the
 	 *    returned content actually is. Browsers will do MIME sniffing in some cases and
@@ -544,85 +544,85 @@ public class HttpConnection {
 		/**
 		 * Transport Layer Security (TLS) is a protocol that can be used with
 		 * other protocols like UDP to provide security between applications
-		 * communicating over an IP network.<br/>
+		 * communicating over an IP network.<br>
 		 * <p>
 		 * The first version TLS 1.0 was defined in 1999 and it built on
-		 * previous work on Secure Socket Layer (SSL). <br/><br/>
+		 * previous work on Secure Socket Layer (SSL). <br><br>
 		 * TLS 1.1 was then released in 2006. A common TLS versions used on
 		 * the Internet today is TLS 1.2 (defined in IETF RFC 5246 from 2008)
 		 * but support for TLS 1.3 (defined in IETF RFC 8446 from 2018) is
-		 * becoming more common. <br/><br/>
+		 * becoming more common. <br><br>
 		 * TLS is used in the 5GC to protect the HTTP-based interfaces.
 		 * 3GPP allows TLS 1.1, TLS 1.2 and TLS 1.3 to be used, even though the use
 		 * of <i>TLS 1.1 is not recommended</i>.
-		 * </p><br/>
+		 * </p><br>
 		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
 		 */
 		TLS,
 
 		/**
 		 * Transport Layer Security (TLS) provide security between applications
-		 * communicating over an IP network.<br/>
+		 * communicating over an IP network.<br>
 		 * The first version TLS 1.0 was defined in 1999 and it built on previous
-		 * work on Secure Socket Layer (SSL).<br/><br/>
-		 * <i>Warning: the use of TLS 1.1 is not recommended</i><br/><br/>
+		 * work on Secure Socket Layer (SSL).<br><br>
+		 * <i>Warning: the use of TLS 1.1 is not recommended</i><br><br>
 		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
 		 */
 		TLSv1,
 
 		/**
 		 * Transport Layer Security (TLS) provide security between applications
-		 * communicating over an IP network.<br/>
-		 * TLS 1.1 was then released in 2006<br/>
+		 * communicating over an IP network.<br>
+		 * TLS 1.1 was then released in 2006<br>
 		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
 		 */
 		TLSv1_1,
 
 		/**
 		 * Transport Layer Security (TLS) provide security between applications
-		 * communicating over an IP network.<br/>
+		 * communicating over an IP network.<br>
 		 * A common TLS versions used on the Internet today is
-		 * TLS 1.2 (defined in IETF RFC 5246 from 2008).<br/>
+		 * TLS 1.2 (defined in IETF RFC 5246 from 2008).<br>
 		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
 		 */
 		TLSv1_2,
 
 		/**
 		 * Transport Layer Security (TLS) provide security between applications
-		 * communicating over an IP network.<br/>
+		 * communicating over an IP network.<br>
 		 * Support for TLS 1.3 (defined in IETF RFC 8446 from 2018) is becoming more common.
 		 * TLS is used in the 5GC to protect the HTTP-based interfaces.
 		 * 3GPP allows TLS 1.1, TLS 1.2 and TLS 1.3 to be used, even though the use of
-		 * <i> TLS 1.1 is not recommended</i>.<br/>
+		 * <i> TLS 1.1 is not recommended</i>.<br>
 		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
 		 */
 		TLSv1_3,
 
 		/**
 		 * Secure Sockets Layer (SSL) was designed to protect HTTP (Hypertext Transfer Protocol)
-		 * data: HTTPS uses TCP port 443.<br/>
-		 * SSL was developed for the Netscape Web browser in the 1990s.<br/><br/>
+		 * data: HTTPS uses TCP port 443.<br>
+		 * SSL was developed for the Netscape Web browser in the 1990s.<br><br>
 		 * <i>TLS (Transport Layer Security) is the latest version of SSL,
-		 * equivalent to SSL version 3.1</i><br/><br/>
+		 * equivalent to SSL version 3.1</i><br><br>
 		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
 		 */
 		SSL,
 
 		/**
 		 * Secure Sockets Layer (SSL) was designed to protect HTTP (Hypertext Transfer Protocol)
-		 * data: HTTPS uses TCP port 443.<br/>
-		 * SSL was developed for the Netscape Web browser in the 1990s.<br/><br/>
-		 * SSL 2.0 was the first released version.<br/><br/>
+		 * data: HTTPS uses TCP port 443.<br>
+		 * SSL was developed for the Netscape Web browser in the 1990s.<br><br>
+		 * SSL 2.0 was the first released version.<br><br>
 		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
 		 */
 		SSLv2,
 
 		/**
 		 * Secure Sockets Layer (SSL) was designed to protect HTTP (Hypertext Transfer Protocol)
-		 * data: HTTPS uses TCP port 443.<br/>
-		 * SSL was developed for the Netscape Web browser in the 1990s.<br/><br/>
+		 * data: HTTPS uses TCP port 443.<br>
+		 * SSL was developed for the Netscape Web browser in the 1990s.<br><br>
 		 * <i>TLS (Transport Layer Security) is the latest version of SSL,
-		 * equivalent to SSL version 3.1</i><br/><br/>
+		 * equivalent to SSL version 3.1</i><br><br>
 		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
 		 */
 		SSLv3;
