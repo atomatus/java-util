@@ -5,8 +5,8 @@ import com.atomatus.util.StringUtils;
 import java.util.Objects;
 
 /**
- * Encryptor.<br>
- * Construct an encryptor using Builder mode.
+ * <strong>Encryptor</strong><br>
+ * <i>Construct an encryptor using Builder mode.</i><br/>
  * <p>
  * Request builder from method {@link Encryptor#builder()},
  * choose a type ({@link Builder#type(Type)}) and might set a private key ({@link Builder#key(String)}),
@@ -52,6 +52,9 @@ public abstract class Encryptor {
 		NUMERIC_MATRIX
 	}
 
+	/**
+	 * Encryptor builder.
+	 */
 	public static class Builder {
 
 		private Type type;
@@ -64,16 +67,30 @@ public abstract class Encryptor {
 			}
 		}
 
+		/**
+		 * Encrypt type
+		 * @param type target type
+		 * @return current builder.
+		 */
 		public Builder type(Type type) {
 			this.type = Objects.requireNonNull(type);
 			return this;
 		}
 
+		/**
+		 * Encrypt hash key
+		 * @param key hash key
+		 * @return current builder
+		 */
 		public Builder key(String key) {
 			this.key = StringUtils.requireNonNullOrWhitespace(key);
 			return this;
 		}
 
+		/**
+		 * Build encrypt from parameters
+		 * @return encrypt instance.
+		 */
 		public Encryptor build() {
 			try {
 				requireNonDisposed();
@@ -96,18 +113,42 @@ public abstract class Encryptor {
 		}
 	}
 
+	/**
+	 * Builder instance
+	 * @return builder instance
+	 */
 	public static Builder builder(){
 		return new Builder();
 	}
 
+	/**
+	 * Encrypt target content
+	 * @param original target content.
+	 * @return encrypted value.
+	 */
 	public abstract String encrypt(String original);
-	
+
+	/**
+	 * Descrypted target value.
+	 * @param encrypted target value
+	 * @return original value.
+	 */
 	public abstract String decrypt(String encrypted);
 
+	/**
+	 * Load private key from encrypted value to be used to encrypt data.
+	 * @param encrypted encrypted value.
+	 */
 	public void loadPrivateKeyByEncrypted(String encrypted) {
 		throw new UnsupportedOperationException("Nao suportado por esse tipo de criptografia!");
 	}
 
+	/**
+	 * Check is booth encrypted values was generated from same encryptor and key.
+	 * @param encrypted1 encrypted value
+	 * @param encrypted2 other encrypted value
+	 * @return true, both as equivalent same origin, otherwise false.
+	 */
 	public boolean isEquivalent(String encrypted1, String encrypted2) {
 		throw new UnsupportedOperationException("Nao suportado por esse tipo de criptografia!");
 	}

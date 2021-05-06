@@ -1,5 +1,9 @@
 package com.atomatus.util;
 
+/**
+ * String utils to help to parse, convert,
+ * join and captalize strings.
+ */
 @SuppressWarnings("UnusedReturnValue")
 public final class StringUtils {
 
@@ -35,45 +39,101 @@ public final class StringUtils {
     }
 
     //region require
+
+    /**
+     * Require string non null
+     * @param str target string
+     * @param message message error
+     * @return target string
+     * @exception NullPointerException throws when string is null.
+     */
     public static String requireNonNull(String str, String message) {
         if(str == null) throw new NullPointerException(message);
         return str;
     }
 
+    /**
+     * Require string non null
+     * @param str target string
+     * @return target string
+     * @exception NullPointerException throws when string is null.
+     */
     public static String requireNonNull(String str) {
         return requireNonNull(str, "Input String is null!");
     }
 
+    /**
+     * Require string non null or empty
+     * @param str target string
+     * @param message message error
+     * @return target string
+     * @exception NullPointerException throws when string is null or empty.
+     */
     public static String requireNonNullOrEmpty(String str, String message) {
         if(isNullOrEmpty(str)) throw new NullPointerException(message);
         return str;
     }
 
+    /**
+     * Require string non null or empty
+     * @param str target string
+     * @return target string
+     * @exception NullPointerException throws when string is null or empty.
+     */
     public static String requireNonNullOrEmpty(String str) {
         return requireNonNullOrEmpty(str, "Input String is null or empty!");
     }
 
+    /**
+     * Require string non null or is only whitespace
+     * @param str target string
+     * @param message message error
+     * @return target string
+     * @exception NullPointerException throws when string is null or is only whitespace.
+     */
     public static String requireNonNullOrWhitespace(String str, String message) {
         if(isNullOrWhitespace(str)) throw new NullPointerException(message);
         return str;
     }
 
+    /**
+     * Require string non null or is only whitespace
+     * @param str target string
+     * @return target string
+     * @exception NullPointerException throws when string is null or is only whitespace.
+     */
     public static String requireNonNullOrWhitespace(String str) {
         return requireNonNullOrWhitespace(str, "Input String is null or does not contains a valid value!");
     }
     //endregion
 
     //region isNullOrEmpty/isNullOrWhitespace
+    /**
+     * Check string is null or empty
+     * @param str target string
+     * @return true, string is null or empty, otherwise false.
+     */
     public static boolean isNullOrEmpty(String str) {
         return str == null || str.length() == 0;
     }
 
+    /**
+     * Check string is null or whitespace
+     * @param str target string
+     * @return true, string is null or is only whitespace, otherwise false.
+     */
     public static boolean isNullOrWhitespace(String str) {
         return str == null || str.trim().length() == 0;
     }
     //endregion
 
     //region startsWithIgnoreCase/endsWithIgnoreCase
+    /**
+     * Check target string in str starts with prefix value ignoring case.
+     * @param str target
+     * @param prefix prefix target
+     * @return true, starts with prefix value, otherwise false.
+     */
     public static boolean startsWithIgnoreCase(String str, String prefix) {
         if(str == null) {
             throw new NullPointerException("Target String is null!");
@@ -85,6 +145,12 @@ public final class StringUtils {
 
     }
 
+    /**
+     * Check target string in str ends with suffix value ignoring case.
+     * @param str target
+     * @param suffix suffix target
+     * @return true, ends with suffix value, otherwise false.
+     */
     public static boolean endsWithIgnoreCase(String str, String suffix) {
         if(str == null) {
             throw new NullPointerException("Target String is null!");
@@ -122,6 +188,14 @@ public final class StringUtils {
         }
     }
 
+    /**
+     * Join all target arguments values.
+     * @param prefix preffix of new string
+     * @param suffix suffix of new string
+     * @param sep separate char between any argument value
+     * @param args target arguments
+     * @return new string from arguments.
+     */
     public static String join(String prefix, String suffix, String sep, Object... args) {
         requireNonNull(sep, "Separator can not be null!");
         StringBuilder sb = new StringBuilder();
@@ -144,6 +218,15 @@ public final class StringUtils {
         return sb.toString();
     }
 
+    /**
+     * Join all target arguments values.
+     * @param prefix preffix of new string
+     * @param suffix suffix of new string
+     * @param sep separate char between any argument value
+     * @param args target arguments
+     * @param <T> target type
+     * @return new string from arguments.
+     */
     public static <T> String join(String prefix, String suffix, String sep, Iterable<T> args) {
         requireNonNull(sep, "Separator can not be null!");
         StringBuilder sb = new StringBuilder();
@@ -168,10 +251,23 @@ public final class StringUtils {
         return sb.toString();
     }
 
+    /**
+     * Join all target arguments values.
+     * @param sep separate char between any argument valuee
+     * @param args target arguments
+     * @return new string from arguments.
+     */
     public static String join(String sep, Object... args) {
         return join(null, null, sep, args);
     }
 
+    /**
+     * Join all target arguments values.
+     * @param sep separate char between any argument valuee
+     * @param args target arguments
+     * @param <T> target type
+     * @return new string from arguments.
+     */
     public static <T> String join(String sep, Iterable<T> args) {
         return join(null, null, sep, args);
     }

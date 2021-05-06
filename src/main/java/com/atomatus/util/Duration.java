@@ -6,7 +6,6 @@ import java.util.Date;
 /**
  * An object that contains information about difference between two Dates.
  * @author Carlos Matos
- *
  */
 public final class Duration {
 
@@ -16,62 +15,122 @@ public final class Duration {
 
 	private Duration() { isEmpty = true; }
 
+	/**
+	 * Empty duration instance.
+	 * @return true, no duration content.
+	 */
 	public boolean isEmpty() {
 		return isEmpty;
 	}
 
+	/**
+	 * Milliseconds
+	 * @return milliss
+	 */
 	public long getMilliss() {
 		return milliss;
 	}
 
+	/**
+	 * Seconds
+	 * @return seconds
+	 */
 	public int getSec() {
 		return sec;
 	}
 
+	/**
+	 * Minutes
+	 * @return minutes
+	 */
 	public int getMin() {
 		return min;
 	}
 
+	/**
+	 * Hour
+	 * @return hour
+	 */
 	public int getHour() {
 		return hour;
 	}
 
+	/**
+	 * Days
+	 * @return days.
+	 */
 	public int getDay() {
 		return day;
 	}
 
+	/**
+	 * Months
+	 * @return months
+	 */
 	public int getMonth() {
 		return month;
 	}
 
+	/**
+	 * Years
+	 * @return years.
+	 */
 	public int getYear() {
 		return year;
 	}
 
+	/**
+	 * Total Milliseconds
+	 * @return total milliss
+	 */
 	public long getTotalMilliss() {
 		return totalMilliss;
 	}
 
+	/**
+	 * Total Seconds
+	 * @return total seconds
+	 */
 	public long getTotalSec() {
 		return totalSec;
 	}
 
+	/**
+	 * Total minutes
+	 * @return total minutes
+	 */
 	public long getTotalMin() {
 		return totalMin;
 	}
 
+	/**
+	 * Total hour
+	 * @return total hour
+	 */
 	public long getTotalHour() {
 		return totalHour;
 	}
 
+	/**
+	 * Total days
+	 * @return total days
+	 */
 	public long getTotalDay() {
 		return totalDay;
 	}
 
+	/**
+	 * Total months
+	 * @return total months
+	 */
 	public long getTotalMonth() {
 		return totalMonth;
 	}
 
+	/**
+	 * Total years
+	 * @return total years
+	 */
 	public long getTotalYear() {
 		return totalYear;
 	}

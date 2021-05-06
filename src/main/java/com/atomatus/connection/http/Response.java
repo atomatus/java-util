@@ -17,7 +17,10 @@ import java.util.Objects;
  */
 public final class Response extends ResponseParameter implements Closeable {
 
-	static class ResponseBuilder extends ResponseParameter {
+	/**
+	 * Response Builder
+	 */
+	public static class ResponseBuilder extends ResponseParameter {
 
 		ResponseBuilder useConnection(HttpURLConnection con) {
 			this.con =  Objects.requireNonNull(con);
@@ -55,6 +58,10 @@ public final class Response extends ResponseParameter implements Closeable {
 			return this;
 		}
 
+		/**
+		 * Build a new response.
+		 * @return response.
+		 */
 		public Response build() {
 			this.requireNonClosed();
 			this.requireConnection();
@@ -66,6 +73,10 @@ public final class Response extends ResponseParameter implements Closeable {
 		}
 	}
 
+	/**
+	 * New response builder.
+	 * @return new builder.
+	 */
 	public static ResponseBuilder builder() {
 		return new ResponseBuilder();
 	}
@@ -195,41 +206,86 @@ public final class Response extends ResponseParameter implements Closeable {
 		return getContentType().getSerializerType();
 	}
 
+	/**
+	 * Get response content as byte array.
+	 * @return respose in byte array
+	 * @throws URLConnectionException throws when is not possible get response content.
+	 */
 	public byte[] getBytesContent() throws URLConnectionException {
 		checkReadResponseFilling();
 		return bytesContent;
 	}
 
+	/**
+	 * Get response content as string.
+	 * @return respose in string
+	 * @throws URLConnectionException throws when is not possible get response content.
+	 */
 	public String getContent() throws URLConnectionException {
 		checkReadResponseFilling();
 		return new String(bytesContent, charset);
 	}
-	
+
+	/**
+	 * Get error response content as byte array.
+	 * @return error respose in byte array
+	 * @throws URLConnectionException throws when is not possible get response content.
+	 */
+
 	public byte[] getErrorBytesContent() throws URLConnectionException {
 		checkReadResponseFilling();
 		return errorBytesContent;
 	}
-	
+
+	/**
+	 * Get error response content as string.
+	 * @return error respose in string
+	 * @throws URLConnectionException throws when is not possible get response content.
+	 */
 	public String getErrorContent() throws URLConnectionException {
 		checkReadResponseFilling();
 		return new String(errorBytesContent, this.charset);
 	}
 
+	/**
+	 * Response status code.
+	 * @return status code.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
 	public HttpConnection.StatusCode getStatusCode() throws URLConnectionException {
 		checkReadResponseOnlyState();
 		return statusCode;
 	}
 
+	/**
+	 * Response content type.
+	 * @return content type.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
 	public HttpConnection.ContentType getContentType() throws URLConnectionException {
 		checkReadResponseOnlyState();
 		return contentType;
 	}
 
+	/**
+	 * Inform whether response is a success status code.
+	 * @return true, response sucessfully.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
 	public boolean isSuccess() throws URLConnectionException {
 		checkReadResponseOnlyState();
 		return success;
 	}
 
+	/**
+	 * Parse and convert response content to target serializable type
+	 * using response content type serializer.
+	 * @param rootElement response content root element, usage for xml.
+	 * @param type target class type
+	 * @param <T> target type
+	 * @return deserialized content from response content.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
 	public <T extends Serializable> T parse(String rootElement, Class<T> type) throws URLConnectionException {
 		checkReadResponseFilling();
 		return success ? Serializer
@@ -237,6 +293,15 @@ public final class Response extends ResponseParameter implements Closeable {
 				.deserialize(bytesContent, rootElement, type) : null;
 	}
 
+	/**
+	 * Parse and convert response content error to target serializable type
+	 * using response content type serializer.
+	 * @param rootElement response content root element, usage for xml.
+	 * @param type target class type
+	 * @param <T> target type
+	 * @return deserialized content from response content.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
 	public <T extends Serializable> T parseError(String rootElement, Class<T> type) throws URLConnectionException {
 		checkReadResponseFilling();
 		return !success ? Serializer
@@ -244,10 +309,26 @@ public final class Response extends ResponseParameter implements Closeable {
 				.deserialize(errorBytesContent, rootElement, type) : null;
 	}
 
+	/**
+	 * Parse and convert response content to target serializable type
+	 * using response content type serializer.
+	 * @param type target class type
+	 * @param <T> target type
+	 * @return deserialized content from response content.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
 	public <T extends Serializable> T parse(Class<T> type) throws URLConnectionException {
 		return parse(null, type);
 	}
 
+	/**
+	 * Parse and convert response content error to target serializable type
+	 * using response content type serializer.
+	 * @param type target class type
+	 * @param <T> target type
+	 * @return deserialized content from response content.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
 	public <T extends Serializable> T parseError(Class<T> type) throws URLConnectionException {
 		return parseError(null, type);
 	}

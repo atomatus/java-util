@@ -21,18 +21,76 @@ public class Parameter {
 	private Object content;
 	private boolean checked;
 
+	/**
+	 * <p>
+	 * Build a query parameter no name.
+	 * </p>
+	 * <p>
+	 * Query parameters are a defined set of parameters attached to the end of a url.<br/>
+	 * They are extensions of the URL that are used to help define specific content or
+	 * actions based on the data being passed.<br/>
+	 * To append query params to the end of a URL, a '? ' Is added followed immediately by
+	 * a query parameter or inner url separated for '/' (slash) char.
+	 * </p>
+	 * @param content parameter value
+	 * @return new query parameter.
+	 */
 	public static Parameter buildQuery(Object content) {
 		return new Parameter(null, content, ParameterType.QUERY);
 	}
 
+	/**
+	 * <p>
+	 * Build a query named parameter.
+	 * </p>
+	 * <p>
+	 * Query parameters are a defined set of parameters attached to the end of a url.<br/>
+	 * They are extensions of the URL that are used to help define specific content or
+	 * actions based on the data being passed.<br/>
+	 * To append query params to the end of a URL, a '? ' Is added followed immediately by
+	 * a query parameter or inner url separated for '/' (slash) char.
+	 * </p>
+	 * @param name parameter name
+	 * @param content parameter value
+	 * @return new query parameter.
+	 */
 	public static Parameter buildQuery(String name, Object content) {
 		return new Parameter(name, content, ParameterType.QUERY);
 	}
 
+	/**
+	 * <p>
+	 * Build a body named parameter.
+	 * </p>
+	 * <p>
+	 * The body parameter is defined in the operation's parameters section
+	 * and includes the following: in: body. schema that describes the body
+	 * data type and structure. The data type is usually an object,
+	 * but can also be a primitive (such as a string or number) or an array.
+	 * </p>
+	 * @param name parameter name
+	 * @param content parameter value
+	 * @return new body parameter.
+	 */
 	public static Parameter buildBody(String name, Object content) {
 		return new Parameter(name, content, ParameterType.BODY);
 	}
-	
+
+	/**
+	 * <p>
+	 * Build a header parameter.
+	 * </p>
+	 * <p>
+	 * HTTP headers let the client and the server pass additional information with an
+	 * HTTP request or response. An HTTP header consists of
+	 * its case-insensitive name followed by a colon ( : ),
+	 * then by its value. Entity headers contain information about the body of
+	 * the resource, like its content length or MIME type.
+	 * </p>
+	 * @param name parameter name
+	 * @param content parameter value
+	 * @return new header parameter.
+	 */
 	public static Parameter buildHeader(String name, Object content) {
 		return new Parameter(name, content, ParameterType.HEADER);
 	}
@@ -41,8 +99,30 @@ public class Parameter {
 	 * Parameter type
 	 */
 	public enum ParameterType {
+		/**
+		 * Query parameters are a defined set of parameters attached to the end of a url.<br/>
+		 * They are extensions of the URL that are used to help define specific content or
+		 * actions based on the data being passed.<br/>
+		 * To append query params to the end of a URL, a '? ' Is added followed immediately by
+		 * a query parameter.
+		 */
 		QUERY,
+
+		/**
+		 * HTTP headers let the client and the server pass additional information with an
+		 * HTTP request or response. An HTTP header consists of
+		 * its case-insensitive name followed by a colon ( : ),
+		 * then by its value. Entity headers contain information about the body of
+		 * the resource, like its content length or MIME type.
+		 */
 		HEADER,
+
+		/**
+		 * The body parameter is defined in the operation's parameters section
+		 * and includes the following: in: body. schema that describes the body
+		 * data type and structure. The data type is usually an object,
+		 * but can also be a primitive (such as a string or number) or an array.
+		 */
 		BODY
 	}
 			
@@ -58,23 +138,44 @@ public class Parameter {
 		this.content	= content;
 		this.type		= type;
 	}
-	
+
+	/**
+	 * Parameter constructs with name and value to query type.
+	 * @param name query parameter name
+	 * @param content query parameter value
+	 */
 	public Parameter(String name, Object content) {
 		this(name, content, ParameterType.QUERY);
 	}
-		
+
+	/**
+	 * Recover parameter name.
+	 * @return parameter name.
+	 */
 	protected String getName() {
 		return name;
 	}
-		
+
+	/**
+	 * Recover parameter content.
+	 * @return parameter content
+	 */
 	protected Object getContent() {
 		return content;
 	}
 
+	/**
+	 * Format parameter content to URLEncoded.
+	 * @return url encoded.
+	 */
 	protected String getContentURLEncoded() {
 		return formatContent();
 	}
 
+	/**
+	 * Check parameter has name.
+	 * @return true, parameter has name, otherwise, false.
+	 */
 	protected boolean hasName() {
 		return !StringUtils.isNullOrEmpty(name);
 	}
@@ -102,6 +203,10 @@ public class Parameter {
 		}
 	}
 
+	/**
+	 * Parameter type
+	 * @return type.
+	 */
 	public ParameterType getType() {
 		return type;
 	}

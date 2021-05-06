@@ -6,6 +6,9 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 
+/**
+ * JsonSerializer implementation to BigDecimal.
+ */
 public final class BigDecimalConverter implements JsonSerializer<BigDecimal>, JsonDeserializer<BigDecimal> {
 
     @Override

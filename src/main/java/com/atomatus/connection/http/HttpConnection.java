@@ -26,7 +26,14 @@ import java.util.zip.InflaterInputStream;
 @SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue"})
 public class HttpConnection {
 
+	/**
+	 * Http protocol scheme.
+	 */
 	public static final String SCHEME_HTTP  = "http://";
+
+	/**
+	 * Https protocol scheme.
+	 */
 	public static final String SCHEME_HTTPS = "https://";
 
 	private static final int BUFFER_LENGTH = 2048;
@@ -254,6 +261,10 @@ public class HttpConnection {
 			this.code = code;
 		}
 
+		/**
+		 * Http status code value.
+		 * @return http status code.
+		 */
 		public int getCode() {
 			return code;
 		}
@@ -314,22 +325,43 @@ public class HttpConnection {
 			};
 		}
 
+		/**
+		 * List all status from Group 2XX.
+		 * @return status from group 2XX.
+		 */
 		public static Iterable<StatusCode> list2XX() {
 			return filtered(2);
 		}
 
+		/**
+		 * List all status from Group 3XX.
+		 * @return status from group 3XX.
+		 */
 		public static Iterable<StatusCode> list3XX() {
 			return filtered(3);
 		}
 
+		/**
+		 * List all status from Group 4XX.
+		 * @return status from group 4XX.
+		 */
 		public static Iterable<StatusCode> list4XX() {
 			return filtered(4);
 		}
 
+		/**
+		 * List all status from Group 5XX.
+		 * @return status from group 5XX.
+		 */
 		public static Iterable<StatusCode> list5XX() {
 			return filtered(5);
 		}
 
+		/**
+		 * Parse and convert code to status code type.
+		 * @param code status code int.
+		 * @return status code enum type.
+		 */
 		public static StatusCode valueOf(int code) {
 			for(StatusCode sc : filtered(code, code)) return sc;
 			throw new IllegalArgumentException("Status Code " + code + " Not found ");
@@ -342,32 +374,117 @@ public class HttpConnection {
 	}
 
 	/**
-	 * Method Type
+	 * HTTP Method Types.
 	 */
 	public enum RequestType {
-		GET, POST, PUT, PATCH, DELETE
+
+		/**
+		 * Read
+		 */
+		GET,
+
+		/**
+		 * Create
+		 */
+		POST,
+
+		/**
+		 * Update/Replace
+		 */
+		PUT,
+
+		/**
+		 * Partial Update/Motiffy
+		 */
+		PATCH,
+
+		/**
+		 * Delete.
+		 */
+		DELETE
 	}
 
 	/**
-	 * Content type.
+	 * <strong>Content Type</strong><br/>
+	 * <p>
+	 *    In responses, a Content-Type header tells the client what the content type of the
+	 *    returned content actually is. Browsers will do MIME sniffing in some cases and
+	 *    will not necessarily follow the value of this header
+	 * </p>
+	 * see more <a href="https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Headers/Content-Type">here</a>
 	 */
 	public enum ContentType {
+		/**
+		 * Content is a form urlenconded.
+		 */
 		XWWW_FORM_URLENCODED("application/x-www-form-urlencoded"),
+
+		/**
+		 * Content is a simple text plan.
+		 */
 		TEXT("text/plain"),
+
+		/**
+		 * Content is bson format.
+		 */
 		BSON("application/bson"),
+
+		/**
+		 * Content is a java archive.
+		 */
 		JAVA_ARCHIVE("application/java-archive"),
+
+		/**
+		 * Content is a javascript format.
+		 */
 		JAVASCRIPT("application/javascript"),
+
+		/**
+		 * Content is a json format.
+		 */
 		JSON("application/json"),
+
+		/**
+		 * Content is a ld+json format.
+		 */
 		LD_JSON("application/ld+json"),
+
+		/**
+		 * Content is a stream.
+		 */
 		OCTET_STREAM("application/octet-stream"),
+
+		/**
+		 * Content is a ogg file format.
+		 */
 		OGG("application/ogg"),
+
+		/**
+		 * Content is a pdf file format.
+		 */
 		PDF("application/pdf"),
+
+		/**
+		 * Content is a xhtml+xml file format.
+		 */
 		XHTML_XML("application/xhtml+xml"),
+
+		/**
+		 * Content is a xml file format.
+		 */
 		XML("application/xml"),
+
+		/**
+		 * Content is a zip file format.
+		 */
 		ZIP("application/zip");
 
 		final String str;
 
+		/**
+		 * Constructor
+		 * @param str content type pattern
+		 */
 		ContentType(String str) {
 			this.str = str;
 		}
@@ -376,6 +493,11 @@ public class HttpConnection {
 			return this.str;
 		}
 
+		/**
+		 * Generate content type by mime type name.
+		 * @param name content type mime type name
+		 * @return instance of content type from mime type name.
+		 */
 		public static ContentType fromType(String name) {
 			if(!StringUtils.isNullOrWhitespace(name)) {
 				int fIndex = name.indexOf('/');
@@ -418,15 +540,97 @@ public class HttpConnection {
 	 * Secure protocols for HTTPS connections.
 	 */
 	public enum SecureProtocols {
+
+		/**
+		 * Transport Layer Security (TLS) is a protocol that can be used with
+		 * other protocols like UDP to provide security between applications
+		 * communicating over an IP network.<br/>
+		 * <p>
+		 * The first version TLS 1.0 was defined in 1999 and it built on
+		 * previous work on Secure Socket Layer (SSL). <br/><br/>
+		 * TLS 1.1 was then released in 2006. A common TLS versions used on
+		 * the Internet today is TLS 1.2 (defined in IETF RFC 5246 from 2008)
+		 * but support for TLS 1.3 (defined in IETF RFC 8446 from 2018) is
+		 * becoming more common. <br/><br/>
+		 * TLS is used in the 5GC to protect the HTTP-based interfaces.
+		 * 3GPP allows TLS 1.1, TLS 1.2 and TLS 1.3 to be used, even though the use
+		 * of <i>TLS 1.1 is not recommended</i>.
+		 * </p><br/>
+		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
+		 */
 		TLS,
+
+		/**
+		 * Transport Layer Security (TLS) provide security between applications
+		 * communicating over an IP network.<br/>
+		 * The first version TLS 1.0 was defined in 1999 and it built on previous
+		 * work on Secure Socket Layer (SSL).<br/><br/>
+		 * <i>Warning: the use of TLS 1.1 is not recommended</i><br/><br/>
+		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
+		 */
 		TLSv1,
+
+		/**
+		 * Transport Layer Security (TLS) provide security between applications
+		 * communicating over an IP network.<br/>
+		 * TLS 1.1 was then released in 2006<br/>
+		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
+		 */
 		TLSv1_1,
+
+		/**
+		 * Transport Layer Security (TLS) provide security between applications
+		 * communicating over an IP network.<br/>
+		 * A common TLS versions used on the Internet today is
+		 * TLS 1.2 (defined in IETF RFC 5246 from 2008).<br/>
+		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
+		 */
 		TLSv1_2,
+
+		/**
+		 * Transport Layer Security (TLS) provide security between applications
+		 * communicating over an IP network.<br/>
+		 * Support for TLS 1.3 (defined in IETF RFC 8446 from 2018) is becoming more common.
+		 * TLS is used in the 5GC to protect the HTTP-based interfaces.
+		 * 3GPP allows TLS 1.1, TLS 1.2 and TLS 1.3 to be used, even though the use of
+		 * <i> TLS 1.1 is not recommended</i>.<br/>
+		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
+		 */
 		TLSv1_3,
+
+		/**
+		 * Secure Sockets Layer (SSL) was designed to protect HTTP (Hypertext Transfer Protocol)
+		 * data: HTTPS uses TCP port 443.<br/>
+		 * SSL was developed for the Netscape Web browser in the 1990s.<br/><br/>
+		 * <i>TLS (Transport Layer Security) is the latest version of SSL,
+		 * equivalent to SSL version 3.1</i><br/><br/>
+		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
+		 */
 		SSL,
-		SSLv2Hello,
+
+		/**
+		 * Secure Sockets Layer (SSL) was designed to protect HTTP (Hypertext Transfer Protocol)
+		 * data: HTTPS uses TCP port 443.<br/>
+		 * SSL was developed for the Netscape Web browser in the 1990s.<br/><br/>
+		 * SSL 2.0 was the first released version.<br/><br/>
+		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
+		 */
+		SSLv2,
+
+		/**
+		 * Secure Sockets Layer (SSL) was designed to protect HTTP (Hypertext Transfer Protocol)
+		 * data: HTTPS uses TCP port 443.<br/>
+		 * SSL was developed for the Netscape Web browser in the 1990s.<br/><br/>
+		 * <i>TLS (Transport Layer Security) is the latest version of SSL,
+		 * equivalent to SSL version 3.1</i><br/><br/>
+		 * <a href="https://www.sciencedirect.com/topics/computer-science/transport-layer-security">more here</a>
+		 */
 		SSLv3;
 
+		/**
+		 * Check if current secure protocol is a TLS type.
+		 * @return true, protocol is TLS, otherwise, false.
+		 */
 		public boolean isTLS(){
 			switch (this){
 				case TLS:
@@ -438,6 +642,10 @@ public class HttpConnection {
 			}
 		}
 
+		/**
+		 * Get protocol.
+		 * @return protocol type and version.
+		 */
 		public String getProtocol() {
 			return name().replace('_', '.');
 		}

@@ -18,20 +18,47 @@ import java.util.Arrays;
 @SuppressWarnings("unused")
 class IOEvent implements InputEvent, OutputEvent, Closeable {
 
+	/**
+	 * Default buffer size.
+	 */
 	public final int BUFFER_SIZE = 1024;
-	
+
+	/**
+	 * Instance of IOEvent as input event.
+	 * @param input input stream instance.
+	 * @param isUseStopByte define whether use stop byte to identify end of stream to write and read.
+	 * @param stopByte stop byte.
+	 * @return IOEvent instance as InputEvent.
+	 */
 	public static InputEvent initInputEvent(InputStream input, boolean isUseStopByte, byte stopByte){
 		return new IOEvent(input, null, isUseStopByte, stopByte);
 	}
 
+	/**
+	 * Instance of IOEvent as output event.
+	 * @param output output stream instance.
+	 * @param isUseStopByte define whether use stop byte to identify end of stream to write and read.
+	 * @param stopByte stop byte.
+	 * @return IOEvent instance as OutputEvent.
+	 */
 	public static OutputEvent initOutputEvent(OutputStream output, boolean isUseStopByte, byte stopByte){
 		return new IOEvent(null, output, isUseStopByte, stopByte);
 	}
 
+	/**
+	 * Instance of IOEvent as input event.
+	 * @param input input stream instance.
+	 * @return IOEvent instance as InputEvent.
+	 */
 	public static InputEvent initInputEvent(InputStream input){
 		return new IOEvent(input, null);
 	}
 
+	/**
+	 * Instance of IOEvent as output event.
+	 * @param output output stream instance.
+	 * @return IOEvent instance as OutputEvent.
+	 */
 	public static OutputEvent initOutputEvent(OutputStream output){
 		return new IOEvent(null, output);
 	}
@@ -71,21 +98,39 @@ class IOEvent implements InputEvent, OutputEvent, Closeable {
 	protected IOEvent(){
 		this(null, null);
 	}
-	
+
+	/**
+	 * Input stream instance when contains permission to read.
+	 * @return input stream instance.
+	 * @exception RuntimeException throws when does not contains permission to read.
+	 */
 	protected InputStream getInputStream(){
 		this.requestPermissionToRead();
 		return input;
 	}
-	
+
+	/**
+	 * Output stream instance when contains permission to write.
+	 * @return ouput stream instance.
+	 * @exception RuntimeException throws when does not contains permission to write.
+	 */
 	protected OutputStream getOutputStream(){
 		this.requestPermissionToWrite();
 		return output;
 	}
-	
+
+	/**
+	 * Define input stream.
+	 * @param input input stream.
+	 */
 	protected void setInput(InputStream input){
 		this.input = input;
 	}
-	
+
+	/**
+	 * Define output stream.
+	 * @param output output stream.
+	 */
 	protected void setOutput(OutputStream output){
 		this.output = output;
 	}
@@ -297,11 +342,19 @@ class IOEvent implements InputEvent, OutputEvent, Closeable {
 		}
 	}
 
+	/**
+	 * I/O charset for encode/decode
+	 * @return current charset
+	 */
     public final Charset getCharset() {
 		return charset;
 	}
-    
-    public final void setCharset(Charset charset) {
+
+	/**
+	 * I/O charset for encode/decode
+	 * @param charset charset value.
+	 */
+	public final void setCharset(Charset charset) {
 		this.charset = charset;
 	}
 

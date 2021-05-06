@@ -7,6 +7,14 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * <strong>Date Helper</strong>
+ * <p>
+ *     To help to parse and converte date time toanother time zone, location,
+ *     convert any date time string format to Calendar or Date object.
+ * </p>
+ * @author Carlos Matos
+ */
 public final class DateHelper {
 
     private static final String FUSE_REGEX;
@@ -25,6 +33,10 @@ public final class DateHelper {
         instance = new DateHelper();
     }
 
+    /**
+     * Date helper singleton instance.
+     * @return singleton instance.
+     */
     public static DateHelper getInstance() {
         return instance;
     }
@@ -32,10 +44,22 @@ public final class DateHelper {
     private DateHelper() { }
 
     //region Current Date TimeZone
+
+    /**
+     * Default format date time string to time zone and locale.
+     * @param timeZone target time zone
+     * @param locale target locale
+     * @return date time string value format.
+     */
     public String getDate(TimeZone timeZone, Locale locale){
         return getDate(new Date(), timeZone, locale);
     }
 
+    /**
+     * Default format date time string to time zone and default locale.
+     * @param timeZone target time zone
+     * @return date time string value format.
+     */
     public String getDate(TimeZone timeZone) {
         return getDate(timeZone, LocaleHelper.getDefaultLocale());
     }

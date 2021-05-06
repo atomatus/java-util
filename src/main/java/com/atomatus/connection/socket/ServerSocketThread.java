@@ -40,7 +40,7 @@ final class ServerSocketThread extends Thread {
 		synchronized (Objects.requireNonNull(owner).lock) {
 			Set<ServerSocketThread> set = socketThreadsMap.get(owner);
 			
-			if(set == null){
+			if(set == null) {
 				set = Collections.newSetFromMap(new ConcurrentHashMap<>());
 				socketThreadsMap.put(owner, set);
 			}

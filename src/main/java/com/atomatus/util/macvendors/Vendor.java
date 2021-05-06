@@ -3,6 +3,9 @@ package com.atomatus.util.macvendors;
 import com.google.gson.annotations.SerializedName;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
+/**
+ * Product vendor data.
+ */
 @XStreamAlias("result")
 public final class Vendor extends Error {
 

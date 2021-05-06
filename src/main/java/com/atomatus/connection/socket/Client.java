@@ -12,11 +12,22 @@ import java.net.UnknownHostException;
  * @author Carlos Matos
  */
 public class Client extends IOEvent implements Closeable {
-	
+
+    /**
+     * Default connection timeout
+     */
 	public static final int DEFAULT_CONNECTION_TIME_OUT	= 1500;
+
+    /**
+     * Default read data timeout.
+     */
 	public static final int DEFAULT_READ_TIME_OUT		= 5000;
-	
+
+    /**
+     * Socket instance.
+     */
     protected Socket socket;
+
     private final String address;
     private final int port;
     

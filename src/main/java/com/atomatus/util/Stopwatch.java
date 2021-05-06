@@ -89,19 +89,35 @@ public final class Stopwatch {
         start   = System.nanoTime();
     }
 
+    /**
+     * Recover elapsed time in nano.
+     * @return time in nano
+     */
     public long getElapsedInNano() {
         requireStopped();
         return result;
     }
 
+    /**
+     * Recover elapsed time in millis.
+     * @return time in millis
+     */
     public long getElapsedInMillis(){
         return getElapsedInNano() / 1000000;
     }
 
+    /**
+     * Recover elapsed time in seconds.
+     * @return time in seconds
+     */
     public long getElapsedInSec(){
         return getElapsedInMillis() / 1000;
     }
 
+    /**
+     * Recover elapsed time in minutes.
+     * @return time in minutes
+     */
     public long getElapsedInMin(){
         return getElapsedInSec() / 60;
     }

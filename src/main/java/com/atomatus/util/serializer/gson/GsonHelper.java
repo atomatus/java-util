@@ -18,7 +18,14 @@ import java.util.concurrent.ConcurrentMap;
  */
 public final class GsonHelper {
 
+    /**
+     * GsonBuilder consumer callback.
+     */
     public interface GsonConsumer {
+        /**
+         * Accept builder to allow set custom builder options.
+         * @param builder current builder.
+         */
         void accept(GsonBuilder builder);
     }
 

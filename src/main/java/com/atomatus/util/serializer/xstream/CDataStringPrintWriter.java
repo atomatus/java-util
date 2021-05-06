@@ -25,10 +25,19 @@ public final class CDataStringPrintWriter extends PrettyPrintWriter {
 		SUFFIX = "]]>";
 	}
 
+	/**
+	 * Constructs with Writer target.
+	 * @param writer abstract class for writing to character streams.
+	 */
 	public CDataStringPrintWriter(Writer writer) {
 		super(writer);
 	}
-	
+
+	/**
+	 * Constructs with Writer target and Coder.
+	 * @param writer abstract class for writing to character streams.
+	 * @param coder encode and decode tag and attribute names in XML drivers.
+	 */
 	public CDataStringPrintWriter(Writer writer, XmlFriendlyNameCoder coder) {
 		super(writer, coder);
 	}

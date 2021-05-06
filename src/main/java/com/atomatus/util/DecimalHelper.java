@@ -20,14 +20,57 @@ import java.util.regex.Pattern;
  */
 public final class DecimalHelper {
 
-    public static final BigDecimal ZERO, ONE, TEN, ONE_HUNDRED, ONE_THOUSAND,
-            ONE_TENTH, ONE_HUNDREDTH, ONE_THOUSANDTH;
+    //region default decimals
+    /**
+     * Zero for big decimal.
+     */
+    public static final BigDecimal ZERO;
+
+    /**
+     * One for big decimal.
+     */
+    public static final BigDecimal ONE;
+
+    /**
+     * Ten for big decimal.
+     */
+    public static final BigDecimal TEN;
+
+    /**
+     * One Hundred for big decimal.
+     */
+    public static final BigDecimal ONE_HUNDRED;
+
+    /**
+     * One Thousand for big decimal.
+     */
+    public static final BigDecimal ONE_THOUSAND;
+
+    /**
+     * One Tenth for big decimal.
+     */
+    public static final BigDecimal ONE_TENTH;
+
+    /**
+     * One Hundredth for big decimal.
+     */
+    public static final BigDecimal ONE_HUNDREDTH;
+
+    /**
+     * One Thousandth for big decimal.
+     */
+    public static final BigDecimal ONE_THOUSANDTH;
+    //endregion
 
     private static Locale lastLocaleByCurrency;
     private static final String CURRENCY_SYMBOL_REGEX;
     private static final MathContext DEFAULT_MATH_CONTEXT;
     private static final int DEFAULT_SCALE, MAX_SCALE;
 
+    /**
+     * Decimal symbol informations, how like,
+     * decimal symbol, group symbol and currency symbol.
+     */
     public static class Info {
 
         private char decimalSymbol;
@@ -36,14 +79,26 @@ public final class DecimalHelper {
 
         private Info() { }
 
+        /**
+         * Decimal Symbol
+         * @return decimal symbol
+         */
         public char getDecimalSymbol() {
             return decimalSymbol;
         }
 
+        /**
+         * Currency Symbol
+         * @return currency symbol
+         */
         public String getCurrencySymbol() {
             return currencySymbol;
         }
 
+        /**
+         * Group Symbol
+         * @return group symbol
+         */
         public char getGroupSymbol() {
             return groupSymbol;
         }

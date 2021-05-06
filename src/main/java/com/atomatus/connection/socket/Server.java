@@ -30,6 +30,10 @@ public class Server implements Runnable, Closeable {
 	
 	private int port;
 	private final int backlog;
+
+	/**
+	 * Synchronized state for thread-safe.
+	 */
 	protected final Object lock;
 		
 	private Thread serverThread;

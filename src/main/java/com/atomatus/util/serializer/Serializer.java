@@ -38,9 +38,24 @@ public abstract class Serializer {
      * Serializer type.
      */
     public enum Type {
+        /**
+         * Serializer type in base64.
+         */
         BASE64,
+
+        /**
+         * Serializer type in bson.
+         */
         BSON,
+
+        /**
+         * Serializer type in json.
+         */
         JSON,
+
+        /**
+         * Serializer type in xml.
+         */
         XML
     }
 

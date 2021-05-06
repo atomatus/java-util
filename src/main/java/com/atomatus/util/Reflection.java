@@ -1,10 +1,7 @@
 package com.atomatus.util;
 
 import java.io.Closeable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
@@ -128,6 +125,10 @@ public abstract class Reflection {
      */
     public abstract <T> T value();
 
+    /**
+     * Reflection empty instance.
+     * @return empty reflection.
+     */
     protected static Reflection empty(){
         return new ReflectionImplEmpty();
     }
@@ -157,8 +158,8 @@ public abstract class Reflection {
                         c -> c.getParameterCount() == 0);
                 if(found != null) {
                     try {
-                        found.setAccessible(true);
-                    } catch (SecurityException ignored) {
+                        setAccessible(found);
+                    } catch (Exception ignored) {
                         return null; //no one accessible.
                     }
                     return found.newInstance();
@@ -252,6 +253,105 @@ public abstract class Reflection {
         }
     }
 
+    /**
+     * Request change accesibility to object Member (Constructor, Field or Method)
+     * without display warning messages that IllegalAccess when build.
+     * @param obj accessible object
+     * @param <T> AccessibleObject type
+     */
+    private static <T extends AccessibleObject> void setAccessible(T obj) {
+        try {
+            WarningState.getInstance().disable();
+            boolean access = false;
+
+            try {
+                Method checkCanSetAccessible = AccessibleObject.class
+                        .getDeclaredMethod("trySetAccessible");
+                Object res = checkCanSetAccessible.invoke(obj);
+                access = res instanceof Boolean && (Boolean) res;
+                if (!access) throw new RuntimeException("Not accessible!");
+            } catch (NoSuchMethodException ignored) {
+            }
+
+            if (!access) {
+                obj.setAccessible(true);
+            }
+
+        } catch (RuntimeException e0) {
+            throw e0;
+        } catch (Exception e1) {
+            throw new RuntimeException(e1);
+        } finally {
+            WarningState.getInstance().reenable();
+        }
+    }
+
+    private static final class WarningState {
+
+        private static final WarningState instance;
+        private final Object locker;
+
+        private transient sun.misc.Unsafe unsafe;
+        private transient Long offset;
+        private transient Class<?> loggerClass;
+        private transient Object logger;
+
+        public static WarningState getInstance() {
+            return instance;
+        }
+
+        static {
+            instance = new WarningState();
+        }
+
+        private WarningState() {
+            locker = new Object();
+        }
+
+        private void loadValues() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException {
+            if(unsafe == null) {
+                Field theUnsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+                theUnsafe.setAccessible(true);
+                unsafe = (sun.misc.Unsafe) theUnsafe.get(null);
+                loggerClass = null;
+            }
+
+            if(loggerClass == null) {
+                loggerClass = Class.forName("jdk.internal.module.IllegalAccessLogger");
+                offset = null;
+            }
+
+            if(offset == null) {
+                Field logger = loggerClass.getDeclaredField("logger");
+                offset = unsafe.staticFieldOffset(logger);
+            }
+        }
+
+        void disable() {
+            synchronized (locker) {
+                try{
+                    if(logger == null) {
+                        loadValues();
+                        logger = unsafe.getObjectVolatile(loggerClass, offset);
+                        unsafe.putObjectVolatile(loggerClass, offset, null);
+                    }
+                }catch (Exception ignored) { }
+            }
+        }
+
+        void reenable() {
+            synchronized (locker) {
+                try{
+                    if(logger != null) {
+                        loadValues();
+                        unsafe.putObjectVolatile(loggerClass, offset, logger);
+                        logger = null;
+                    }
+                } catch (Exception ignored) { }
+            }
+        }
+    }
+
     private static final class ReflectionImplInflateClass extends Reflection {
 
         private Object obj;
@@ -325,7 +425,7 @@ public abstract class Reflection {
                 try {
                     Method m = args.length == 0 ? objClass.getMethod(StringUtils.requireNonNullOrWhitespace(methodName)) :
                             objClass.getMethod(methodName, ArrayHelper.select(args, Object::getClass));
-                    m.setAccessible(true);
+                    setAccessible(m);
                     isVoid = m.getReturnType().equals(Void.TYPE);
                     Object result = m.invoke(Modifier.isStatic(m.getModifiers()) ? null : obj, args);
                     checkSelfDeflateAfterReturn(true);
@@ -346,7 +446,7 @@ public abstract class Reflection {
         public Reflection field(String fieldName) {
             try {
                 Field f = objClass.getDeclaredField(StringUtils.requireNonNullOrWhitespace(fieldName));
-                f.setAccessible(true);
+                setAccessible(f);
                 Object result = f.get(obj);
                 checkSelfDeflateAfterReturn(true);
                 return result != null ?

@@ -13,15 +13,28 @@ public abstract class TextTable implements Closeable {
      */
     public static class Builder {
 
+        private static final int TYPE_NULL      = -1;
+        private static final int TYPE_MONETARY  =  0;
+        private static final int TYPE_NUMERIC   =  1;
+        private static final int TYPE_TEXT      =  2;
+        private static final int TYPE_URL       =  3;
+
+        //region attr
         private String[] cols, labels;
         private Object[][] rows, table;
+        private Boolean hasCols;
         private int maxWidth, width, cellIndex;
-        private boolean alignLeft, separator, noWrap;
+        private boolean indexLabels, alignLeft, separator, noWrap;
+        //endregion
 
+        /**
+         * Construct table.
+         */
         public Builder() {
             alignLeft = true;
         }
 
+        //region builder options
         /**
          * Add all columns to current table builder
          * @param cols columns
@@ -30,6 +43,7 @@ public abstract class TextTable implements Closeable {
         public Builder columns(String[] cols) {
             this.cols = cols;
             this.width = cols == null ? 0 : cols.length;
+            this.hasCols = width > 0;
             return this;
         }
 
@@ -39,10 +53,11 @@ public abstract class TextTable implements Closeable {
          * @return current builder
          */
         public Builder column(String col) {
-            cols = cols == null ?
+            this.cols = this.cols == null ?
                     new String[] { col } :
-                    ArrayHelper.add(cols, col);
-            width = cols.length;
+                    ArrayHelper.add(this.cols, col);
+            this.width = this.cols.length;
+            this.hasCols = true;
             return this;
         }
 
@@ -157,7 +172,7 @@ public abstract class TextTable implements Closeable {
         }
 
         /**
-         * Add labels to display how first column of table.
+         * Add labels to display like first column of table.
          * @param labels labels values, identify each row value by column
          * @return current builder.
          */
@@ -167,6 +182,17 @@ public abstract class TextTable implements Closeable {
             }
 
             this.labels = labels;
+            this.indexLabels = false;
+            return this;
+        }
+
+        /**
+         * Enable to display index labels like first column of table.
+         * @return current builder.
+         */
+        public Builder label() {
+            indexLabels = true;
+            labels = null;
             return this;
         }
 
@@ -189,6 +215,15 @@ public abstract class TextTable implements Closeable {
          */
         public Builder noWrap(){
             this.noWrap = true;
+            return this;
+        }
+
+        /**
+         * Mark current table as containg columns in first line.
+         * @return current builder.
+         */
+        public Builder hasColumns(){
+            hasCols = true;
             return this;
         }
 
@@ -218,6 +253,79 @@ public abstract class TextTable implements Closeable {
             this.separator = true;
             return this;
         }
+        //endregion
+
+        //region validate
+        private Double[] validateTableColumnSimilarity(Object[][] table) {
+            int len = table.length;
+            Double[] sim = new Double[len]; //similarity
+            for(int i=0; i < len; i++) {
+                String str;
+                Object cell;
+                Object[] row = table[i];
+                Integer[] cTypes = new Integer[row.length];
+                for(int j=0, k=row.length; j < k; j++) {
+                    cTypes[j] = (cell = row[j]) == null ? TYPE_NULL :
+                            RegExp.isValidNumberOnly(str = cell.toString().trim()) ? TYPE_NUMERIC :
+                            RegExp.isValidMonetary(str) ? TYPE_MONETARY :
+                            RegExp.isValidURL(str) ? TYPE_URL : TYPE_TEXT;
+                }
+                Integer[] dist = ArrayHelper.distinct(cTypes);
+                sim[i] = 1d / dist.length;
+            }
+
+            return sim;
+        }
+        //endregion
+
+        //region getOrMount
+        private Object[][] getOrMountTable(){
+            if(table == null) {
+                int colOffset = cols != null ? 1 : 0;
+                int rowsCount = rows != null ? rows.length : 0;
+
+                table = new Object[rowsCount + colOffset][];
+
+                if(rowsCount > 0) {
+                    System.arraycopy(rows, 0, table, colOffset, rows.length);
+                }
+
+                if(colOffset > 0) {
+                    table[0] = cols;
+                    hasCols  = true;
+                }
+            }
+
+            return table;
+        }
+
+        private boolean getOrValidateHasCols(){
+            if(hasCols == null) {
+                Object[][] table = getOrMountTable();
+                Double[] sim = validateTableColumnSimilarity(table);
+                hasCols = sim.length > 1 && sim[0] == 1d &&
+                    ArrayHelper.reduce(sim,
+                        (acc, curr) -> curr == 1d ? acc++ : acc,
+                        0d) <= (sim.length * .5d);
+            }
+
+            return hasCols;
+        }
+
+        private String[] getOrMountLabels(){
+            if(indexLabels && labels == null) {
+                Object[][] table = getOrMountTable();
+                int len = table.length;
+                if(len > 1) {
+                    labels = new String[len];
+                    for (int i = 0, c = 0; i < len; i++) {
+                        labels[i] = (i == 0 && getOrValidateHasCols()) ? "" : Integer.toString(c++);
+                    }
+                }
+            }
+            return labels;
+        }
+        //endregion
 
         /**
          * Build a simple text table.
@@ -225,46 +333,59 @@ public abstract class TextTable implements Closeable {
          */
         public TextTable build() {
             try {
-                if(table == null) {
-                    int colOffset = cols != null ? 1 : 0;
-                    int rowsCount = rows != null ? rows.length : 0;
-
-                    table = new Object[rowsCount + colOffset][];
-
-                    if(rowsCount > 0) {
-                        System.arraycopy(rows, 0, table, colOffset, rows.length);
-                    }
-
-                    if(colOffset > 0) {
-                        table[0] = cols;
-                    }
-                }
 
                 return new SimpleTextTable(
-                        table,
-                        labels,
+                        getOrMountTable(),
+                        getOrMountLabels(),
                         maxWidth,
+                        getOrValidateHasCols(),
                         alignLeft,
                         separator,
                         noWrap);
             } finally {
-                this.rows   = null;
-                this.cols   = null;
-                this.labels = null;
-                this.table  = null;
-                this.width  = cellIndex = 0;
+                this.rows    = null;
+                this.cols    = null;
+                this.labels  = null;
+                this.table   = null;
+                this.hasCols = null;
+                this.width   = cellIndex = 0;
             }
         }
     }
 
+    /**
+     * Target table.
+     */
     protected Object[][] table;
+
+    /**
+     * Identify that table contains columns as first line.
+     */
+    protected final boolean hasCols;
+
+    /**
+     * Identify that content must be align to left side.
+     */
     protected final boolean isAlignLeft;
+
+    /**
+     * Identify that content must by print with separate line.
+     */
     protected final boolean isSeparator;
 
+    /**
+     * Constructos text table.
+     * @param table matrix table.
+     * @param hasCols identify table has columns in first line
+     * @param alignLeft align content to left.
+     * @param separator print separator line for each line.
+     */
     protected TextTable(Object[][] table,
+                        boolean hasCols,
                         boolean alignLeft,
                         boolean separator) {
         this.table       = table;
+        this.hasCols     = hasCols;
         this.isAlignLeft = alignLeft;
         this.isSeparator = separator;
     }
@@ -292,10 +413,11 @@ final class SimpleTextTable extends TextTable {
     public SimpleTextTable(Object[][] table,
                            String[] labels,
                            int maxWidth,
+                           boolean hasCols,
                            boolean alignLeft,
                            boolean separator,
                            boolean noWrap) {
-        super(table, alignLeft, separator);
+        super(table, hasCols, alignLeft, separator);
         formatTableAddLabels(labels);
         formatTableMaxWidthCell(maxWidth, noWrap);
         formatTableMaxWidthCellNoWrap(maxWidth, noWrap);

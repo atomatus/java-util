@@ -6,6 +6,9 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.Calendar;
 
+/**
+ * JsonSerializer implementation to Calendar.
+ */
 public final class CalendarConverter implements JsonSerializer<Calendar>, JsonDeserializer<Calendar> {
 
     @Override

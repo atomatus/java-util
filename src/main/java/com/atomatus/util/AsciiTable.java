@@ -1,7 +1,7 @@
 package com.atomatus.util;
 
 /**
- * <h1>ASCII Table and Description</h1>
+ * <strong>ASCII Table and Description</strong>
  * <p>
  *     ASCII stands for American Standard Code for Information Interchange.
  *     Computers can only understand numbers, so an ASCII code is the numerical representation of
@@ -188,6 +188,10 @@ public enum AsciiTable {
 	US;
 	//endregion
 
+	/**
+	 * Ascii code.
+	 * @return ascii code.
+	 */
 	public byte code() {
 		return (byte) ordinal();
 	}

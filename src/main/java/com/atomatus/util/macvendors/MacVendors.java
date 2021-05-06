@@ -19,6 +19,10 @@ public final class MacVendors {
 
     private final Map<String, Vendor> vendors;
 
+    /**
+     * Mac vendors instance (Singleton pattern).
+     * @return singleton instance.
+     */
     public static MacVendors getInstance(){
         return instance;
     }

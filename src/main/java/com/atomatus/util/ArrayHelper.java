@@ -9,30 +9,80 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public final class ArrayHelper {
 
+    /**
+     * Simple Function Callback.
+     * @param <I> input type
+     * @param <O> output type
+     */
     public interface Function<I, O> {
+        /**
+         * Apply function to convert Input type to Output type.
+         * @param i input element target.
+         * @return output element generated.
+         */
         O apply(I i);
     }
 
+    /**
+     * Simple reducer function callback.
+     * @param <A> accumulate and output type
+     * @param <I> input type
+     */
     public interface Reducer<A, I> {
+        /**
+         * Apply reducer
+         * @param acc accumulate value.
+         * @param i current value.
+         * @return accumulate value.
+         */
         A apply(A acc, I i);
     }
 
+    /**
+     * Simple reducer function callback.
+     * @param <A> accumulate and output type
+     * @param <I> input type
+     */
     public interface ReducerIndex<A, I> {
+        /**
+         * Apply reducer
+         * @param acc accumulate value.
+         * @param i current value.
+         * @param index current index.
+         * @return accumulate value.
+         */
         A apply(A acc, I i, int index);
     }
 
+    /**
+     * Simple filter callback.
+     * @param <I> input type
+     */
     public interface Filter<I> {
+        /**
+         * Filter accept callback.
+         * @param i target element
+         * @return true, element has to be filtered, otherwise, element is ignored.
+         */
         boolean accept(I i);
     }
 
     private ArrayHelper() { }
 
+    /**
+     * Throws exception when object is null or is not an array.
+     * @param arr target array object.
+     */
     public static void requireArray(Object arr) {
         if (!Objects.requireNonNull(arr).getClass().isArray()) {
             throw new IllegalArgumentException("Object is not an array!");
         }
     }
 
+    /**
+     * Throws exception when object is null or is not an array or is empty.
+     * @param arr target array object.
+     */
     public static void requireArrayNonNullOrEmpty(Object arr) {
         requireArray(arr);
         if(Array.getLength(arr) == 0) {
@@ -265,6 +315,68 @@ public final class ArrayHelper {
     }
 
     /**
+     * First element on array into condition.
+     * @param args target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    public static <I> I first(I[] args, int start, int end, Filter<I> where) {
+        Objects.requireNonNull(args);
+        Objects.requireNonNull(where);
+
+        for (int i = start; i < end; i++) {
+            if (where.accept(args[i])) {
+                return args[i];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param args target
+     * @param <I>  element type
+     * @return new array with distinct elements.
+     */
+    @SuppressWarnings("rawtypes")
+    public static <I> I[] distinct(I[] args) {
+        Objects.requireNonNull(args);
+
+        if(args.length == 0) {
+            return args;
+        }
+
+        Class<?> clazz = args[0].getClass();
+        I[] dist = (I[]) Array.newInstance(clazz, args.length);
+        int offset = 0;
+
+        for(I i : args) {
+            if(i instanceof Comparable<?>) {
+                Comparable comp = (Comparable<?>) i;
+                if(any(dist, 0, offset, curr -> comp.compareTo(curr) == 0)){
+                    continue;
+                }
+            } else if(contains(dist, i, 0, offset)) {
+                continue;
+            }
+
+            dist[offset++] = i;
+        }
+
+        if(offset < dist.length) {
+            I[] aux = dist;
+            dist = (I[]) Array.newInstance(clazz, offset);
+            System.arraycopy(aux, 0, dist, 0, dist.length);
+        }
+
+        return dist;
+    }
+
+    /**
      * Apply reduce operation.
      * @param args target
      * @param func reduce function
@@ -369,6 +481,114 @@ public final class ArrayHelper {
             System.arraycopy(arr, count, out, 0, out.length);
             return  out;
         }
+    }
+
+    /**
+     * Check if all elements on array pass on test action.
+     * @param args target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    public static <I> boolean all(I[] args, int start, int end, Filter<I> where) {
+        Objects.requireNonNull(args);
+        Objects.requireNonNull(where);
+
+        for (int i = start; i < end; i++) {
+            if (!where.accept(args[i])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if all elements on array pass on test action.
+     * @param args target
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    public static <I> boolean all(I[] args, Filter<I> where) {
+        Objects.requireNonNull(args);
+        Objects.requireNonNull(where);
+
+        for (I arg : args) {
+            if (!where.accept(arg)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if at least one element on array pass on test action.
+     * @param args target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    public static <I> boolean any(I[] args, int start, int end, Filter<I> where) {
+        Objects.requireNonNull(args);
+        Objects.requireNonNull(where);
+
+        for (int i = start; i < end; i++) {
+            if (where.accept(args[i])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if at least one array on iterable pass on test action.
+     * @param args target
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    public static <I> boolean any(I[] args, Filter<I> where) {
+        Objects.requireNonNull(args);
+        Objects.requireNonNull(where);
+
+        for (I arg : args) {
+            if (where.accept(arg)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if current array contains target element.
+     * @param args target array
+     * @param e target element to find
+     * @param <I> element type
+     * @return true, element exists on array, otherwise, false.
+     */
+    public static <I> boolean contains(I[] args, I e){
+        return indexOf(args, e) > -1;
+    }
+
+    /**
+     * Check if current array contains target element.
+     * @param args target array
+     * @param e target element to find
+     * @param start start index to search
+     * @param end end length to search
+     * @param <I> element type
+     * @return true, element exists on array, otherwise, false.
+     */
+    public static <I> boolean contains(I[] args, I e, int start, int end){
+        return indexOf(args, e, start, end) > -1;
     }
 
     /**

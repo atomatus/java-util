@@ -1,27 +1,92 @@
 package com.atomatus.util;
 
+/**
+ * Current system information.
+ */
 public final class SystemInfo {
 
+    /**
+     * Operation system type
+     */
     public enum OS {
+        /**
+         * Unknown OS.
+         */
         UNKNOWN,
+
+        /**
+         * Android
+         */
         ANDROID,
+
+        /**
+         * Linux
+         */
         LINUX,
+
+        /**
+         * MacOSX
+         */
         MAC_OS,
+
+        /**
+         * Solaris
+         */
         SOLARIS,
+
+        /**
+         * Windows
+         */
         WINDOWS
     }
 
+    /**
+     * CPU Architecture type.
+     */
     public enum Arch {
+
+        /**
+         * Unknown CPU Arch.
+         */
         UNKNOWN,
+        /**
+         * Intel x64
+         */
         IA64,
+
+        /**
+         * AMD x64
+         */
         AMD64,
+
+        /**
+         * CPU x32
+         */
         X86,
+
+        /**
+         * CPU ARM
+         */
         ARM
     }
 
+    /**
+     * JVM Architecture type.
+     */
     public enum JVMArch {
+        /**
+         * JVM x64
+         */
         X64,
+
+        /**
+         * JVM x86 (32Bits)
+         */
         X86,
+
+        /**
+         * JVm ARM
+         */
         ARM
     }
 
@@ -33,6 +98,10 @@ public final class SystemInfo {
 
     private static transient SystemInfo instance;
 
+    /**
+     * Transient instance of System info.
+     * @return system info.
+     */
     public synchronized static SystemInfo getInstance() {
         return (instance == null ? instance = new SystemInfo() : instance);
     }
@@ -77,6 +146,10 @@ public final class SystemInfo {
         return Arch.UNKNOWN;
     }
 
+    /**
+     * Get JVM arch
+     * @return jvm arch.
+     */
     public JVMArch getJVMArch(){
         String arch = System.getProperty("sun.arch.data.model");
         if(!StringUtils.isNullOrEmpty(arch)) {
@@ -87,46 +160,90 @@ public final class SystemInfo {
         return JVMArch.ARM;
     }
 
+    /**
+     * CPU architecture.
+     * @return cpu arch.
+     */
     public Arch arch() {
         return osArch;
     }
 
+    /**
+     * JVM architecture.
+     * @return JVM arch.
+     */
     public JVMArch jvmArch() {
         return jvmArch;
     }
 
+    /**
+     * OS type
+     * @return os type.
+     */
     public OS os() {
         return os;
     }
 
+    /**
+     * OS name.
+     * @return os name.
+     */
     public String name() {
         return osName;
     }
 
+    /**
+     * OS version
+     * @return os version.
+     */
     public String osVersion() {
         return osVersion;
     }
 
+    /**
+     * Check current OS is Android.
+     * @return true, is android, otherwise false.
+     */
     public boolean isAndroid() {
         return os == OS.ANDROID;
     }
 
+    /**
+     * Check current OS is Linux.
+     * @return true, is linux, otherwise false.
+     */
     public boolean isLinux() {
         return os == OS.LINUX;
     }
 
+    /**
+     * Check current OS is Mac.
+     * @return true, is Mac, otherwise false.
+     */
     public boolean isMac() {
         return os == OS.MAC_OS;
     }
 
+    /**
+     * Check current OS is Solaris.
+     * @return true, is solaris, otherwise false.
+     */
     public boolean isSolaris() {
         return os == OS.SOLARIS;
     }
 
+    /**
+     * Check current OS is Windows.
+     * @return true, is windows, otherwise false.
+     */
     public boolean isWindows() {
         return os == OS.WINDOWS;
     }
 
+    /**
+     * Get app directory bin path indicate by OS.
+     * @return app bin path indicate by OS.
+     */
     public String getAppBinPath(){
         switch (os) {
             case WINDOWS:

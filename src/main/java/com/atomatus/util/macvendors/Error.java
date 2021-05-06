@@ -5,6 +5,9 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 import java.io.Serializable;
 
+/**
+ * Error generated for MacVendors request.
+ */
 @SuppressWarnings("unused")
 abstract class Error implements Serializable {
 

@@ -22,7 +22,14 @@ import java.util.concurrent.ConcurrentMap;
 @SuppressWarnings("SpellCheckingInspection")
 public final class XStreamHelper {
 
+    /**
+     * XStream consumer callback.
+     */
     public interface XStreamConsumer {
+        /**
+         * Accept XStream set custom configurations.
+         * @param x xstream instance.
+         */
         void accept(XStream x);
     }
 

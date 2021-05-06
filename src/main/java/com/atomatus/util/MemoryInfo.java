@@ -3,6 +3,9 @@ package com.atomatus.util;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
+/**
+ * System and App memory information.
+ */
 public final class MemoryInfo {
 
     /**
@@ -79,6 +82,11 @@ public final class MemoryInfo {
         throw new UnsupportedOperationException("Was not possible create instance of android.app.ActivityManager.MemoryInfo");
     }
 
+    /**
+     * Instance of memory info by context.
+     * @param context system context, usage for android Context.
+     * @return instance of memory info.
+     */
     public synchronized static MemoryInfo getInstance(Object context) {
         MemoryInfo mi;
         if(instance == null || (mi = instance.get()) == null) {
@@ -89,12 +97,22 @@ public final class MemoryInfo {
         return mi;
     }
 
+    /**
+     * Instance of memory info without context.<br/>
+     * <i>Warning: If using in Android, use {@link #getInstance(Object)} passing Context of activity.</i>
+     * @return instance of memory info.
+     */
     public static MemoryInfo getInstance() {
         return getInstance(null);
     }
 
     private MemoryInfo() { }
 
+    /**
+     * Get memory info in bytes amount.
+     * @param amount amount type.
+     * @return amount value
+     */
     public long getBytes(Amount amount) {
         switch (Objects.requireNonNull(amount)) {
             case FREE:
@@ -112,14 +130,29 @@ public final class MemoryInfo {
         }
     }
 
+    /**
+     * Get memory info in KBytes amount.
+     * @param amount amount type.
+     * @return amount value
+     */
     public long getKBytes(Amount amount) {
         return getBytes(amount) / 0x400;
     }
 
+    /**
+     * Get memory info in MBytes amount.
+     * @param amount amount type.
+     * @return amount value
+     */
     public long getMBytes(Amount amount) {
         return getBytes(amount) / 0x100000;
     }
 
+    /**
+     * Get memory info in GBytes amount.
+     * @param amount amount type.
+     * @return amount value
+     */
     public long getGBytes(Amount amount) {
         return getBytes(amount) / 0x40000000;
     }

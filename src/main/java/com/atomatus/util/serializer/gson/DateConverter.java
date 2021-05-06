@@ -6,6 +6,9 @@ import com.google.gson.*;
 import java.lang.reflect.Type;
 import java.util.Date;
 
+/**
+ * JsonSerializer implementation to Date.
+ */
 public final class DateConverter implements JsonSerializer<Date>, JsonDeserializer<Date> {
 
     @Override
