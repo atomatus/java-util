@@ -214,6 +214,46 @@ public final class DateHelper {
     }
     //endregion
 
+    //region ISO 8601
+    /**
+     * Parse and convert target date with time zone to ISO8601 (UTC) format.
+     * @param date target date
+     * @param timeZone target time zone
+     * @return formated date to ISO8601 (UTC).
+     */
+    public String toISO8601(Date date, TimeZone timeZone) {
+        return getFormattedDate(date, "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timeZone);
+    }
+
+    /**
+     * Parse and convert target date with time zone to ISO8601 (UTC) format.
+     * @param date target date
+     * @return formated date to ISO8601 (UTC).
+     */
+    public String toISO8601(Date date) {
+        return getFormattedDate(date, "yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    }
+
+    /**
+     * Parse and convert target date with time zone to ISO8601 (UTC) format.
+     * @param calendar target date
+     * @param timeZone target time zone
+     * @return formated date to ISO8601 (UTC).
+     */
+    public String toISO8601(Calendar calendar, TimeZone timeZone) {
+        return toISO8601(calendar.getTime(), timeZone);
+    }
+
+    /**
+     * Parse and convert target date with time zone to ISO8601 (UTC) format.
+     * @param calendar target date
+     * @return formated date to ISO8601 (UTC).
+     */
+    public String toISO8601(Calendar calendar) {
+        return toISO8601(calendar.getTime());
+    }
+    //endregion
+
     //region Any Date
     /**
      * Default format date time string from input date, time zone and locale.

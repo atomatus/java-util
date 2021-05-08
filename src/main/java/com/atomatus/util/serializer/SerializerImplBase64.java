@@ -2,11 +2,12 @@ package com.atomatus.util.serializer;
 
 import com.atomatus.util.Base64;
 import com.atomatus.util.StringUtils;
+import com.atomatus.util.serializer.wrapper.SerializerBase64;
 
 import java.io.*;
 import java.util.Objects;
 
-final class SerializerImplBase64 extends Serializer {
+final class SerializerImplBase64 extends SerializerImpl implements SerializerBase64 {
 
     @Override
     public <T extends Serializable> String serialize(T t, String rootElement) {

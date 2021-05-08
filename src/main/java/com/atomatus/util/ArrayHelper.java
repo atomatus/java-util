@@ -69,6 +69,7 @@ public final class ArrayHelper {
 
     private ArrayHelper() { }
 
+    //region requires
     /**
      * Throws exception when object is null or is not an array.
      * @param arr target array object.
@@ -89,34 +90,37 @@ public final class ArrayHelper {
             throw new IllegalArgumentException("Array is empty!");
         }
     }
+    //endregion
 
+    //region clear
     /**
      * Remove all elements of target array.
      * @param arr target array.
      */
     public static void clear(Object arr) {
         requireArray(arr);
+        Class<?> arrType = arr.getClass().getComponentType();
         int len = Array.getLength(arr);
         for (int i = 0; i < len; i++) {
             Object aux = Array.get(arr, i);
-            if(aux != null) {
-                if(aux.getClass().isPrimitive()) {
-                    if(aux instanceof Number) {
-                        Array.set(arr, i, 0);
-                    } else if(aux instanceof Boolean) {
-                        Array.set(arr, i, false);
-                    } else if(aux instanceof Character) {
-                        Array.set(arr, i, '\0');
-                    } else {
-                        Array.set(arr, i, null);
-                    }
+            if(arrType.isPrimitive()) {
+                if(aux instanceof Number) {
+                    Array.set(arr, i, 0);
+                } else if(aux instanceof Boolean) {
+                    Array.set(arr, i, false);
+                } else if(aux instanceof Character) {
+                    Array.set(arr, i, '\0');
                 } else {
                     Array.set(arr, i, null);
                 }
+            } else {
+                Array.set(arr, i, null);
             }
         }
     }
+    //endregion
 
+    //region indexOf
     /**
      * Retrieve index of target element.
      * @param arr target array
@@ -155,6 +159,48 @@ public final class ArrayHelper {
     }
 
     /**
+     * Retrieve index of target element.
+     * @param arr target array
+     * @param e target element
+     * @param start start index to search
+     * @param end end length to search
+     * @param <E> element type
+     * @return index of element, or -1 when not found.
+     */
+    public static <E> int indexOf(Object arr, E e, int start, int end) {
+        requireArray(arr);
+        if (e == null) {
+            for (int i = start; i < end; i++) {
+                Object aux = Array.get(arr, i);
+                if (aux == null) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = start; i < end; i++) {
+                Object aux = Array.get(arr, i);
+                if (e.equals(aux)) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Retrieve index of target element.
+     * @param arr target array
+     * @param e target element
+     * @param <E> element type
+     * @return index of element, or -1 when not found.
+     */
+    public static <E> int indexOf(Object arr, E e) {
+        return indexOf(Objects.requireNonNull(arr), e, 0, Array.getLength(arr));
+    }
+    //endregion
+
+    //region toArray
+    /**
      * Create a new object array from current object (current object referecing a array).
      *
      * @param arr target object.
@@ -191,7 +237,9 @@ public final class ArrayHelper {
 
         return objArr;
     }
+    //endregion
 
+    //region insertAt
     /**
      * Insert a new element at object array (on index).
      *
@@ -226,6 +274,116 @@ public final class ArrayHelper {
     }
 
     /**
+     * Insert a new element at array (on index).
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @return new array.
+     */
+    public static boolean[] insertAt(boolean[] arr, boolean e, int index) {
+        return (boolean[]) insertAt(arr, e, index, boolean[]::new);
+    }
+
+    /**
+     * Insert a new element at array (on index).
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @return new array.
+     */
+    public static char[] insertAt(char[] arr, char e, int index) {
+        return (char[]) insertAt(arr, e, index, char[]::new);
+    }
+
+    /**
+     * Insert a new element at array (on index).
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @return new array.
+     */
+    public static short[] insertAt(short[] arr, short e, int index) {
+        return (short[]) insertAt(arr, e, index, short[]::new);
+    }
+
+    /**
+     * Insert a new element at array (on index).
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @return new array.
+     */
+    public static int[] insertAt(int[] arr, int e, int index) {
+        return (int[]) insertAt(arr, e, index, int[]::new);
+    }
+
+    /**
+     * Insert a new element at array (on index).
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @return new array.
+     */
+    public static long[] insertAt(long[] arr, long e, int index) {
+        return (long[]) insertAt(arr, e, index, long[]::new);
+    }
+
+    /**
+     * Insert a new element at array (on index).
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @return new array.
+     */
+    public static float[] insertAt(float[] arr, float e, int index) {
+        return (float[]) insertAt(arr, e, index, float[]::new);
+    }
+
+    /**
+     * Insert a new element at array (on index).
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @return new array.
+     */
+    public static double[] insertAt(double[] arr, double e, int index) {
+        return (double[]) insertAt(arr, e, index, double[]::new);
+    }
+
+    /**
+     * Insert a new element at object array (on index).
+     *
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @param newArrayLengthFun new array length function callback.
+     * @param <E>   element type
+     * @return new array.
+     */
+    private static <E> Object insertAt(Object arr, E e, int index,
+                                      Function<Integer, Object> newArrayLengthFun) {
+        Objects.requireNonNull(arr);
+        if (index < 0) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        int length = Array.getLength(arr);
+        Object nArr = newArrayLengthFun.apply(Math.max(index, length) + 1 /*new length*/);
+
+        boolean found = false;
+        for (int i = 0, j = 0; i < length; j++, i++) {
+            if (!found && (found = i == index)) {
+                j++;
+            }
+            Array.set(nArr, j, Array.get(arr, i));
+        }
+        Array.set(nArr, index, e);
+        return nArr;
+    }
+    //endregion
+
+    //region push
+    /**
      * Insert a new element at first index of object array.
      *
      * @param arr target array
@@ -237,6 +395,68 @@ public final class ArrayHelper {
         return insertAt(arr, e, 0);
     }
 
+    /**
+     * Insert a new element at first index of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static boolean[] push(boolean[] arr, boolean e) {
+        return insertAt(arr, e, 0);
+    }
+
+    /**
+     * Insert a new element at first index of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static char[] push(char[] arr, char e) {
+        return insertAt(arr, e, 0);
+    }
+
+    /**
+     * Insert a new element at first index of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static short[] push(short[] arr, short e) {
+        return insertAt(arr, e, 0);
+    }
+
+    /**
+     * Insert a new element at first index of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static int[] push(int[] arr, int e) {
+        return insertAt(arr, e, 0);
+    }
+
+    /**
+     * Insert a new element at first index of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static float[] push(float[] arr, float e) {
+        return insertAt(arr, e, 0);
+    }
+
+    /**
+     * Insert a new element at first index of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static double[] push(double[] arr, double e) {
+        return insertAt(arr, e, 0);
+    }
+    //endregion
+
+    //region add
     /**
      * Insert a new element at end of object array.
      *
@@ -250,32 +470,219 @@ public final class ArrayHelper {
     }
 
     /**
+     * Insert a new element at end of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static boolean[] add(boolean[] arr, boolean e) {
+        return insertAt(arr, e, arr.length);
+    }
+
+    /**
+     * Insert a new element at end of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static char[] add(char[] arr, char e) {
+        return insertAt(arr, e, arr.length);
+    }
+
+    /**
+     * Insert a new element at end of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static int[] add(int[] arr, int e) {
+        return insertAt(arr, e, arr.length);
+    }
+
+    /**
+     * Insert a new element at end of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static long[] add(long[] arr, long e) {
+        return insertAt(arr, e, arr.length);
+    }
+
+    /**
+     * Insert a new element at end of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static float[] add(float[] arr, float e) {
+        return insertAt(arr, e, arr.length);
+    }
+
+    /**
+     * Insert a new element at end of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static double[] add(double[] arr, double e) {
+        return insertAt(arr, e, arr.length);
+    }
+    //endregion
+
+    //region select
+    /**
      * Select current array objects data.
-     * @param args target array
+     * @param arr target array
      * @param func select function
      * @param <I> array type
      * @param <O> result array type
      * @return a new array within selection.
      */
-    public static <I, O> O[] select(I[] args, Function<I, O> func) {
-        Objects.requireNonNull(args);
+    public static <I, O> O[] select(I[] arr, Function<I, O> func) {
+        Objects.requireNonNull(arr);
         Objects.requireNonNull(func);
-        if(args.length == 0) {
-            return (O[]) new Object[0];
+        if(arr.length == 0) {
+            return (O[]) Array.newInstance(
+                    arr.getClass().getComponentType(),
+                    arr.length);
         }
 
-        O aux = func.apply(args[0]);
-        O[] out = aux == null ? (O[]) new Object[args.length] :
-                (O[]) Array.newInstance(aux.getClass(), args.length);
-        out[0] = aux;
+        O aux   = func.apply(arr[0]);
+        O[] out = (O[])
+                (aux != null ? Array.newInstance(aux.getClass(), arr.length) :
+                new Object[arr.length]);
+        out[0]  = aux;
 
-        for (int i = 1, l = args.length; i < l; i++) {
-            out[i] = func.apply(args[i]);
+        for (int i = 1, l = arr.length; i < l; i++) {
+            out[i] = func.apply(arr[i]);
         }
 
         return out;
     }
 
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    public static <O> O[] select(byte[] arr, Function<Byte, O> func) {
+        return selectInternal(arr, func, byte[]::new);
+    }
+
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    public static <O> O[] select(boolean[] arr, Function<Byte, O> func) {
+        return selectInternal(arr, func, boolean[]::new);
+    }
+
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    public static <O> O[] select(char[] arr, Function<Character, O> func) {
+        return selectInternal(arr, func, char[]::new);
+    }
+
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    public static <O> O[] select(short[] arr, Function<Short, O> func) {
+        return selectInternal(arr, func, short[]::new);
+    }
+
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    public static <O> O[] select(int[] arr, Function<Integer, O> func) {
+        return selectInternal(arr, func, int[]::new);
+    }
+
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    public static <O> O[] select(long[] arr, Function<Long, O> func) {
+        return selectInternal(arr, func, long[]::new);
+    }
+
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    public static <O> O[] select(float[] arr, Function<Float, O> func) {
+        return selectInternal(arr, func, float[]::new);
+    }
+
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    public static <O> O[] select(double[] arr, Function<Double, O> func) {
+        return selectInternal(arr, func, double[]::new);
+    }
+
+    /**
+     * Select current array objects data.
+     * @param arr target array
+     * @param func select function
+     * @param <I> array type
+     * @param <O> result array type
+     * @return a new array within selection.
+     */
+    private static <I, O> O[] selectInternal(Object arr,
+                                             Function<I, O> func,
+                                             Function<Integer, Object> newArrayFunction) {
+        Objects.requireNonNull(arr);
+        Objects.requireNonNull(func);
+        int length = Array.getLength(arr);
+        if(length == 0) {
+            return (O[]) newArrayFunction.apply(length);
+        }
+
+        O aux   = func.apply((I) Array.get(arr, 0));
+        O[] out = (O[])
+                (aux != null ? Array.newInstance(aux.getClass(), length) :
+                        new Object[length]);
+        out[0]  = aux;
+
+
+        for (int i = 1; i < length; i++) {
+            out[i] = func.apply((I) Array.get(arr, i));
+        }
+
+        return out;
+    }
+    //endregion
+
+    //region filter
     /**
      * Filter current array.
      * @param args target
@@ -296,6 +703,276 @@ public final class ArrayHelper {
         return take(out, offset);
     }
 
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static boolean[] filter(boolean[] args, Filter<Boolean> where) {
+        return (boolean[]) filter(args, Boolean[]::new, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static char[] filter(char[] args, Filter<Character> where) {
+        return (char[]) filter(args, Character[]::new, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static short[] filter(short[] args, Filter<Short> where) {
+        return (short[]) filter(args, Short[]::new, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static int[] filter(int[] args, Filter<Integer> where) {
+        return (int[]) filter(args, Integer[]::new, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static long[] filter(long[] args, Filter<Long> where) {
+        return (long[]) filter(args, Long[]::new, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static float[] filter(float[] args, Filter<Float> where) {
+        return (float[]) filter(args, Float[]::new, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static double[] filter(double[] args, Filter<Double> where) {
+        return (double[]) filter(args, Double[]::new, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param arr target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    private static <I> Object filter(Object arr,
+                                     Function<Integer, Object> newArrayLengthFun,
+                                     Filter<I> where) {
+        Objects.requireNonNull(arr);
+        Objects.requireNonNull(where);
+        int len = Array.getLength(arr);
+        int offset = 0;
+
+        Object out = newArrayLengthFun.apply(len);
+
+        for (int i=0; i < len; i++) {
+            I curr = (I) Array.get(arr, i);
+            if (where.accept(curr)) {
+                Array.set(out, offset ++, curr);
+            }
+        }
+
+        return take(out, offset, newArrayLengthFun);
+    }
+    //endregion
+
+    //region filterAs
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(I[] args, Filter<I> where) {
+        return filterAsLocal(args, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(boolean[] args, Filter<I> where, Class<I> clazz) {
+        return filterAsLocal(args, where, clazz);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(boolean[] args, Filter<I> where) {
+        return filterAsLocal(args, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(char[] args, Filter<I> where, Class<I> clazz) {
+        return filterAsLocal(args, where, clazz);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(char[] args, Filter<I> where) {
+        return filterAsLocal(args, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(short[] args, Filter<I> where, Class<I> clazz) {
+        return filterAsLocal(args, where, clazz);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(short[] args, Filter<I> where) {
+        return filterAsLocal(args, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(int[] args, Filter<I> where, Class<I> clazz) {
+        return filterAsLocal(args, where, clazz);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(int[] args, Filter<I> where) {
+        return filterAsLocal(args, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(long[] args, Filter<I> where, Class<I> clazz) {
+        return filterAsLocal(args, where, clazz);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(long[] args, Filter<I> where) {
+        return filterAsLocal(args, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(float[] args, Filter<I> where, Class<I> clazz) {
+        return filterAsLocal(args, where, clazz);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(float[] args, Filter<I> where) {
+        return filterAsLocal(args, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(double[] args, Filter<I> where, Class<I> clazz) {
+        return filterAsLocal(args, where, clazz);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    public static <I> I[] filterAs(double[] args, Filter<I> where) {
+        return filterAsLocal(args, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param arr target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    private static <I> I[] filterAsLocal(Object arr, Filter<I> where, Class<I> clazz) {
+        return (I[]) filter(arr, len -> Array.newInstance(clazz, len), where);
+    }
+
+    /**
+     * Filter current array.
+     * @param arr target
+     * @param where condition
+     * @return new array with filtered items.
+     */
+    private static <I> I[] filterAsLocal(Object arr, Filter<I> where) {
+        return (I[]) filter(arr, Object[]::new, where);
+    }
+    //endregion
+
+    //region first
     /**
      * First element on array into condition.
      * @param args target
@@ -335,7 +1012,9 @@ public final class ArrayHelper {
 
         return null;
     }
+    //endregion
 
+    //region distinct
     /**
      * Recover distinct (non duplicated) element of array.
      * @param args target
@@ -375,7 +1054,9 @@ public final class ArrayHelper {
 
         return dist;
     }
+    //endregion
 
+    //region reduce
     /**
      * Apply reduce operation.
      * @param args target
@@ -445,7 +1126,9 @@ public final class ArrayHelper {
     public static <I, A extends I> A reduceI(I[] args, ReducerIndex<A, I> func) {
         return reduceI(args, func, null);
     }
+    //endregion
 
+    //region take
     /**
      * Take a count of elements.
      * @param arr target
@@ -463,6 +1146,96 @@ public final class ArrayHelper {
         }
     }
 
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    public static byte[] take(byte[] arr, int count) {
+        return (byte[]) take(arr, count, byte[]::new);
+    }
+
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    public static boolean[] take(boolean[] arr, int count) {
+        return (boolean[]) take(arr, count, boolean[]::new);
+    }
+
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    public static short[] take(short[] arr, int count) {
+        return (short[]) take(arr, count, short[]::new);
+    }
+
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    public static int[] take(int[] arr, int count) {
+        return (int[]) take(arr, count, int[]::new);
+    }
+
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    public static long[] take(long[] arr, int count) {
+        return (long[]) take(arr, count, long[]::new);
+    }
+
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    public static float[] take(float[] arr, int count) {
+        return (float[]) take(arr, count, float[]::new);
+    }
+
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    public static double[] take(double[] arr, int count) {
+        return (double[]) take(arr, count, double[]::new);
+    }
+
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    private static Object take(Object arr, int count,
+                               Function<Integer, Object> newArrayLengthFun) {
+        if(count >= Array.getLength(Objects.requireNonNull(arr))) {
+            return arr;
+        } else {
+            Object out = newArrayLengthFun.apply(count);
+            System.arraycopy(arr, 0, out, 0, count);
+            return  out;
+        }
+    }
+    //endregion
+
+    //region jump
     /**
      * Ignore a count of element.
      * @param arr target
@@ -482,7 +1255,9 @@ public final class ArrayHelper {
             return  out;
         }
     }
+    //endregion
 
+    //region all
     /**
      * Check if all elements on array pass on test action.
      * @param args target
@@ -524,7 +1299,9 @@ public final class ArrayHelper {
 
         return true;
     }
+    //endregion
 
+    //region any
     /**
      * Check if at least one element on array pass on test action.
      * @param args target
@@ -566,7 +1343,9 @@ public final class ArrayHelper {
 
         return false;
     }
+    //endregion
 
+    //region contains
     /**
      * Check if current array contains target element.
      * @param args target array
@@ -592,6 +1371,32 @@ public final class ArrayHelper {
     }
 
     /**
+     * Check if current array contains target element.
+     * @param arr target array
+     * @param e target element to find
+     * @param <I> element type
+     * @return true, element exists on array, otherwise, false.
+     */
+    public static <I> boolean contains(Object arr, I e){
+        return indexOf(arr, e) > -1;
+    }
+
+    /**
+     * Check if current array contains target element.
+     * @param arr target array
+     * @param e target element to find
+     * @param start start index to search
+     * @param end end length to search
+     * @param <I> element type
+     * @return true, element exists on array, otherwise, false.
+     */
+    public static <I> boolean contains(Object arr, I e, int start, int end){
+        return indexOf(arr, e, start, end) > -1;
+    }
+    //endregion
+
+    //region sequenceEquals
+    /**
      * Compare if sequence of arrays are equals.
      * @param arr0 target array
      * @param arr1 target array
@@ -611,6 +1416,30 @@ public final class ArrayHelper {
     }
 
     /**
+     * Compare if sequence of arrays are equals.
+     * @param arr0 target array
+     * @param arr1 target array
+     * @return true when both are sequential equals.
+     */
+    public static boolean sequenceEquals(Object arr0, Object arr1) {
+        int len0 = Array.getLength(Objects.requireNonNull(arr0));
+        int len1 = Array.getLength(Objects.requireNonNull(arr1));
+
+        if(len0 != len1) {
+            return false;
+        } else {
+            for(int i = 0; i < len0; i ++) {
+                if(!Objects.equals(Array.get(arr0, i), Array.get(arr1, i))) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+    //endregion
+
+    //region reverse
+    /**
      * Reverse position of array elements.
      * @param arr target array
      * @param <I> element type
@@ -619,6 +1448,19 @@ public final class ArrayHelper {
         Objects.requireNonNull(arr);
         for(int start=0, end=arr.length-1; start <= end; start++, end--) {
             I aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
+    public static void reverse(boolean[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            boolean aux = arr[start];
             arr[start] = arr[end];
             arr[end] = aux;
         }
@@ -701,4 +1543,5 @@ public final class ArrayHelper {
             arr[end] = aux;
         }
     }
+    //endregion
 }

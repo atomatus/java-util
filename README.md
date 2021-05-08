@@ -175,7 +175,7 @@ String xmlEx = s.serialize(ex1);
 ex1 = s.deserialize(xmlEx);
 ``` 
 
-Whether needs apply some particular rule for target class, use below code
+Whether desire apply some particular rule for target class, use below code
 
 ```
 Serializer.setupDefaultConfigurationXml(Example.class, x -> {
@@ -319,6 +319,27 @@ str = StringUtils.requireNonNullOrWhitespace(str, "custom message");//throws exc
 //check values
 StringUtils.isNullOrEmpty(str);
 StringUtils.isNullOrWhitespace(str);
+
+//capitalize
+StringUtils.capitalize("AbC", StringUtils.Capitalize.NONE); 
+//abc
+
+StringUtils.capitalize("AbC", StringUtils.Capitalize.ALL); 
+//ABC
+
+StringUtils.capitalize("Aa bbb ccc", StringUtils.Capitalize.FIRST_EACH_WORD);
+//Aa Bbb Ccc
+
+StringUtils.capitalize("Aa bbb ccc", StringUtils.Capitalize.ONLY_FIRST);
+//Aa bbb ccc
+
+//padLeft
+StringUtils.padLeft("1", 3, '0');
+//001
+
+//padRight
+StringUtils.padRight("1", 3, '0');
+//100
 
 //join
 str = StringUtils.join("[", "]", ", ", 0, 1, 2, 3);

@@ -2,6 +2,7 @@ package com.atomatus.util.serializer;
 
 import com.atomatus.util.StringUtils;
 import com.atomatus.util.serializer.gson.GsonHelper;
+import com.atomatus.util.serializer.wrapper.SerializerJson;
 import com.google.gson.FieldNamingStrategy;
 
 import java.io.Serializable;
@@ -9,7 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Objects;
 
-class SerializerImplJSON extends Serializer {
+class SerializerImplJSON extends SerializerImpl implements SerializerJson {
 
     //region Container
     private static class Container<T> {

@@ -1,6 +1,7 @@
 package com.atomatus.util.serializer;
 
 import com.atomatus.util.StringUtils;
+import com.atomatus.util.serializer.wrapper.SerializerXml;
 import com.atomatus.util.serializer.xstream.XStreamHelper;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
@@ -13,7 +14,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class SerializerImplXML extends Serializer {
+final class SerializerImplXML extends SerializerImpl implements SerializerXml {
 
     private String getRootElementFromSerialized(String serialized) {
         if(serialized != null) {
@@ -53,6 +54,11 @@ final class SerializerImplXML extends Serializer {
                 xs.alias(rootElement, type);
             }
         }
+    }
+
+    @Override
+    public <T extends Serializable> String from(T target, String rootElement) {
+        return serialize(target, rootElement);
     }
 
     @Override
@@ -105,4 +111,5 @@ final class SerializerImplXML extends Serializer {
             throw new SerializerException(e);
         }
     }
+
 }

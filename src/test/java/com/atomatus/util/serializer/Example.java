@@ -139,7 +139,7 @@ public class Example implements Serializable {
 
     @Override
     public String toString() {
-        return "Example{" +
+        return '{' +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", value=" + value +

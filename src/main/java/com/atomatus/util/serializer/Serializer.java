@@ -1,6 +1,10 @@
 package com.atomatus.util.serializer;
 
 import com.atomatus.util.serializer.gson.GsonHelper;
+import com.atomatus.util.serializer.wrapper.SerializerBase64;
+import com.atomatus.util.serializer.wrapper.SerializerBson;
+import com.atomatus.util.serializer.wrapper.SerializerJson;
+import com.atomatus.util.serializer.wrapper.SerializerXml;
 import com.atomatus.util.serializer.xstream.XStreamHelper;
 
 import java.io.Serializable;
@@ -34,6 +38,7 @@ import java.io.Serializable;
  */
 public abstract class Serializer {
 
+    //region getInstance
     /**
      * Serializer type.
      */
@@ -78,7 +83,43 @@ public abstract class Serializer {
                 throw new UnsupportedOperationException("Serializer type not implemented: " + type);
         }
     }
+    //endregion
 
+    //region fast instance factory
+    /**
+     * Instance of serializer for Base64.
+     * @return serializer for base64.
+     */
+    public static SerializerBase64 base64() {
+        return new SerializerImplBase64();
+    }
+
+    /**
+     * Instance of serializer for Bson.
+     * @return serializer for bson.
+     */
+    public static SerializerBson bson() {
+        return new SerializerImplBSON();
+    }
+
+    /**
+     * Instance of serializer for Json.
+     * @return serializer for json.
+     */
+    public static SerializerJson json() {
+        return new SerializerImplJSON();
+    }
+
+    /**
+     * Instance of serializer for Xml.
+     * @return serializer for xml.
+     */
+    public static SerializerXml xml() {
+        return new SerializerImplXML();
+    }
+    //endregion
+
+    //region serialize/deserialize
     /**
      * Serialize target object.
      * @param t target object
@@ -158,6 +199,7 @@ public abstract class Serializer {
     public final <T extends Serializable> T deserialize(byte[] serialized, Class<T> type) {
         return deserialize(serialized, null, type);
     }
+    //endregion
 
     //region setupDefaultConfigurationXml
     /**

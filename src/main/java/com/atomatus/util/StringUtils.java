@@ -273,8 +273,7 @@ public final class StringUtils {
     }
     //endregion
 
-    //region captalize
-
+    //region capitalize
     /**
      * Capitalize an input string.
      * @param input target
@@ -434,7 +433,6 @@ public final class StringUtils {
     //endregion
 
     //region split by size
-
     /**
      * Split current string by defined limit size.
      * @param target target string

@@ -25,7 +25,7 @@ public final class DateConverter implements Converter {
 	@Override
 	public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
 		Date date = (Date) obj;
-		String value = DateHelper.getInstance().getDate(date);
+		String value = DateHelper.getInstance().toISO8601(date);
 		writer.setValue(value);
 	}
 

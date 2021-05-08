@@ -13,7 +13,8 @@ public final class DateConverter implements JsonSerializer<Date>, JsonDeserializ
 
     @Override
     public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(DateHelper.getInstance().getDate(src));
+        String str = DateHelper.getInstance().toISO8601(src);
+        return new JsonPrimitive(str);
     }
 
     @Override

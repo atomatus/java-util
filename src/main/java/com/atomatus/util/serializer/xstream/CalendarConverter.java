@@ -25,7 +25,7 @@ public final class CalendarConverter implements Converter {
 	@Override
 	public void marshal(Object obj, HierarchicalStreamWriter writer, MarshallingContext context) {
 		Calendar calendar = (Calendar) obj;
-		String value = DateHelper.getInstance().getDate(calendar.getTime());
+		String value = DateHelper.getInstance().toISO8601(calendar);
 		writer.setValue(value);
 	}
 

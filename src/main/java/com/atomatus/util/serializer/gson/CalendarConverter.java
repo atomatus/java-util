@@ -13,7 +13,7 @@ public final class CalendarConverter implements JsonSerializer<Calendar>, JsonDe
 
     @Override
     public JsonElement serialize(Calendar src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(DateHelper.getInstance().getDate(src.getTime()));
+        return new JsonPrimitive(DateHelper.getInstance().toISO8601(src.getTime()));
     }
 
     @Override

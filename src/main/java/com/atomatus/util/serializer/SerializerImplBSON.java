@@ -1,6 +1,8 @@
 package com.atomatus.util.serializer;
 
 import com.atomatus.util.Base64;
+import com.atomatus.util.serializer.wrapper.SerializerBson;
+import com.atomatus.util.serializer.wrapper.SerializerJson;
 import org.bson.BsonBinaryWriter;
 import org.bson.BsonDocument;
 import org.bson.RawBsonDocument;
@@ -11,7 +13,7 @@ import org.bson.io.BasicOutputBuffer;
 import java.io.Serializable;
 import java.util.Objects;
 
-final class SerializerImplBSON extends SerializerImplJSON {
+final class SerializerImplBSON extends SerializerImplJSON implements SerializerBson {
 
     @Override
     public <T extends Serializable> String serialize(T t, String rootElement) {

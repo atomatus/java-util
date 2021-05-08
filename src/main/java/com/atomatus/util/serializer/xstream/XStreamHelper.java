@@ -1,5 +1,6 @@
 package com.atomatus.util.serializer.xstream;
 
+import com.atomatus.util.WarningLoggerState;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.DomDriver;
@@ -55,7 +56,17 @@ public final class XStreamHelper {
      * @return instance of XStream.
      */
     public static XStream getInstance(Class<?> classType) {
+        return WarningLoggerState
+                .getInstance()
+                .suppressWarningsFor(XStreamHelper::getInstanceLocal, classType);
+    }
 
+    /**
+     * Create a new instance of XStream with autodetect and ignoring not mapping fields.
+     * @param classType class type to identity on {@link XStreamHelper#setupDefaultConfiguration}.
+     * @return instance of XStream.
+     */
+    private static XStream getInstanceLocal(Class<?> classType) {
         XStream x = new XStream(new DomDriver(Charset.defaultCharset().name(), new XmlFriendlyNameCoder("$", "_")){
             @Override
             public HierarchicalStreamWriter createWriter(Writer out) {
