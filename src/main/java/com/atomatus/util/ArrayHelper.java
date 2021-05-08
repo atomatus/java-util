@@ -9,6 +9,7 @@ import java.util.Objects;
 @SuppressWarnings("unchecked")
 public final class ArrayHelper {
 
+    //region callbacks
     /**
      * Simple Function Callback.
      * @param <I> input type
@@ -66,6 +67,7 @@ public final class ArrayHelper {
          */
         boolean accept(I i);
     }
+    //endregion
 
     private ArrayHelper() { }
 
@@ -280,6 +282,17 @@ public final class ArrayHelper {
      * @param index index on array
      * @return new array.
      */
+    public static byte[] insertAt(byte[] arr, byte e, int index) {
+        return (byte[]) insertAt(arr, e, index, byte[]::new);
+    }
+
+    /**
+     * Insert a new element at array (on index).
+     * @param arr   target array
+     * @param e     new element to array
+     * @param index index on array
+     * @return new array.
+     */
     public static boolean[] insertAt(boolean[] arr, boolean e, int index) {
         return (boolean[]) insertAt(arr, e, index, boolean[]::new);
     }
@@ -401,6 +414,16 @@ public final class ArrayHelper {
      * @param e   new element to array
      * @return new array.
      */
+    public static byte[] push(byte[] arr, byte e) {
+        return insertAt(arr, e, 0);
+    }
+
+    /**
+     * Insert a new element at first index of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
     public static boolean[] push(boolean[] arr, boolean e) {
         return insertAt(arr, e, 0);
     }
@@ -475,6 +498,16 @@ public final class ArrayHelper {
      * @param e   new element to array
      * @return new array.
      */
+    public static byte[] add(byte[] arr, byte e) {
+        return insertAt(arr, e, arr.length);
+    }
+
+    /**
+     * Insert a new element at end of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
     public static boolean[] add(boolean[] arr, boolean e) {
         return insertAt(arr, e, arr.length);
     }
@@ -486,6 +519,16 @@ public final class ArrayHelper {
      * @return new array.
      */
     public static char[] add(char[] arr, char e) {
+        return insertAt(arr, e, arr.length);
+    }
+
+    /**
+     * Insert a new element at end of array.
+     * @param arr target array
+     * @param e   new element to array
+     * @return new array.
+     */
+    public static short[] add(short[] arr, short e) {
         return insertAt(arr, e, arr.length);
     }
 
@@ -693,7 +736,13 @@ public final class ArrayHelper {
     public static <I> I[] filter(I[] args, Filter<I> where) {
         Objects.requireNonNull(args);
         Objects.requireNonNull(where);
-        I[] out = (I[]) new Object[args.length];
+
+        if(args.length == 0) {
+            return args;
+        }
+
+        Class<?> itemClazz = args.getClass().getComponentType();
+        I[] out = (I[]) Array.newInstance(itemClazz, args.length);
         int offset = 0;
         for (I curr : args) {
             if (where.accept(curr)) {
@@ -709,8 +758,18 @@ public final class ArrayHelper {
      * @param where condition
      * @return new array with filtered items.
      */
+    public static byte[] filter(byte[] args, Filter<Byte> where) {
+        return (byte[]) filter(args, byte[]::new, where);
+    }
+
+    /**
+     * Filter current array.
+     * @param args target
+     * @param where condition
+     * @return new array with filtered items.
+     */
     public static boolean[] filter(boolean[] args, Filter<Boolean> where) {
-        return (boolean[]) filter(args, Boolean[]::new, where);
+        return (boolean[]) filter(args, boolean[]::new, where);
     }
 
     /**
@@ -720,7 +779,7 @@ public final class ArrayHelper {
      * @return new array with filtered items.
      */
     public static char[] filter(char[] args, Filter<Character> where) {
-        return (char[]) filter(args, Character[]::new, where);
+        return (char[]) filter(args, char[]::new, where);
     }
 
     /**
@@ -730,7 +789,7 @@ public final class ArrayHelper {
      * @return new array with filtered items.
      */
     public static short[] filter(short[] args, Filter<Short> where) {
-        return (short[]) filter(args, Short[]::new, where);
+        return (short[]) filter(args, short[]::new, where);
     }
 
     /**
@@ -740,7 +799,7 @@ public final class ArrayHelper {
      * @return new array with filtered items.
      */
     public static int[] filter(int[] args, Filter<Integer> where) {
-        return (int[]) filter(args, Integer[]::new, where);
+        return (int[]) filter(args, int[]::new, where);
     }
 
     /**
@@ -750,7 +809,7 @@ public final class ArrayHelper {
      * @return new array with filtered items.
      */
     public static long[] filter(long[] args, Filter<Long> where) {
-        return (long[]) filter(args, Long[]::new, where);
+        return (long[]) filter(args, long[]::new, where);
     }
 
     /**
@@ -760,7 +819,7 @@ public final class ArrayHelper {
      * @return new array with filtered items.
      */
     public static float[] filter(float[] args, Filter<Float> where) {
-        return (float[]) filter(args, Float[]::new, where);
+        return (float[]) filter(args, float[]::new, where);
     }
 
     /**
@@ -770,7 +829,7 @@ public final class ArrayHelper {
      * @return new array with filtered items.
      */
     public static double[] filter(double[] args, Filter<Double> where) {
-        return (double[]) filter(args, Double[]::new, where);
+        return (double[]) filter(args, double[]::new, where);
     }
 
     /**
@@ -787,6 +846,10 @@ public final class ArrayHelper {
         int len = Array.getLength(arr);
         int offset = 0;
 
+        if(len == 0) {
+            return arr;
+        }
+
         Object out = newArrayLengthFun.apply(len);
 
         for (int i=0; i < len; i++) {
@@ -800,215 +863,200 @@ public final class ArrayHelper {
     }
     //endregion
 
-    //region filterAs
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param <I> input type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(I[] args, Filter<I> where) {
-        return filterAsLocal(args, where);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param clazz output class type
-     * @param <I> input type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(boolean[] args, Filter<I> where, Class<I> clazz) {
-        return filterAsLocal(args, where, clazz);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(boolean[] args, Filter<I> where) {
-        return filterAsLocal(args, where);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param clazz output class type
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(char[] args, Filter<I> where, Class<I> clazz) {
-        return filterAsLocal(args, where, clazz);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(char[] args, Filter<I> where) {
-        return filterAsLocal(args, where);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param clazz output class type
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(short[] args, Filter<I> where, Class<I> clazz) {
-        return filterAsLocal(args, where, clazz);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(short[] args, Filter<I> where) {
-        return filterAsLocal(args, where);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param clazz output class type
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(int[] args, Filter<I> where, Class<I> clazz) {
-        return filterAsLocal(args, where, clazz);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(int[] args, Filter<I> where) {
-        return filterAsLocal(args, where);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param clazz output class type
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(long[] args, Filter<I> where, Class<I> clazz) {
-        return filterAsLocal(args, where, clazz);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(long[] args, Filter<I> where) {
-        return filterAsLocal(args, where);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param clazz output class type
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(float[] args, Filter<I> where, Class<I> clazz) {
-        return filterAsLocal(args, where, clazz);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(float[] args, Filter<I> where) {
-        return filterAsLocal(args, where);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param clazz output class type
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(double[] args, Filter<I> where, Class<I> clazz) {
-        return filterAsLocal(args, where, clazz);
-    }
-
-    /**
-     * Filter current array.
-     * @param args target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    public static <I> I[] filterAs(double[] args, Filter<I> where) {
-        return filterAsLocal(args, where);
-    }
-
-    /**
-     * Filter current array.
-     * @param arr target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    private static <I> I[] filterAsLocal(Object arr, Filter<I> where, Class<I> clazz) {
-        return (I[]) filter(arr, len -> Array.newInstance(clazz, len), where);
-    }
-
-    /**
-     * Filter current array.
-     * @param arr target
-     * @param where condition
-     * @param <I> output type
-     * @return new array with filtered items.
-     */
-    private static <I> I[] filterAsLocal(Object arr, Filter<I> where) {
-        return (I[]) filter(arr, Object[]::new, where);
-    }
-    //endregion
-
     //region first
     /**
      * First element on array into condition.
-     * @param args target
+     * @param arr target
      * @param where condition
      * @param <I> array type
      * @return first element into condition or null.
      */
-    public static <I> I first(I[] args, Filter<I> where) {
-        Objects.requireNonNull(args);
+    public static <I> I first(I[] arr, Filter<I> where) {
+        return firstInternal(Objects.requireNonNull(arr), 0, arr.length, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    public static <I> I first(I[] arr, int start, int end, Filter<I> where) {
+        return firstInternal(Objects.requireNonNull(arr), start, end, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static byte first(byte[] arr, Filter<Byte> where) {
+        return firstInternalOrThrowsEx(arr, 0, arr.length, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static byte first(byte[] arr, int start, int end, Filter<Byte> where) {
+        return firstInternalOrThrowsEx(arr, start, end, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static char first(char[] arr, Filter<Character> where) {
+        return firstInternalOrThrowsEx(arr, 0, arr.length, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static char first(char[] arr, int start, int end, Filter<Character> where) {
+        return firstInternalOrThrowsEx(arr, start, end, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static short first(short[] arr, Filter<Short> where) {
+        return firstInternalOrThrowsEx(arr, 0, arr.length, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static short first(short[] arr, int start, int end, Filter<Short> where) {
+        return firstInternalOrThrowsEx(arr, start, end, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static int first(int[] arr, Filter<Integer> where) {
+        return firstInternalOrThrowsEx(arr, 0, arr.length, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static int first(int[] arr, int start, int end, Filter<Integer> where) {
+        return firstInternalOrThrowsEx(arr, start, end, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static long first(long[] arr, Filter<Long> where) {
+        return firstInternalOrThrowsEx(arr, 0, arr.length, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static long first(long[] arr, int start, int end, Filter<Long> where) {
+        return firstInternalOrThrowsEx(arr, start, end, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static float first(float[] arr, Filter<Float> where) {
+        return firstInternalOrThrowsEx(arr, 0, arr.length, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static float first(float[] arr, int start, int end, Filter<Float> where) {
+        return firstInternalOrThrowsEx(arr, start, end, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static double first(double[] arr, Filter<Double> where) {
+        return firstInternalOrThrowsEx(arr, 0, arr.length, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end index
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static double first(double[] arr, int start, int end, Filter<Double> where) {
+        return firstInternalOrThrowsEx(arr, start, end, where);
+    }
+
+    /**
+     * First element on array into condition.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    private static <I> I firstInternal(Object arr, int start, int end, Filter<I> where) {
+        requireArray(arr);
         Objects.requireNonNull(where);
-        for (I curr : args) {
-            if (where.accept(curr)) {
+        end = Math.min(Array.getLength(arr), end);
+        for(int i=start; i < end; i++) {
+            I curr = (I) Array.get(arr, i);
+            if(where.accept(curr)) {
                 return curr;
             }
         }
@@ -1017,63 +1065,129 @@ public final class ArrayHelper {
 
     /**
      * First element on array into condition.
-     * @param args target
+     * @param arr target
      * @param start start index
-     * @param end end index
+     * @param end end length
      * @param where condition
-     * @param <I> array type
      * @return first element into condition or null.
      */
-    public static <I> I first(I[] args, int start, int end, Filter<I> where) {
-        Objects.requireNonNull(args);
-        Objects.requireNonNull(where);
-
-        for (int i = start; i < end; i++) {
-            if (where.accept(args[i])) {
-                return args[i];
-            }
-        }
-
-        return null;
+    private static <I> I firstInternalOrThrowsEx(Object arr, int start, int end, Filter<I> where) {
+        I i = firstInternal(arr, start, end, where);
+        if(i == null) throw new RuntimeException("Search condition does not produced no one result!");
+        return i;
     }
     //endregion
 
     //region distinct
     /**
      * Recover distinct (non duplicated) element of array.
-     * @param args target
+     * @param arr target
      * @param <I>  element type
      * @return new array with distinct elements.
      */
-    @SuppressWarnings("rawtypes")
-    public static <I> I[] distinct(I[] args) {
-        Objects.requireNonNull(args);
+    public static <I> I[] distinct(I[] arr) {
+        return (I[]) distinct(arr, i -> Array.newInstance(arr.getClass().getComponentType(), i));
+    }
 
-        if(args.length == 0) {
-            return args;
-        }
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param arr target
+     * @return new array with distinct elements.
+     */
+    public static byte[] distinct(byte[] arr){
+        return (byte[]) distinct(arr, byte[]::new);
+    }
 
-        Class<?> clazz = args[0].getClass();
-        I[] dist = (I[]) Array.newInstance(clazz, args.length);
-        int offset = 0;
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param arr target
+     * @return new array with distinct elements.
+     */
+    public static boolean[] distinct(boolean[] arr){
+        return (boolean[]) distinct(arr, boolean[]::new);
+    }
 
-        for(I i : args) {
-            if(i instanceof Comparable<?>) {
-                Comparable comp = (Comparable<?>) i;
-                if(any(dist, 0, offset, curr -> comp.compareTo(curr) == 0)){
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param arr target
+     * @return new array with distinct elements.
+     */
+    public static char[] distinct(char[] arr){
+        return (char[]) distinct(arr, char[]::new);
+    }
+
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param arr target
+     * @return new array with distinct elements.
+     */
+    public static short[] distinct(short[] arr){
+        return (short[]) distinct(arr, short[]::new);
+    }
+
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param arr target
+     * @return new array with distinct elements.
+     */
+    public static int[] distinct(int[] arr){
+        return (int[]) distinct(arr, int[]::new);
+    }
+
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param arr target
+     * @return new array with distinct elements.
+     */
+    public static long[] distinct(long[] arr){
+        return (long[]) distinct(arr, long[]::new);
+    }
+
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param arr target
+     * @return new array with distinct elements.
+     */
+    public static float[] distinct(float[] arr){
+        return (float[]) distinct(arr, float[]::new);
+    }
+
+    /**
+     * Recover distinct (non duplicated) element of array.
+     * @param arr target
+     * @return new array with distinct elements.
+     */
+    public static double[] distinct(double[] arr){
+        return (double[]) distinct(arr, double[]::new);
+    }
+
+    @SuppressWarnings({"rawtypes", "SuspiciousSystemArraycopy"})
+    private static Object distinct(Object arr, Function<Integer, Object> newArrayFunction) {
+        Objects.requireNonNull(arr);
+        int len = Array.getLength(arr);
+        if(len == 0) return arr;
+
+        Object dist = newArrayFunction.apply(len);
+        int offset  = 0;
+
+        for(int i=0; i < len; i++) {
+            Object e = Array.get(arr, i);
+            if(e instanceof Comparable<?>) {
+                Comparable comp = (Comparable<?>) e;
+                if(anyInternal(dist, 0, offset, curr -> comp.compareTo(curr) == 0)){
                     continue;
                 }
             } else if(contains(dist, i, 0, offset)) {
                 continue;
             }
 
-            dist[offset++] = i;
+            Array.set(dist, offset++, e);
         }
 
-        if(offset < dist.length) {
-            I[] aux = dist;
-            dist = (I[]) Array.newInstance(clazz, offset);
-            System.arraycopy(aux, 0, dist, 0, dist.length);
+        if(offset < len) {
+            Object aux = dist;
+            dist = newArrayFunction.apply(offset);
+            System.arraycopy(aux, 0, dist, 0, offset);
         }
 
         return dist;
@@ -1081,24 +1195,458 @@ public final class ArrayHelper {
     //endregion
 
     //region reduce
+
+    //region reduce object
     /**
      * Apply reduce operation.
-     * @param args target
+     * @param arr target
      * @param func reduce function
      * @param acc accumulator
      * @param <I> array element type
      * @param <A> accumulator element type
      * @return accumulator result.
      */
-    public static <I, A> A reduce(I[] args, Reducer<A, I> func, A acc) {
-        Objects.requireNonNull(args);
+    public static <I, A> A reduce(I[] arr, Reducer<A, I> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param <I> array element type
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <I, A extends I> A reduce(I[] arr, Reducer<A, I> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <I> array element type
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <I, A> A reduceI(I[] arr, ReducerIndex<A, I> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param <I> array element type
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <I, A extends I> A reduceI(I[] arr, ReducerIndex<A, I> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce byte
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduce(byte[] arr, Reducer<A, Byte> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduce(byte[] arr, Reducer<A, Byte> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduceI(byte[] arr, ReducerIndex<A, Byte> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduceI(byte[] arr, ReducerIndex<A, Byte> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce boolean
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduce(boolean[] arr, Reducer<A, Boolean> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @return accumulator result.
+     */
+    public static boolean reduce(boolean[] arr, Reducer<Boolean, Boolean> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduceI(boolean[] arr, ReducerIndex<A, Boolean> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @return accumulator result.
+     */
+    public static boolean reduceI(boolean[] arr, ReducerIndex<Boolean, Boolean> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce char
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduce(char[] arr, Reducer<A, Character> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @return accumulator result.
+     */
+    public static char reduce(char[] arr, Reducer<Character, Character> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduceI(char[] arr, ReducerIndex<A, Character> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @return accumulator result.
+     */
+    public static Character reduceI(char[] arr, ReducerIndex<Character, Character> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce short
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduce(short[] arr, Reducer<A, Short> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduce(short[] arr, Reducer<A, Short> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduceI(short[] arr, ReducerIndex<A, Short> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduceI(short[] arr, ReducerIndex<A, Short> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce int
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduce(int[] arr, Reducer<A, Integer> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduce(int[] arr, Reducer<A, Integer> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduceI(int[] arr, ReducerIndex<A, Integer> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduceI(int[] arr, ReducerIndex<A, Integer> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce long
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduce(long[] arr, Reducer<A, Long> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduce(long[] arr, Reducer<A, Long> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduceI(long[] arr, ReducerIndex<A, Long> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduceI(long[] arr, ReducerIndex<A, Long> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce float
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduce(float[] arr, Reducer<A, Float> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduce(float[] arr, Reducer<A, Float> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduceI(float[] arr, ReducerIndex<A, Float> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduceI(float[] arr, ReducerIndex<A, Float> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce double
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduce(double[] arr, Reducer<A, Double> func, A acc) {
+        return reduceInternal(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduce(double[] arr, Reducer<A, Double> func) {
+        return reduceInternal(arr, func, null);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A> A reduceI(double[] arr, ReducerIndex<A, Double> func, A acc) {
+        return reduceInternalI(arr, func, acc);
+    }
+
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    public static <A extends Number> A reduceI(double[] arr, ReducerIndex<A, Double> func) {
+        return reduceInternalI(arr, func, null);
+    }
+    //endregion
+
+    //region reduce internal
+    /**
+     * Apply reduce operation.
+     * @param arr target
+     * @param func reduce function with index
+     * @param acc accumulator
+     * @param <I> array element type
+     * @param <A> accumulator element type
+     * @return accumulator result.
+     */
+    private static <I, A> A reduceInternalI(Object arr, ReducerIndex<A, I> func, A acc) {
+        Objects.requireNonNull(arr);
         Objects.requireNonNull(func);
-        for(int i=0,l=args.length; i < l; i++) {
+        int length = Array.getLength(arr);
+        for(int i = 0; i < length; i++) {
             if(i == 0 && acc == null) {
-                //noinspection unchecked
-                acc = (A) args[i];
+                acc = (A) Array.get(arr, i);
             } else {
-                acc = func.apply(acc, args[i]);
+                acc = func.apply(acc, (I) Array.get(arr, i), i);
             }
         }
         return acc;
@@ -1106,50 +1654,28 @@ public final class ArrayHelper {
 
     /**
      * Apply reduce operation.
-     * @param args target
+     * @param arr target
      * @param func reduce function
-     * @param <I> array element type
-     * @param <A> accumulator element type
-     * @return accumulator result.
-     */
-    public static <I, A extends I> A reduce(I[] args, Reducer<A, I> func) {
-        return reduce(args, func, null);
-    }
-
-    /**
-     * Apply reduce operation.
-     * @param args target
-     * @param func reduce function with index
      * @param acc accumulator
      * @param <I> array element type
      * @param <A> accumulator element type
      * @return accumulator result.
      */
-    public static <I, A> A reduceI(I[] args, ReducerIndex<A, I> func, A acc) {
-        Objects.requireNonNull(args);
+    private static <I, A> A reduceInternal(Object arr, Reducer<A, I> func, A acc) {
+        Objects.requireNonNull(arr);
         Objects.requireNonNull(func);
-        for(int i=0,l=args.length; i < l; i++) {
+        int length = Array.getLength(arr);
+        for(int i = 0; i < length; i++) {
             if(i == 0 && acc == null) {
-                //noinspection unchecked
-                acc = (A) args[i];
+                acc = (A) Array.get(arr, i);
             } else {
-                acc = func.apply(acc, args[i], i);
+                acc = func.apply(acc, (I) Array.get(arr, i));
             }
         }
         return acc;
     }
+    //endregion
 
-    /**
-     * Apply reduce operation.
-     * @param args target
-     * @param func reduce function with index
-     * @param <I> array element type
-     * @param <A> accumulator element type
-     * @return accumulator result.
-     */
-    public static <I, A extends I> A reduceI(I[] args, ReducerIndex<A, I> func) {
-        return reduceI(args, func, null);
-    }
     //endregion
 
     //region take
@@ -1161,13 +1687,7 @@ public final class ArrayHelper {
      * @return new array.
      */
     public static <I> I[] take(I[] arr, int count) {
-        if(count >= Objects.requireNonNull(arr).length) {
-            return arr;
-        } else {
-            I[] out = (I[]) new Object[count];
-            System.arraycopy(arr, 0, out, 0, count);
-            return  out;
-        }
+        return (I[]) take(arr, count, l -> Array.newInstance(arr.getClass().getComponentType(), l));
     }
 
     /**
@@ -1188,6 +1708,16 @@ public final class ArrayHelper {
      */
     public static boolean[] take(boolean[] arr, int count) {
         return (boolean[]) take(arr, count, boolean[]::new);
+    }
+
+    /**
+     * Take a count of elements.
+     * @param arr target
+     * @param count count to take
+     * @return new array.
+     */
+    public static char[] take(char[] arr, int count) {
+        return (char[]) take(arr, count, char[]::new);
     }
 
     /**
@@ -1249,7 +1779,11 @@ public final class ArrayHelper {
     @SuppressWarnings("SuspiciousSystemArraycopy")
     private static Object take(Object arr, int count,
                                Function<Integer, Object> newArrayLengthFun) {
-        if(count >= Array.getLength(Objects.requireNonNull(arr))) {
+        if(count < 0) {
+            throw new IndexOutOfBoundsException();
+        } else if(count == 0) {
+            return newArrayLengthFun.apply(0);
+        } else if(count >= Array.getLength(Objects.requireNonNull(arr))) {
             return arr;
         } else {
             Object out = newArrayLengthFun.apply(count);
@@ -1268,55 +1802,364 @@ public final class ArrayHelper {
      * @return new array after count.
      */
     public static <I> I[] jump(I[] arr, int count) {
+        return (I[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    public static byte[] jump(byte[] arr, int count) {
+        return (byte[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    public static boolean[] jump(boolean[] arr, int count) {
+        return (boolean[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    public static char[] jump(char[] arr, int count) {
+        return (char[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    public static short[] jump(short[] arr, int count) {
+        return (short[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    public static int[] jump(int[] arr, int count) {
+        return (int[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    public static long[] jump(long[] arr, int count) {
+        return (long[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    public static float[] jump(float[] arr, int count) {
+        return (float[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    public static double[] jump(double[] arr, int count) {
+        return (double[]) jumpInternal(arr, count);
+    }
+
+    /**
+     * Ignore a count of element.
+     * @param arr target
+     * @param count count to be ignored
+     * @return new array after count.
+     */
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    private static Object jumpInternal(Object arr, int count) {
         Objects.requireNonNull(arr);
+
         if(count <= 0) {
             return arr;
-        } else if(count >= arr.length) {
-            return (I[]) new Object[0];
+        }
+
+        int length = Array.getLength(arr);
+        if(count >= length) {
+            return Array.newInstance(arr.getClass().getComponentType(), 0);
         } else {
-            I[] out = (I[]) new Object[arr.length - count];
-            System.arraycopy(arr, count, out, 0, out.length);
+            int diff = length - count;
+            Object out = Array.newInstance(arr.getClass().getComponentType(), diff);
+            System.arraycopy(arr, count, out, 0, diff);
             return  out;
         }
     }
     //endregion
 
     //region all
+
+    //region all object
     /**
-     * Check if all elements on array pass on test action.
-     * @param args target
+     * Check whether all elements on array pass on test action.
+     * @param arr target
      * @param start start index
      * @param end end length
      * @param where condition
      * @param <I> array type
      * @return first element into condition or null.
      */
-    public static <I> boolean all(I[] args, int start, int end, Filter<I> where) {
-        Objects.requireNonNull(args);
-        Objects.requireNonNull(where);
-
-        for (int i = start; i < end; i++) {
-            if (!where.accept(args[i])) {
-                return false;
-            }
-        }
-
-        return true;
+    public static <I> boolean all(I[] arr, int start, int end, Filter<I> where) {
+        return allInternal(arr, start, end, where);
     }
 
     /**
-     * Check if all elements on array pass on test action.
-     * @param args target
+     * Check whether all elements on array pass on test action.
+     * @param arr target
      * @param where condition
      * @param <I> array type
      * @return first element into condition or null.
      */
-    public static <I> boolean all(I[] args, Filter<I> where) {
-        Objects.requireNonNull(args);
+    public static <I> boolean all(I[] arr, Filter<I> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all byte
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(byte[] arr, int start, int end, Filter<Byte> where) {
+        return allInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(byte[] arr, Filter<Byte> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all boolean
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(boolean[] arr, int start, int end, Filter<Boolean> where) {
+        return allInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(boolean[] arr, Filter<Boolean> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all char
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(char[] arr, int start, int end, Filter<Character> where) {
+        return allInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(char[] arr, Filter<Character> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all short
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(short[] arr, int start, int end, Filter<Short> where) {
+        return allInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(short[] arr, Filter<Short> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all int
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(int[] arr, int start, int end, Filter<Integer> where) {
+        return allInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(int[] arr, Filter<Integer> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all long
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(long[] arr, int start, int end, Filter<Long> where) {
+        return allInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(long[] arr, Filter<Long> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all float
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(float[] arr, int start, int end, Filter<Float> where) {
+        return allInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(float[] arr, Filter<Float> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all double
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(double[] arr, int start, int end, Filter<Double> where) {
+        return allInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean all(double[] arr, Filter<Double> where) {
+        return allInternal(arr, where);
+    }
+    //endregion
+
+    //region all internal
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    public static <I> boolean allInternal(Object arr, Filter<I> where) {
+        Objects.requireNonNull(arr);
+        return allInternal(arr, 0, Array.getLength(arr), where);
+    }
+
+    /**
+     * Check whether all elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    private static <I> boolean allInternal(Object arr, int start, int end, Filter<I> where) {
+        Objects.requireNonNull(arr);
         Objects.requireNonNull(where);
 
-        for (I arg : args) {
-            if (!where.accept(arg)) {
+        for (int i = start; i < end; i++) {
+            I e = (I) Array.get(arr, i);
+            if (!where.accept(e)) {
                 return false;
             }
         }
@@ -1325,48 +2168,261 @@ public final class ArrayHelper {
     }
     //endregion
 
+    //endregion
+
     //region any
+
+    //region any object
     /**
-     * Check if at least one element on array pass on test action.
-     * @param args target
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
      * @param start start index
      * @param end end length
      * @param where condition
      * @param <I> array type
      * @return first element into condition or null.
      */
-    public static <I> boolean any(I[] args, int start, int end, Filter<I> where) {
-        Objects.requireNonNull(args);
-        Objects.requireNonNull(where);
-
-        for (int i = start; i < end; i++) {
-            if (where.accept(args[i])) {
-                return true;
-            }
-        }
-
-        return false;
+    public static <I> boolean any(I[] arr, int start, int end, Filter<I> where) {
+        return anyInternal(arr, start, end, where);
     }
 
     /**
-     * Check if at least one array on iterable pass on test action.
-     * @param args target
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
      * @param where condition
      * @param <I> array type
      * @return first element into condition or null.
      */
-    public static <I> boolean any(I[] args, Filter<I> where) {
-        Objects.requireNonNull(args);
-        Objects.requireNonNull(where);
+    public static <I> boolean any(I[] arr, Filter<I> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
 
-        for (I arg : args) {
-            if (where.accept(arg)) {
+    //region any byte
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(byte[] arr, int start, int end, Filter<Byte> where) {
+        return anyInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(byte[] arr, Filter<Byte> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
+
+    //region any boolean
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(boolean[] arr, int start, int end, Filter<Boolean> where) {
+        return anyInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(boolean[] arr, Filter<Boolean> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
+
+    //region any char
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(char[] arr, int start, int end, Filter<Character> where) {
+        return anyInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(char[] arr, Filter<Character> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
+
+    //region any short
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(short[] arr, int start, int end, Filter<Short> where) {
+        return anyInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(short[] arr, Filter<Short> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
+
+    //region any int
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(int[] arr, int start, int end, Filter<Integer> where) {
+        return anyInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(int[] arr, Filter<Integer> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
+
+    //region any long
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(long[] arr, int start, int end, Filter<Long> where) {
+        return anyInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(long[] arr, Filter<Long> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
+
+    //region any float
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(float[] arr, int start, int end, Filter<Float> where) {
+        return anyInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(float[] arr, Filter<Float> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
+
+    //region any double
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(double[] arr, int start, int end, Filter<Double> where) {
+        return anyInternal(arr, start, end, where);
+    }
+
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @return first element into condition or null.
+     */
+    public static boolean any(double[] arr, Filter<Double> where) {
+        return anyInternal(arr, where);
+    }
+    //endregion
+
+    //region any internal
+    /**
+     * Check whether least one elements on array pass on test action.
+     * @param arr target
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    public static <I> boolean anyInternal(Object arr, Filter<I> where) {
+        Objects.requireNonNull(arr);
+        return anyInternal(arr, 0, Array.getLength(arr), where);
+    }
+
+    /**
+     * Check if at least one array on iterable pass on test action.
+     * @param arr target
+     * @param start start index
+     * @param end end length
+     * @param where condition
+     * @param <I> array type
+     * @return first element into condition or null.
+     */
+    private static <I> boolean anyInternal(Object arr, int start, int end, Filter<I> where) {
+        for(int i=start; i < end; i++) {
+            I e = (I) Array.get(arr, i);
+            if(where.accept(e)) {
                 return true;
             }
         }
-
         return false;
     }
+    //endregion
+
     //endregion
 
     //region contains
@@ -1481,6 +2537,32 @@ public final class ArrayHelper {
      * Reverse position of array elements.
      * @param arr target array
      */
+    public static void reverse(byte[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            byte aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
+    public static void reverse(char[] arr) {
+        Objects.requireNonNull(arr);
+        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
+            char aux = arr[start];
+            arr[start] = arr[end];
+            arr[end] = aux;
+        }
+    }
+
+    /**
+     * Reverse position of array elements.
+     * @param arr target array
+     */
     public static void reverse(boolean[] arr) {
         Objects.requireNonNull(arr);
         for(int start=0, end=arr.length-1; start <= end; start++, end--) {
@@ -1524,19 +2606,6 @@ public final class ArrayHelper {
         Objects.requireNonNull(arr);
         for(int start=0, end=arr.length-1; start <= end; start++, end--) {
             long aux = arr[start];
-            arr[start] = arr[end];
-            arr[end] = aux;
-        }
-    }
-
-    /**
-     * Reverse position of array elements.
-     * @param arr target array
-     */
-    public static void reverse(byte[] arr) {
-        Objects.requireNonNull(arr);
-        for(int start=0, end=arr.length-1; start <= end; start++, end--) {
-            byte aux = arr[start];
             arr[start] = arr[end];
             arr[end] = aux;
         }
