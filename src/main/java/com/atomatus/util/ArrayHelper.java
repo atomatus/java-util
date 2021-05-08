@@ -805,6 +805,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param <I> input type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(I[] args, Filter<I> where) {
@@ -815,6 +816,8 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param clazz output class type
+     * @param <I> input type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(boolean[] args, Filter<I> where, Class<I> clazz) {
@@ -825,6 +828,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(boolean[] args, Filter<I> where) {
@@ -835,6 +839,8 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param clazz output class type
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(char[] args, Filter<I> where, Class<I> clazz) {
@@ -845,6 +851,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(char[] args, Filter<I> where) {
@@ -855,6 +862,8 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param clazz output class type
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(short[] args, Filter<I> where, Class<I> clazz) {
@@ -865,6 +874,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(short[] args, Filter<I> where) {
@@ -875,6 +885,8 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param clazz output class type
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(int[] args, Filter<I> where, Class<I> clazz) {
@@ -885,6 +897,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(int[] args, Filter<I> where) {
@@ -895,6 +908,8 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param clazz output class type
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(long[] args, Filter<I> where, Class<I> clazz) {
@@ -905,6 +920,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(long[] args, Filter<I> where) {
@@ -915,6 +931,8 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param clazz output class type
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(float[] args, Filter<I> where, Class<I> clazz) {
@@ -925,6 +943,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(float[] args, Filter<I> where) {
@@ -935,6 +954,8 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param clazz output class type
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(double[] args, Filter<I> where, Class<I> clazz) {
@@ -945,6 +966,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param args target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     public static <I> I[] filterAs(double[] args, Filter<I> where) {
@@ -955,6 +977,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param arr target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     private static <I> I[] filterAsLocal(Object arr, Filter<I> where, Class<I> clazz) {
@@ -965,6 +988,7 @@ public final class ArrayHelper {
      * Filter current array.
      * @param arr target
      * @param where condition
+     * @param <I> output type
      * @return new array with filtered items.
      */
     private static <I> I[] filterAsLocal(Object arr, Filter<I> where) {
