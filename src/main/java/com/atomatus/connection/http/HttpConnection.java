@@ -5,6 +5,7 @@ import com.atomatus.connection.http.exception.SecureContextCredentialsException;
 import com.atomatus.connection.http.exception.URLConnectionException;
 import com.atomatus.util.Base64;
 import com.atomatus.util.StringUtils;
+import com.atomatus.util.cache.CacheControl;
 import com.atomatus.util.serializer.Serializer;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -15,6 +16,7 @@ import java.net.*;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -36,7 +38,9 @@ public class HttpConnection {
 	 */
 	public static final String SCHEME_HTTPS = "https://";
 
-	private static final int BUFFER_LENGTH = 2048;
+	private static final int BUFFER_LENGTH;
+	private static final int DEFAULT_CACHE_MAX_AGE_IN_SEC;
+	private static final int CACHE_ID;
 
 	private static CookieManager cookieManager;
 
@@ -49,10 +53,14 @@ public class HttpConnection {
 	private Charset charset;
 	private String username, password;
 	private String contentType;
-	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, isUseBasicAuth, useSecureContext;
+	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, useCache, isUseBasicAuth, useSecureContext;
 
 	private int connectionTimeOut;
 	private int readTimeOut;
+	private int cacheId;
+	private long cacheMaxAge;
+	private TimeUnit cacheTimeUnit;
+	private CacheMode cacheMode;
 	private StatusCode[] acceptRespCode;
 	private SecureProtocols protocol;
 	private SecureContextCredentials secureContextCredentials;
@@ -651,6 +659,27 @@ public class HttpConnection {
 		}
 	}
 
+	/**
+	 * Cache modes.
+	 */
+	public enum CacheMode {
+		/**
+		 * Keep cache data in memory
+		 */
+		MEMORY,
+
+		/**
+		 * Keep cache data stored releasing memory space.
+		 */
+		STORED
+	}
+
+	static  {
+		BUFFER_LENGTH = 2048;
+		DEFAULT_CACHE_MAX_AGE_IN_SEC = 3600;
+		CACHE_ID = UUID.randomUUID().hashCode();
+	}
+
 	{
 		connectionTimeOut = readTimeOut = 5000;
 		proxyLock = new Object();
@@ -682,6 +711,19 @@ public class HttpConnection {
 	public HttpConnection useBasicAuth() {
 		this.isUseBasicAuth = true;
 		return this;
+	}
+
+	/**
+	 * Enable cache for requests (GET method)
+	 * with default max age ({@link #DEFAULT_CACHE_MAX_AGE_IN_SEC}).
+	 * @return current instance.
+	 */
+	public HttpConnection useCache() {
+		this.useCache = true;
+		if(cacheMode == null) cacheMode = CacheMode.MEMORY;
+		if(cacheId == 0) cacheId = CACHE_ID;
+		return cacheTimeUnit != null ? this :
+				this.setCacheMaxAge(DEFAULT_CACHE_MAX_AGE_IN_SEC, TimeUnit.SECONDS);
 	}
 
 	/**
@@ -777,6 +819,47 @@ public class HttpConnection {
 		Authenticator.setDefault(new ProxyAuthenticator(
 				this.username = StringUtils.requireNonNullOrWhitespace(username, "Authentication: User name not set!"),
 				this.password = StringUtils.requireNonNullOrEmpty(password, "Authentication: Password not set!")));
+		return this;
+	}
+
+	/**
+	 * <p>Set cache id.</p>
+	 * <i>Warning: Use cache id whether you have to isolate cache, otherwise
+	 * does not set it to use shared cache for all HttpConnection cached.</i>
+	 * @param cacheId cache id
+	 * @return current instance.
+	 * @throws IllegalArgumentException throws if cache id is equals 0 (zero).
+	 */
+	public HttpConnection setCacheId(int cacheId) {
+		if(cacheId == 0) throw new IllegalArgumentException("Cache id can not be equals 0 (zero)!");
+		this.cacheId = cacheId;
+		return this;
+	}
+
+	/**
+	 * Set cache max age by target request.
+	 * @param cacheMaxAge cache max age.
+	 * @param cacheTimeUnit cache max age time unit.
+	 * @return current instance.
+	 * @throws IllegalArgumentException throws when cache max age is less or equals zero.
+	 * @throws NullPointerException throws when cache time unit is null.
+	 */
+	public HttpConnection setCacheMaxAge(long cacheMaxAge, TimeUnit cacheTimeUnit) {
+		if(cacheMaxAge <= 0) throw new IllegalArgumentException("Max age can not be equals or less then 0!");
+		if(cacheTimeUnit == null) throw new NullPointerException();
+		this.cacheMaxAge = cacheMaxAge;
+		this.cacheTimeUnit = cacheTimeUnit;
+		return this;
+	}
+
+	/**
+	 * Set cache mode.
+	 * @param mode cache mode
+	 * @return current instance.
+	 * @throws NullPointerException throws when cache mode is null.
+	 */
+	public HttpConnection setCacheMode(CacheMode mode) {
+		this.cacheMode = Objects.requireNonNull(mode);
 		return this;
 	}
 
@@ -1256,39 +1339,76 @@ public class HttpConnection {
 		this.updateCookies(con);
 	}
 
-	private Response getResponse(HttpURLConnection con) {
-		return Response.builder()
-				.useConnection(con)
+	private Response.Builder getResponseBuilder() {
+		return new Response.Builder()
 				.useCharset(this.charset)
 				.useBufferLength(BUFFER_LENGTH)
 				.useSuccessResponseFun(this::containsHttpResponseCode)
 				.useInputStreamFun(this::resolveInputStream)
 				.useErrorStreamFun(this::resolveErrorStream)
-				.useFinallyAction(this::finallyHttpUrlConn)
+				.useFinallyAction(this::finallyHttpUrlConn);
+	}
+
+	private Response getResponse(HttpURLConnection con) {
+		return getResponseBuilder()
+				.useConnection(con)
 				.build();
+	}
+
+	private Response getResponseCached(URL url,
+									   ResponseParameter.FunctionIO<URL, HttpURLConnection> conFun) {
+		return getResponseBuilder()
+				.useUrl(url)
+				.useConnectionFun(conFun)
+				.useCacheFun(this::getCache)
+				.build();
+	}
+	//endregion
+
+	//region cached Response
+	private CacheControl getCache() {
+		if(useCache) {
+			switch (cacheMode) {
+				case MEMORY:
+					return CacheControl.memory(cacheId)
+							.maxAge(cacheMaxAge, cacheTimeUnit);
+				case STORED:
+					return CacheControl.stored(cacheId)
+							.maxAge(cacheMaxAge, cacheTimeUnit);
+				default:
+					throw new UnsupportedOperationException();
+			}
+		}
+		return null;
 	}
 	//endregion
 
 	//region get and send
 	private Response get(URL url, Parameter... params) throws URLConnectionException {
-		HttpURLConnection con;
 
+		//region prepare url
 		try {
 			url = addParameters(url, params);
-			con = this.openConnection(url, RequestType.GET, 0, params);
 		} catch (MalformedURLException e) {
 			throw new URLConnectionException(
 					"An error occurred while attempt to add parameters to URL:\n" + e.getMessage());
 		}
+		//endregion
 
-		try {
-			con.connect();
-		} catch (IOException e) {
-			throw new URLConnectionException(
-					"An error occurred while attempt to connect on \"" + url + "\" :\n" + e.getMessage());
-		}
-
-		return this.getResponse(con);
+		//cached or new request
+		return this.getResponseCached(url, (u) -> {
+			//region new request
+			HttpURLConnection con;
+			try {
+				con = this.openConnection(u, RequestType.GET, 0, params);
+				con.connect();
+				return con;
+			} catch (IOException e) {
+				throw new URLConnectionException(
+						"An error occurred while attempt to connect on \"" + u + "\" :\n" + e.getMessage());
+			}
+		});
+		//endregion
 	}
 
 	private Response get(String url, Parameter... params) throws URLConnectionException {
@@ -1331,7 +1451,7 @@ public class HttpConnection {
 		} catch (IOException e) {
 			if(con != null) con.disconnect();
 			throw new URLConnectionException(
-					"An error occurred while attempt to post datas:\n" + e.getMessage());
+					"An error occurred while attempt to post data:\n" + e.getMessage());
 		}
 	}
 
