@@ -241,6 +241,104 @@ public final class ArrayHelper {
     }
     //endregion
 
+    //region copy
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @param <E> array element type
+     * @return new array within same elements references.
+     */
+    public static <E> E[] copy(E[] arr) {
+        return (E[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    public static byte[] copy(byte[] arr) {
+        return (byte[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    public static boolean[] copy(boolean[] arr) {
+        return (boolean[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    public static char[] copy(char[] arr) {
+        return (char[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    public static short[] copy(short[] arr) {
+        return (short[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    public static int[] copy(int[] arr) {
+        return (int[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    public static long[] copy(long[] arr) {
+        return (long[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    public static float[] copy(float[] arr) {
+        return (float[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    public static double[] copy(double[] arr) {
+        return (double[]) copyInternal(arr);
+    }
+
+    /**
+     * Generate an array copy within same elements references.
+     * @param arr target array
+     * @return new array within same elements references.
+     */
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    private static Object copyInternal(Object arr) {
+        requireArray(arr);
+        int len = Array.getLength(arr);
+        Object aux = Array.newInstance(arr.getClass().getComponentType(), len);
+        System.arraycopy(arr, 0, aux, 0, len);
+        return aux;
+    }
+    //endregion
+
     //region insertAt
     /**
      * Insert a new element at object array (on index).
@@ -2635,6 +2733,371 @@ public final class ArrayHelper {
             arr[start] = arr[end];
             arr[end] = aux;
         }
+    }
+    //endregion
+
+    //region resize
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @param <T> array type.
+     * @return new array resized.
+     */
+    public static <T> T[] resize(T[] arr, int len) {
+        return (T[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    public static byte[] resize(byte[] arr, int len) {
+        return (byte[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    public static boolean[] resize(boolean[] arr, int len) {
+        return (boolean[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    public static char[] resize(char[] arr, int len) {
+        return (char[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    public static short[] resize(short[] arr, int len) {
+        return (short[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    public static int[] resize(int[] arr, int len) {
+        return (int[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    public static long[] resize(long[] arr, int len) {
+        return (long[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    public static float[] resize(float[] arr, int len) {
+        return (float[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    public static double[] resize(double[] arr, int len) {
+        return (double[]) resizeInternal(arr, len);
+    }
+
+    /**
+     * Resize target array to new length.
+     * @param arr target array
+     * @param len new array length
+     * @return new array resized.
+     */
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    private static Object resizeInternal(Object arr, int len) {
+        int arrLen = Array.getLength(Objects.requireNonNull(arr));
+        if(len <= 0) {
+            throw new IllegalArgumentException("Length can not be less or equals 0 (zero)!");
+        }
+        Object aux = Array.newInstance(arr.getClass().getComponentType(), len);
+        System.arraycopy(arr, 0, aux, 0, Math.min(len, arrLen));
+        return aux;
+    }
+    //endregion
+
+    //region join
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @param <T> array type
+     * @return joined arrays
+     */
+    public static <T> T[] join(T[] arr, T[]... args) {
+        return (T[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @param <T> array type
+     * @return joined arrays
+     */
+    public static <T> T[] join(T[] arr, T[] arg, int start, int end) {
+        return (T[]) joinInternal(arr, arg, start, end);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @return joined arrays
+     */
+    public static byte[] join(byte[] arr, byte[]... args) {
+        return (byte[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @return joined arrays
+     */
+    public static byte[] join(byte[] arr, byte[] arg, int start, int end) {
+        return (byte[]) joinInternal(arr, arg, start, end);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @return joined arrays
+     */
+    public static boolean[] join(boolean[] arr, boolean[]... args) {
+        return (boolean[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @return joined arrays
+     */
+    public static boolean[] join(boolean[] arr, boolean[] arg, int start, int end) {
+        return (boolean[]) joinInternal(arr, arg, start, end);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @return joined arrays
+     */
+    public static char[] join(char[] arr, char[]... args) {
+        return (char[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @return joined arrays
+     */
+    public static char[] join(char[] arr, char[] arg, int start, int end) {
+        return (char[]) joinInternal(arr, arg, start, end);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @return joined arrays
+     */
+    public static short[] join(short[] arr, short[]... args) {
+        return (short[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @return joined arrays
+     */
+    public static short[] join(short[] arr, short[] arg, int start, int end) {
+        return (short[]) joinInternal(arr, arg, start, end);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @return joined arrays
+     */
+    public static int[] join(int[] arr, int[]... args) {
+        return (int[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @return joined arrays
+     */
+    public static int[] join(int[] arr, int[] arg, int start, int end) {
+        return (int[]) joinInternal(arr, arg, start, end);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @return joined arrays
+     */
+    public static long[] join(long[] arr, long[]... args) {
+        return (long[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @return joined arrays
+     */
+    public static long[] join(long[] arr, long[] arg, int start, int end) {
+        return (long[]) joinInternal(arr, arg, start, end);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @return joined arrays
+     */
+    public static float[] join(float[] arr, float[]... args) {
+        return (float[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @return joined arrays
+     */
+    public static float[] join(float[] arr, float[] arg, int start, int end) {
+        return (float[]) joinInternal(arr, arg, start, end);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param args targets to join
+     * @return joined arrays
+     */
+    public static double[] join(double[] arr, double[]... args) {
+        return (double[]) joinInternal(arr, args);
+    }
+
+    /**
+     * Join arrays.
+     * @param arr current array
+     * @param arg target array to join
+     * @param start start index of target array
+     * @param end count of element of target array to join.
+     * @return joined arrays
+     */
+    public static double[] join(double[] arr, double[] arg, int start, int end) {
+        return (double[]) joinInternal(arr, arg, start, end);
+    }
+
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    private static Object joinInternal(Object arr, Object arg, int start, int end) {
+        int arrLen = Array.getLength(Objects.requireNonNull(arr));
+        int argLen = Array.getLength(Objects.requireNonNull(arg)) - start;
+
+        if(start < 0 || start >= argLen || start > end || end > argLen) {
+            throw new IndexOutOfBoundsException();
+        } else if((argLen = end) == 0) {
+            return arr;
+        }
+
+        int len     = arrLen + argLen;
+        Object res  = Array.newInstance(arr.getClass().getComponentType(), len);
+        System.arraycopy(arr, 0, res, 0, arrLen);
+        System.arraycopy(arg, start, res, arrLen, argLen);
+        return res;
+    }
+
+    @SuppressWarnings("SuspiciousSystemArraycopy")
+    private static Object joinInternal(Object arr, Object args) {
+        Objects.requireNonNull(arr);
+
+        int arrLen  = Array.getLength(arr);//arr length
+        int argsLen = Array.getLength(args); //args length
+
+        if(argsLen == 0) {
+            return arr;
+        }
+
+        int len = reduceInternal(args, (acc, curr) -> acc + Array.getLength(curr), arrLen);//accumulate length
+
+        if(len == arrLen) {
+            return arr;
+        }
+
+        //result.
+        Object result = Array.newInstance(arr.getClass().getComponentType(), len);
+
+        //from arr to result.
+        int offset = 0;
+        System.arraycopy(arr, 0, result, offset, offset += arrLen);
+
+        //from each args to result.
+        for (int i=0; i < argsLen; i++) {
+            Object argArr  = Array.get(args, i);
+            int currArgLen = Array.getLength(argArr);
+            System.arraycopy(argArr, 0, result, offset, currArgLen);
+            offset += currArgLen;
+        }
+
+        return result;
     }
     //endregion
 }

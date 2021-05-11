@@ -11,12 +11,22 @@ import java.util.Random;
  */
 class NumberEncryptor extends Encryptor {
 
+	/**
+	 * Generate a random key for number encryptor.
+	 * @return random key.
+	 */
+	public static String generateKey() {
+		return KeyGenerator.generateRandomKey(KEYSIZE);
+	}
+
 	public final static int COUNT					= 3;
 	public final static int GENERATOR_KEY_LENGTH	= 4;
 	public final static int MAX_VALUE				= 30;
 
 	private final static int MIN_SEP_CHAR 			= 71;
 	private final static int MAX_SEP_CHAR 			= 90;
+
+	private final static int KEYSIZE				= 4;
 
 	private String privateKey;
 	private final boolean hasLog;
@@ -284,9 +294,30 @@ class NumberEncryptor extends Encryptor {
 		return result;
 	}
 
+	@Override
+	public byte[] encrypt(byte[] original) {
+		return this.encrypt(new String(original)).getBytes();
+	}
+
+	@Override
+	public byte[] encrypt(byte[] original, int offset, int len) {
+		return this.encrypt(new String(original, offset, len)).getBytes();
+	}
+
 	public String decrypt(String encrypted) {
 		return this.decryptValue(encrypted)[0];
 	}
+
+	@Override
+	public byte[] decrypt(byte[] encrypted) {
+		return this.decrypt(new String(encrypted)).getBytes();
+	}
+
+	@Override
+	public byte[] decrypt(byte[] encrypted, int offset, int len) {
+		return this.decrypt(new String(encrypted, offset, len)).getBytes();
+	}
+
 	//endregion
 
 }

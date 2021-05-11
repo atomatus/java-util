@@ -76,6 +76,24 @@ Example of action POST with URL Parameter, Query Parameter and Body Parameter
 //url: https://test.com/api/urlParamExample/json?param=queryParamExample
 ```
 
+Example of action GET Cached
+
+```
+ try (Response resp = new HttpConnection()
+        .useCache()//enable cache
+        .setCacheMaxAge(60L, TimeUnit.SECONDS)//cache data max age
+        .setCacheId(cacheId)//if defined, create an isolated cache, otherwise use global cache.
+        .getContent("https://test.com/api/{0}/json",            
+            Parameter.buildQuery("urlParamExample"))) {
+                String result = resp.getContent();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+//url: https://test.com/api/urlParamExample/json
+//all other requests (using cacheId) will use cached data into 60 seconds, then request again.
+```
+
+
 ## 🔌 Socket Connection
 Simple way for socket Client/Server connection.
 
@@ -129,7 +147,9 @@ Vendor v = MacVendors.getInstance().find("BC:92:6B:FF:FF:FF");
 ```
 
 ## 🔒 Security
-Encryptors types and helper for random key generator.
+
+### Encryptors  
+Encrypt and decrypt data ysing CIPHER, NUMERIC or NUMERIC_MATRIX.
 
 ```
 //example encryptor build.
@@ -142,6 +162,9 @@ String result   = e.encrypt("target");
 String original = e.decrypt(result);
 
 ```
+
+### Key Generator
+Generate random key decimal, hexadecimal or alpha numeric. 
 
 ````
 //random decimal.
@@ -164,6 +187,81 @@ System.out.println(KeyGenerator.generateRandomKeyAlphaNumeric())
 ``JYUSDFLBOR``
 
 ``Q8E5W2G8BP``
+
+### Sensitive Bytes
+Write data ciphered in memory to protect againt access violation,
+using SensitiveBytes, SentitiveChars or SensitiveData classes.
+Keeping ciphered data in memory or storing in temp file to free memory.
+
+```
+//Sensitive bytes
+byte[] str = "This is a sensitive string!".getBytes();
+SensitiveBytes sb0 = SensitiveBytes.of(str);//instance inputing bytes
+
+// and/or
+
+//append data
+SensitiveBytes sb0 = new SensitiveBytes()
+                .append((byte) 'A')
+                .append((byte) 'B')
+                .append((byte) 'C')
+                .append((byte) 'D');
+
+//data is ciphered
+byte[] res = sb0.readAll();//now, deciphering back to read.
+
+//reading by index
+byte b = sb0.read(0);
+//b = 'A' (byte)
+
+//reading by range
+byte[] range = sb0.read(0, 2);
+//range = ['A', 'B'] (byte)
+
+//reading by iterator loop
+for (Byte b : sb0) {
+  //todo
+}
+
+//reading as stream
+InputStream stream = sb0.stream();
+
+```
+
+Storing large SensitiveBytes in temp file to free memory
+
+```
+ byte[] script = new HttpConnection()
+                .getContent("https://raw.githubusercontent.com/chcmatos/nanodegree_py_analyze_srag/main/app/analyze.py")
+                .getContentBytes();
+ SensitiveBytes sb = SensitiveBytes.of(script);
+ File tmp = sb.store(); //create temp file in system temp dir.  
+```
+
+```
+ //or naming file
+ File tmp = sb.store("filepath");
+```
+
+```
+ //or inputing file
+ File file = new File("filepath");
+ File tmp = sb.store(file);
+```
+```
+ //to recover data back
+ sb.stored();
+ //or inputing file
+ sb.stored(tmp);
+```
+
+To read content stored in temp file, but without reload back in memory.
+
+```
+   byte[] bytes = sb.peekStored(); //deciphered   
+   //or as stream
+   InputStream stream = sb.streamStored(); //deciphering stream when read
+```
 
 ## 📝 Serializer
 Serialize and deserialize objects for Object Base64, BSON, JSON or XML.
@@ -189,55 +287,142 @@ Helper to analyze, manipulate and convert array objects.
 
 ```
 //insert a new element at first index.
-Integer[] arr = new Integer[] {1, 2, 3}
+
+Integer[] arr = new Integer[] {1, 2, 3};
 ArrayHelper.push(arr, 0);
 //arr = [0, 1, 2, 3]
 ```
 
 ```
 //insert a new element at last index.
-Integer[] arr = new Integer[] {1, 2, 3}
+
+Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.add(arr, 0);
 //arr = [1, 2, 3, 0]
 ```
 
 ```
 //select array elements converting to new values.
-Integer[] arr = new Integer[] {1, 2, 3}
+
+Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.select(arr, e -> e * 2);
 //arr = [2, 4, 6]
 ```
 
 ```
 //filter array elements.
-Integer[] arr = new Integer[] {1, 2, 3}
+
+Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.filter(arr, e -> e < 3);
 //arr = [1, 2]
+
+```
+```
+//first element by condition.
+
+Integer[] arr = new Integer[] {1, 2, 3};
+Integer i = ArrayHelper.first(arr, e -> e % 2 == 0);
+//i = 2
+```
+
+```
+//distinct array elements.
+
+Integer[] arr = new Integer[] {1, 1, 2, 2, 3};
+Integer result = ArrayHelper.distinct(arr);
+//result = [1, 2, 3]
 ```
 
 ```
 //reduce array elements.
-Integer[] arr = new Integer[] {1, 2, 3}
+
+Integer[] arr = new Integer[] {1, 2, 3};
 Integer result = ArrayHelper.reduce(arr, (acc, curr) -> acc + curr);
 //result = 6
 ```
 
 ```
 //Take a count of elements.
-Integer[] arr = new Integer[] {1, 2, 3}
+
+Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.take(arr, 2);
 //arr = [1, 2]
 ```
 
 ```
 //"Jump" (Ignore) a count of element.
-Integer[] arr = new Integer[] {1, 2, 3}
+
+Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.jump(arr, 2);
 //arr = [3]
 ```
 
+```
+//Resize array
+
+Integer[] arr = new Integer[] {1, 2, 3};
+arr = ArrayHelper.resize(arr, arr.length + 1);
+//arr = [1, 2, 3, null]
+
+arr = ArrayHelper.resize(arr, arr.length - 1);
+//arr = [1, 2]
+```
+
+```
+//Reverse array
+
+Integer[] arr0 = new Integer[] {1, 2, 3};
+ArrayHelper.reverse(arr0);
+//arr0 = [3, 2, 1]
+```
+
+```
+//Join array
+Integer[] arr0 = new Integer[] {0, 1};
+Integer[] arr1 = new Integer[] {2, 3, 4, 5};
+Integer[] arr2 = ArrayHelper.join(arr0, arr1);
+//arr2 = [0, 1, 2, 3, 4, 5]
+```
+
+```
+//All condition array
+
+Integer[] arr = new Integer[] {1, 2, 3};
+boolean b = ArrayHelper.all(arr, i -> i % 2 == 0);
+//b = false
+```
+
+```
+//Any condition array
+
+Integer[] arr = new Integer[] {1, 2, 3};
+boolean b = ArrayHelper.any(arr, i -> i % 2 == 0);
+//b = true
+```
+
+```
+//Contains condition array
+
+Integer[] arr = new Integer[] {1, 2, 3};
+boolean b = ArrayHelper.contains(arr, 2);
+//b = true
+```
+
+```
+//SequenceEquals condition array
+
+Integer[] arr0 = new Integer[] {1, 2, 3};
+Integer[] arr1 = new Integer[] {1, 2, 3};
+boolean b = ArrayHelper.sequenceEquals(arr0, arr1);
+//b = true
+```
+
+```
+//and more...
+```
+
 ## ∑ $ 👊 Decimal Helper
-Helper to analyze and convert wrapper or decimal types to BigDecimal, currency or decimal
+Helper to analyze and convert wraper or decimal types to BigDecimal, currency or decimal
 by discover Locale automatically or locale set it.
 
 ```
@@ -273,6 +458,9 @@ Helper to parse and convert String date formatted to Date or Calendar.
 Date date = DateHelper.getInstance().parseDate("19/11/2020 11:46");
 Date date = DateHelper.getInstance().parseDate("19/11/2020");
 Date date = DateHelper.getInstance().parseDate("11:46");
+```
+```
+//and more...
 ```
 
 ## 🧠 Memory Info
@@ -349,6 +537,10 @@ str = StringUtils.join(",", 0, 1, 2, 3);
 //str = "0, 1, 2, 3"
 ```
 
+```
+//and more...
+```
+
 ## 🔥 Reflection
 Access objects by reflection.<br>
 Inflate (create an instance or load access for static class) a class by fullName (included package path) 
@@ -379,6 +571,10 @@ boolean b = Reflection.tryInflate("android.os.Debug")
 Object obj      = "simple test";
 Reflection r    = Reflection.cast(obj, "java.lang.String");
 boolean found   = r.method("indexOf", "test").valueInt() > 0;
+```
+
+```
+//and more...
 ```
 
 ## 🔍 📋 Debug

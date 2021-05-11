@@ -115,18 +115,18 @@ public class ArrayHelperTest extends TestCase {
         String[] strArr;
         String[] arr2 = ArrayHelper.take(strArr = new String[] { "a", "b" }, 3);
 
-        Assert.assertArrayEquals(arr0, new int[] {0, 1});
-        Assert.assertArrayEquals(arr1, new float[] {0.1f, 1.2f, 2.3f}, 0f);
+        Assert.assertArrayEquals(new int[] {0, 1}, arr0);
+        Assert.assertArrayEquals(new float[] {0.1f, 1.2f, 2.3f}, arr1, 0f);
 
         assertEquals(strArr, arr2);
     }
 
     public void testJump() {
         byte[] arr0 = ArrayHelper.jump(new byte[]{ 0x01, 0x02, 0x04}, 1);
-        Assert.assertArrayEquals(arr0, new byte[]{ 0x02, 0x04 });
+        Assert.assertArrayEquals(new byte[]{ 0x02, 0x04 }, arr0);
 
         Long[] arr1 = ArrayHelper.jump(new Long[]{ 1L, 2L, 4L}, 1);
-        Assert.assertArrayEquals(arr1, new Long[]{ 2L, 4L });
+        Assert.assertArrayEquals(new Long[]{ 2L, 4L }, arr1);
     }
 
     public void testAll() {
@@ -175,6 +175,32 @@ public class ArrayHelperTest extends TestCase {
         Long[] arr1 = new Long[] { 3L, 2L, 1L };
         ArrayHelper.reverse(arr1);
         Assert.assertArrayEquals(arr1, new Long[] { 1L, 2L, 3L });
+    }
+
+    public void testResize() {
+        byte[] arr0 = ArrayHelper.resize(new byte[]{ 0x01, 0x02, 0x04}, 2);
+        Assert.assertArrayEquals(new byte[]{ 0x01, 0x02 }, arr0);
+
+        Long[] arr1 = ArrayHelper.resize(new Long[]{ 1L, 2L, 4L}, 4);
+        Assert.assertArrayEquals(new Long[]{ 1L, 2L, 4L, null }, arr1);
+    }
+
+    public void testJoin() {
+        Integer[] arr0 = new Integer[] {0, 1};
+        Integer[] arr1 = new Integer[] {2, 3, 4, 5};
+        Integer[] arr2 = ArrayHelper.join(arr0, arr1);
+        Assert.assertArrayEquals(new Integer[] {0, 1, 2, 3, 4, 5}, arr2);
+
+        byte[] arr3 = new byte[] {0, 1};
+        byte[] arr4 = new byte[] {2, 3, 4};
+        byte[] arr5 = new byte[] {5};
+        byte[] arr6 = ArrayHelper.join(arr3, arr4, arr5);
+        Assert.assertArrayEquals(new byte[] {0, 1, 2, 3, 4, 5}, arr6);
+
+        arr3 = new byte[] {0, 1};
+        arr4 = new byte[] {2, 3, 4};
+        arr5 = ArrayHelper.join(arr3, arr4, 1, 2);
+        Assert.assertArrayEquals(new byte[] {0, 1, 3, 4}, arr5);
     }
 
 }

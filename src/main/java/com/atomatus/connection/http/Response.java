@@ -1,6 +1,9 @@
 package com.atomatus.connection.http;
 
 import com.atomatus.connection.http.exception.URLConnectionException;
+import com.atomatus.util.Debug;
+import com.atomatus.util.cache.CacheControl;
+import com.atomatus.util.cache.CacheData;
 import com.atomatus.util.serializer.Serializer;
 
 import java.io.Closeable;
@@ -8,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Objects;
 
@@ -20,40 +24,56 @@ public final class Response extends ResponseParameter implements Closeable {
 	/**
 	 * Response Builder
 	 */
-	public static class ResponseBuilder extends ResponseParameter {
+	protected static class Builder extends ResponseParameter {
 
-		ResponseBuilder useConnection(HttpURLConnection con) {
-			this.con =  Objects.requireNonNull(con);
+		Builder useConnection(HttpURLConnection con) {
+			this.con = Objects.requireNonNull(con);
+			this.url = con.getURL();
 			return this;
 		}
 
-		ResponseBuilder useCharset(Charset charset) {
+		Builder useCharset(Charset charset) {
 			this.charset = Objects.requireNonNull(charset);
 			return this;
 		}
 
-		ResponseBuilder useBufferLength(int bufferLength) {
+		Builder useBufferLength(int bufferLength) {
 			if(bufferLength <= 0) throw new IndexOutOfBoundsException();
 			this.bufferLength = bufferLength;
 			return this;
 		}
 
-		ResponseBuilder useSuccessResponseFun(Function<HttpConnection.StatusCode, Boolean> successResponseFun) {
+		Builder useConnectionFun(FunctionIO<URL, HttpURLConnection> conFun){
+			this.conFun = Objects.requireNonNull(conFun);
+			return this;
+		}
+
+		Builder useUrl(URL url) {
+			this.url = Objects.requireNonNull(url);
+			return this;
+		}
+
+		Builder useCacheFun(Function<CacheControl> cacheFun) {
+			this.cacheFun = Objects.requireNonNull(cacheFun);
+			return this;
+		}
+
+		Builder useSuccessResponseFun(FunctionIO<HttpConnection.StatusCode, Boolean> successResponseFun) {
 			this.successResponseFun = Objects.requireNonNull(successResponseFun);
 			return this;
 		}
 
-		ResponseBuilder useInputStreamFun(Function<HttpURLConnection, InputStream> inputStreamFun) {
+		Builder useInputStreamFun(FunctionIO<HttpURLConnection, InputStream> inputStreamFun) {
 			this.inputStreamFun = Objects.requireNonNull(inputStreamFun);
 			return this;
 		}
 
-		ResponseBuilder useErrorStreamFun(Function<HttpURLConnection, InputStream> errorStreamFun) {
+		Builder useErrorStreamFun(FunctionIO<HttpURLConnection, InputStream> errorStreamFun) {
 			this.errorStreamFun = Objects.requireNonNull(errorStreamFun);
 			return this;
 		}
 
-		ResponseBuilder useFinallyAction(Action<HttpURLConnection> finnalyAction) {
+		Builder useFinallyAction(Action<HttpURLConnection> finnalyAction) {
 			this.finallyAction = Objects.requireNonNull(finnalyAction);
 			return this;
 		}
@@ -64,7 +84,8 @@ public final class Response extends ResponseParameter implements Closeable {
 		 */
 		public Response build() {
 			this.requireNonClosed();
-			this.requireConnection();
+			this.requireConnectionOrFunction();
+
 			try {
 				return new Response(this);
 			} finally {
@@ -73,52 +94,48 @@ public final class Response extends ResponseParameter implements Closeable {
 		}
 	}
 
-	/**
-	 * New response builder.
-	 * @return new builder.
-	 */
-	public static ResponseBuilder builder() {
-		return new ResponseBuilder();
-	}
-
 	private boolean success;
 	private HttpConnection.StatusCode statusCode;
 	private HttpConnection.ContentType contentType;
-	private byte[] bytesContent;
+	private byte[] contentBytes;
 	private byte[] errorBytesContent;
 	private final Object lock;
 
-	private Response(ResponseBuilder builder) {
+	private Response(Builder builder) {
 		super(builder);
 		lock = new Object();
 	}
 
-	private void tryClose(Closeable c) {
-		try {
-			if (c != null) {
-				c.close();
+	private InputStream getInputStream(boolean success) throws URLConnectionException {
+		if(stream != null) {
+			try {
+				stream.reset();
+			} catch (IOException e) {
+				if(Debug.isDebugMode()) {
+					throw new URLConnectionException(e);
+				} else {
+					try{
+						stream.close();
+					} catch (IOException ignored) { } finally {
+						stream = null;
+					}
+					return getInputStream(success);
+				}
 			}
-		} catch (Exception ignored) { }
-	}
-
-	private void tryClose(HttpURLConnection con) {
-		try {
-			if (con != null) {
-				con.disconnect();
+		} else {
+			try {
+				HttpURLConnection con = requireConnection();
+				if(success) {
+					stream = inputStreamFun != null ? inputStreamFun.apply(con) : con.getInputStream();
+				} else {
+					stream = errorStreamFun != null ? errorStreamFun.apply(con) : con.getErrorStream();
+				}
+			} catch (IOException e) {
+				throw new URLConnectionException(e);
 			}
-		} catch (Exception ignored) { }
-	}
-
-	private InputStream getInputStream(HttpURLConnection con, boolean success) throws URLConnectionException {
-		try {
-			if(success) {
-				return inputStreamFun != null ? inputStreamFun.apply(con) : con.getInputStream();
-			} else {
-				return errorStreamFun != null ? errorStreamFun.apply(con) : con.getErrorStream();
-			}
-		} catch (IOException e) {
-			throw new URLConnectionException(e);
 		}
+
+		return stream;
 	}
 
 	private byte[] readAll(InputStream in) throws URLConnectionException {
@@ -148,19 +165,60 @@ public final class Response extends ResponseParameter implements Closeable {
 		return buffer;
 	}
 
+	private void checkCache(boolean fillBuffer)  throws URLConnectionException {
+		if((contentBytes == null || !fillBuffer) && cacheFun != null) {
+			try {
+				CacheControl cache = cacheFun.apply();
+				if(cache != null) {
+					CacheData data = cache.get(url);
+
+					if (data.exists()) {
+						contentBytes 	= fillBuffer ? data.bytes() : contentBytes;
+						stream 			= !fillBuffer ? data.stream() : null;
+						success 		= true;
+					}
+				}
+			} catch (Exception e) {
+				if(Debug.isDebugMode()) {
+					throw new URLConnectionException(e);
+				}
+			}
+		}
+	}
+
+	private byte[] checkAddCache(byte[] buffer) throws URLConnectionException {
+		if(cacheFun != null) {
+			try {
+				CacheControl cache = cacheFun.apply();
+				if (cache != null) {
+					cache.add(new CacheData.Builder()
+							.id(url)
+							.bytes(buffer)
+							.build());
+				}
+			} catch (Exception e) {
+				if(Debug.isDebugMode()) {
+					throw new URLConnectionException(e);
+				}
+			}
+		}
+		return buffer;
+	}
+
 	private void checkReadResponse(boolean fillBuffer) throws URLConnectionException {
 		synchronized (lock) {
 			requireNonClosed();
-			if (bytesContent == null) {
+			checkCache(fillBuffer);
+			if (contentBytes == null) {
 				success = success || successResponseFun.apply(getStatusCodeLocal());
 				if (fillBuffer) {
 					InputStream in = null;
 					try {
-						errorBytesContent = bytesContent = new byte[0];
+						errorBytesContent = contentBytes = new byte[0];
 						if(getStatusCodeLocal() != HttpConnection.StatusCode.HTTP_NO_CONTENT) {
-							byte[] buffer = readAll(in = getInputStream(requireConnection(), success));
+							byte[] buffer = readAll(in = getInputStream(success));
 							if (success) {
-								bytesContent = buffer;
+								contentBytes = checkAddCache(buffer);
 							} else {
 								errorBytesContent = buffer;
 							}
@@ -207,13 +265,27 @@ public final class Response extends ResponseParameter implements Closeable {
 	}
 
 	/**
+	 * Get response content as stream.
+	 * @return response in stream
+	 * @throws URLConnectionException throws when is not possible get response content.
+	 */
+	public InputStream getContentStream() throws URLConnectionException {
+		synchronized (lock) {
+			requireNonClosed();
+			checkCache(false);
+			success = success || successResponseFun.apply(getStatusCodeLocal());
+			return getInputStream(success);
+		}
+	}
+
+	/**
 	 * Get response content as byte array.
 	 * @return respose in byte array
 	 * @throws URLConnectionException throws when is not possible get response content.
 	 */
-	public byte[] getBytesContent() throws URLConnectionException {
+	public byte[] getContentBytes() throws URLConnectionException {
 		checkReadResponseFilling();
-		return bytesContent;
+		return contentBytes;
 	}
 
 	/**
@@ -223,7 +295,7 @@ public final class Response extends ResponseParameter implements Closeable {
 	 */
 	public String getContent() throws URLConnectionException {
 		checkReadResponseFilling();
-		return new String(bytesContent, charset);
+		return new String(contentBytes, charset);
 	}
 
 	/**
@@ -290,7 +362,7 @@ public final class Response extends ResponseParameter implements Closeable {
 		checkReadResponseFilling();
 		return success ? Serializer
 				.getInstance(getSerializerType())
-				.deserialize(bytesContent, rootElement, type) : null;
+				.deserialize(contentBytes, rootElement, type) : null;
 	}
 
 	/**
@@ -335,8 +407,9 @@ public final class Response extends ResponseParameter implements Closeable {
 
 	@Override
 	protected void onClose() {
+		this.tryClose(stream);
 		this.tryClose(con);
-		this.bytesContent = null;
+		this.contentBytes = null;
 		this.errorBytesContent = null;
 		this.statusCode = null;
 		this.contentType = null;

@@ -9,6 +9,16 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 final class NumericMatrixEncryptor extends NumberEncryptor {
 
+	/**
+	 * Generate a random key for number encryptor.
+	 * @return random key.
+	 */
+	public static String generateKey() {
+		return KeyGenerator.generateRandomKey(KEYSIZE);
+	}
+
+	private final static int KEYSIZE = 4;
+
 	private final int[][] keyMatrix;
 
 	/**
