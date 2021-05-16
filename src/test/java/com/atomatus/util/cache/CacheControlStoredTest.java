@@ -56,7 +56,7 @@ public class CacheControlStoredTest extends TestCase {
 
             assertTrue(cache.remove(cdAux));
         } catch (Exception e){
-            throw new AssertionFailedError(e.getMessage());
+            throw new AssertionError(e.getMessage(), e);
         }
     }
 }

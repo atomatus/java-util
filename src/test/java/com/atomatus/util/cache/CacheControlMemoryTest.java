@@ -55,7 +55,7 @@ public class CacheControlMemoryTest extends TestCase {
 
             assertTrue(cache.remove(cdAux));
         } catch (Exception e) {
-            throw new AssertionFailedError(e.getMessage());
+            throw new AssertionError(e.getMessage(), e);
         }
     }
 
@@ -72,7 +72,7 @@ public class CacheControlMemoryTest extends TestCase {
             assertTrue(cd.isExpired());
             assertNotSame(cd, cache.get(id));
         } catch (Exception e){
-            throw new AssertionFailedError(e.getMessage());
+            throw new AssertionError(e.getMessage(), e);
         }
     }
 }
