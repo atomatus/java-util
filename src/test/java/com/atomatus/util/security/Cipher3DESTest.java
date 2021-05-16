@@ -19,11 +19,12 @@ public class Cipher3DESTest extends TestCase {
     }
 
     public void testSecretKey() {
+        doEncDec(new Cipher3DES(Cipher3DES.generateKey()));
         doEncDec(new Cipher3DES("0123456789QWERTYUIOPASDF"));
     }
 
     public void testSecretKeyIv() {
-        doEncDec(new Cipher3DES("0123456789QWERTYUIOPASDF", "ASDFCBTY"));
+        doEncDec(new Cipher3DES(Cipher3DES.generateKey(), Cipher3DES.generateIv()));
         doEncDec(new Cipher3DES("0123456789QWERTYUIOPASDF", "98989898"));
     }
 

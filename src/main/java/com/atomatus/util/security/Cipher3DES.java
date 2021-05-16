@@ -7,9 +7,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 /**
  * Cipher (DESede/CBC/PKCS5Paddin) Encryptor.
@@ -24,10 +22,7 @@ final class Cipher3DES extends Encryptor {
     }
 
     public static String generateIv(){
-        byte[] iv = new byte[IVSIZE];
-        SecureRandom secRandom = new SecureRandom() ;
-        secRandom.nextBytes(iv);
-        return new String(iv);
+        return KeyGenerator.generateRandomKeyHex(IVSIZE);
     }
 
     public static final int KEYSIZE    = 8 * 3;
@@ -53,14 +48,23 @@ final class Cipher3DES extends Encryptor {
      * @param key private key (24 bytes)
      * @param initializationVector initialization vector (8 bytes).
      */
-    public Cipher3DES(String key, String initializationVector) {
+    public Cipher3DES(byte[] key, byte[] initializationVector) {
         try{
 	        this.cifrador    = Cipher.getInstance(DESEDE_CBC_PKCS5PADDING);
-	        this.chave       = new SecretKeySpec(key.getBytes(), DESEDE);
-	        this.iv          = new IvParameterSpec(initializationVector.getBytes());
+	        this.chave       = new SecretKeySpec(key, DESEDE);
+	        this.iv          = new IvParameterSpec(initializationVector);
         }catch(NoSuchAlgorithmException | NoSuchPaddingException ex){
         	throw new IllegalArgumentException(ex);
         }
+    }
+
+    /**
+     * Constructor with key and initialization vector.
+     * @param key private key (24 bytes)
+     * @param initializationVector initialization vector (8 bytes).
+     */
+    public Cipher3DES(String key, String initializationVector) {
+        this(key.getBytes(), initializationVector.getBytes());
     }
 
     /**
@@ -85,7 +89,7 @@ final class Cipher3DES extends Encryptor {
     public String encrypt(String original) {
         byte[] plaintext, cipherText;
         try{
-	        plaintext = original.getBytes(StandardCharsets.UTF_8);
+	        plaintext = original.getBytes();
 	        cifrador.init(Cipher.ENCRYPT_MODE, chave, iv);
 	        cipherText = cifrador.doFinal(plaintext);
         }catch(Throwable ex){

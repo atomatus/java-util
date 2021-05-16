@@ -1,8 +1,8 @@
 package com.atomatus.util.cache;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +55,7 @@ public class CacheControlStoredTest extends TestCase {
             assertEquals(mock, cdAux.text());//recupera dado armazenado
 
             assertTrue(cache.remove(cdAux));
-        } catch (Exception e){
+        } catch (IOException e){
             throw new AssertionError(e.getMessage(), e);
         }
     }

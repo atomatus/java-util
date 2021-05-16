@@ -1,8 +1,8 @@
 package com.atomatus.util.cache;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +54,7 @@ public class CacheControlMemoryTest extends TestCase {
             assertEquals(mock, cdAux.text());
 
             assertTrue(cache.remove(cdAux));
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new AssertionError(e.getMessage(), e);
         }
     }
@@ -68,10 +68,10 @@ public class CacheControlMemoryTest extends TestCase {
                     .build();
 
             cache.add(cd);
-            Thread.sleep(TimeUnit.SECONDS.toMillis(maxAgeInSec));
+            Thread.sleep(TimeUnit.SECONDS.toMillis(maxAgeInSec) + 1);
             assertTrue(cd.isExpired());
             assertNotSame(cd, cache.get(id));
-        } catch (Exception e){
+        } catch (InterruptedException e){
             throw new AssertionError(e.getMessage(), e);
         }
     }
