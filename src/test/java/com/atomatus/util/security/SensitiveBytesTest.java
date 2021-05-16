@@ -13,14 +13,18 @@ import java.io.InputStream;
 public class SensitiveBytesTest extends TestCase {
 
     public void testSecure() {
-        byte[] str = "This is a sensitive string!".getBytes();
-        SensitiveBytes sb0 = SensitiveBytes.of(str);
-        Assert.assertArrayEquals(str, sb0.readAll());
+        boolean sameCipher = true;
+        for(int i=0; i < 5; i++) {
+            byte[] str = "This is a sensitive string!".getBytes();
+            SensitiveBytes sb0 = SensitiveBytes.of(str);
+            Assert.assertArrayEquals(str, sb0.readAll());
 
-        SensitiveBytes sb1 = SensitiveBytes.of(str);
-        Assert.assertArrayEquals(str, sb1.readAll());
+            SensitiveBytes sb1 = SensitiveBytes.of(str);
+            Assert.assertArrayEquals(str, sb1.readAll());
+            sameCipher = sameCipher & ArrayHelper.sequenceEquals(sb0.secure(), sb1.secure());
+        }
 
-        assertFalse(ArrayHelper.sequenceEquals(sb0.secure(), sb1.secure()));
+        assertFalse(sameCipher);
     }
 
     public void testByteToBytes() {
