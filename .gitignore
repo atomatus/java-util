@@ -46,6 +46,9 @@ gradle-app.setting
 .idea/dictionaries
 .idea/vcs.xml
 .idea/jsLibraryMappings.xml
+.idea/Project_Default.xml
+.idea/libraries-with-intellij-classes.xml
+.idea/inspectionProfiles/Project_Default.xml
 
 # Sensitive or high-churn files:
 .idea/dataSources.ids
