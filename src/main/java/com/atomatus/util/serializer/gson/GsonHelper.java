@@ -1,7 +1,6 @@
 package com.atomatus.util.serializer.gson;
 
 import com.atomatus.util.Debug;
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -65,7 +64,8 @@ public final class GsonHelper {
         GsonBuilder builder = new GsonBuilder()
                 .serializeNulls()
                 .excludeFieldsWithModifiers(Modifier.STATIC | Modifier.VOLATILE)
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                //does not implement serialize/deserialize policies by default.
+                //.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(BigDecimal.class, new BigDecimalConverter())
                 .registerTypeAdapter(Calendar.class, new CalendarConverter())
                 .registerTypeAdapter(Date.class, new DateConverter())
