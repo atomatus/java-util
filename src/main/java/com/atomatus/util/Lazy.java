@@ -26,6 +26,7 @@ public final class Lazy<Param, Result> implements Destroyable {
      * @param <IN> callback input parameter type
      * @param <OUT> callback result value type
      */
+    @FunctionalInterface
     public interface LazyFunction<IN, OUT> {
         /**
          * Apply request to load value.

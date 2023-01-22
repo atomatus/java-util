@@ -15,6 +15,7 @@ public final class ArrayHelper {
      * @param <I> input type
      * @param <O> output type
      */
+    @FunctionalInterface
     public interface Function<I, O> {
         /**
          * Apply function to convert Input type to Output type.
@@ -29,6 +30,7 @@ public final class ArrayHelper {
      * @param <A> accumulate and output type
      * @param <I> input type
      */
+    @FunctionalInterface
     public interface Reducer<A, I> {
         /**
          * Apply reducer
@@ -44,6 +46,7 @@ public final class ArrayHelper {
      * @param <A> accumulate and output type
      * @param <I> input type
      */
+    @FunctionalInterface
     public interface ReducerIndex<A, I> {
         /**
          * Apply reducer
@@ -59,6 +62,7 @@ public final class ArrayHelper {
      * Simple filter callback.
      * @param <I> input type
      */
+    @FunctionalInterface
     public interface Filter<I> {
         /**
          * Filter accept callback.

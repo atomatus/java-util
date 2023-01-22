@@ -18,6 +18,7 @@ public final class WarningLoggerState {
     /**
      * Consumer callback.
      */
+    @FunctionalInterface
     public interface Consumer {
         /**
          * Action.
@@ -29,6 +30,7 @@ public final class WarningLoggerState {
      * Consumer callback.
      * @param <I> input type
      */
+    @FunctionalInterface
     public interface ConsumerI<I> {
         /**
          * Action
@@ -41,6 +43,7 @@ public final class WarningLoggerState {
      * Function callback.
      * @param <O> output type
      */
+    @FunctionalInterface
     public interface Function<O> {
         /**
          * Apply
@@ -54,6 +57,7 @@ public final class WarningLoggerState {
      * @param <I> input type
      * @param <O> output type
      */
+    @FunctionalInterface
     public interface FunctionIO<I, O> {
         /**
          * Apply

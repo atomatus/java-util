@@ -12,6 +12,7 @@ public final class EnumUtils {
      * @param <IN> input type
      * @param <E> element type
      */
+    @FunctionalInterface
     public interface EnumCondition<IN, E extends Enum<?>> {
         /**
          * Apply action.
@@ -26,6 +27,7 @@ public final class EnumUtils {
      * Enum callback.
      * @param <E> element type.
      */
+    @FunctionalInterface
     public interface EnumFunction<E extends Enum<?>> {
         /**
          * Apply condition.

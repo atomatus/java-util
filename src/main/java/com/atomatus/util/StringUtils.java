@@ -1,11 +1,28 @@
 package com.atomatus.util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * String utils to help to parse, convert,
  * join and captalize strings.
  */
 @SuppressWarnings("UnusedReturnValue")
 public final class StringUtils {
+
+    /**
+     * String util condition to filter.
+     * @param <T> input type
+     */
+    @FunctionalInterface
+    public interface Condition<T> {
+        /**
+         * Apply condition callback.
+         * @param t input type
+         * @return true, filter, otherwise false.
+         */
+        boolean apply(T t);
+    }
 
     /**
      * Capitalize Modes
@@ -127,6 +144,26 @@ public final class StringUtils {
     }
     //endregion
 
+    //region isNonNullAndNonEmpty/isNonNullAndNonWhitespace
+    /**
+     * Check string is not null and not empty
+     * @param str target string
+     * @return true, string is not null and not empty, otherwise false.
+     */
+    public static boolean isNonNullAndNonEmpty(String str) {
+        return str != null && str.length() != 0;
+    }
+
+    /**
+     * Check string is not null and not whitespace
+     * @param str target string
+     * @return true,string is not null and not whitespace, otherwise false.
+     */
+    public static boolean isNonNullAndNonWhitespace(String str) {
+        return str != null && str.trim().length() != 0;
+    }
+    //endregion
+
     //region startsWithIgnoreCase/endsWithIgnoreCase
     /**
      * Check target string in str starts with prefix value ignoring case.
@@ -164,9 +201,24 @@ public final class StringUtils {
     //endregion
 
     //region join
-    private static void appendValueForJoin(StringBuilder sb, Object value) {
+    private static <T> void appendValueForJoin(StringBuilder sb, T value) {
         if(value == null) {
             sb.append("null");
+        } else if(value.getClass().isPrimitive())  {
+            Class<?> clazz = value.getClass();
+            if (Character.TYPE.equals(clazz)) {
+                sb.append((char)value);
+            } else if(Short.TYPE.equals(clazz) || Integer.TYPE.equals(clazz)) {
+                sb.append((int)value);
+            } else if(Long.TYPE.equals(clazz)) {
+                sb.append((long)value);
+            } else if(Float.TYPE.equals(clazz)) {
+                sb.append((float)value);
+            } else if(Double.TYPE.equals(clazz)) {
+                sb.append((double)value);
+            } else {
+                sb.append(value);
+            }
         } else if(value instanceof CharSequence) {
             sb.append((CharSequence) value);
         } else if(value instanceof Character) {
@@ -406,6 +458,59 @@ public final class StringUtils {
     }
     //endregion
 
+    //region repeat
+    /**
+     * Create a string with repeated chars n-times by length parameter.
+     * @param c character
+     * @param length times to repeat the character.
+     * @return string with repeated chars n-times by length parameter.
+     */
+    public static String repeat(char c, int length) {
+        return new String(new char[length]).replace('\0', c);
+    }
+    //endregion
+
+    //region matches
+    /**
+     * Creates a matcher that will match the given input against this pattern regex
+     * and find the next subsequence of the input sequence that matches the pattern.
+     *
+     * If the match succeeds then more information can be obtained via the start,
+     * end, and group methods.
+     *
+     * @param target target string.
+     * @param regex regular expression
+     * @param patternFlag Match flags, a bit mask that may include
+     *         {@link Pattern#CASE_INSENSITIVE}, {@link Pattern#MULTILINE}, {@link Pattern#DOTALL},
+     *         {@link Pattern#UNICODE_CASE}, {@link Pattern#CANON_EQ}, {@link Pattern#UNIX_LINES},
+     *         {@link Pattern#LITERAL}, {@link Pattern#UNICODE_CHARACTER_CLASS} and {@link Pattern#COMMENTS}
+     * @return true if, and only if, a subsequence of the input sequence matches this matcher's pattern.
+     */
+    public static boolean match(String target, String regex, int patternFlag) {
+        if(isNonNullAndNonEmpty(target)) {
+            Pattern pattern = Pattern.compile(regex, patternFlag);
+            Matcher matcher = pattern.matcher(target);
+            return matcher.find();
+        }
+        return false;
+    }
+
+    /**
+     * Creates a matcher that will match the given input against this pattern regex
+     * and find the next subsequence of the input sequence that matches the pattern.
+     *
+     * If the match succeeds then more information can be obtained via the start,
+     * end, and group methods.
+     *
+     * @param target target string.
+     * @param regex regular expression
+     * @return true if, and only if, a subsequence of the input sequence matches this matcher's pattern.
+     */
+    public static boolean match(String target, String regex) {
+        return match(target, regex, 0);
+    }
+    //endregion
+
     //region countMatches
     private static int indexOf(String target, String find, int start) {
         return target.indexOf(find, start);
@@ -446,6 +551,55 @@ public final class StringUtils {
             arr = ArrayHelper.add(arr, e);
         }
         return arr;
+    }
+    //endregion
+
+    //region digitsOnly/digitsLettersOnly
+    /**
+     * Remove all non digits characters in string.
+     * @param target target string
+     * @return digits only.
+     */
+    public static String digitsOnly(String target) {
+        return target == null ? "" : target.replaceAll("[^0-9]", "");
+    }
+
+    /**
+     * Remove all non digits or letters chartacters in string.
+     * @param target target string
+     * @return digits an letters only.
+     */
+    public static String digitLettersOnly(String target) {
+        return target == null ? "" : target.replaceAll("[^0-9a-zA-Z]", "");
+    }
+    //endregion
+
+    //region append
+    /**
+     * Apply append method of StringBuilder if condition is true.
+     * @param builder target
+     * @param value value to be append
+     * @param condition condition
+     * @param <T> value type
+     * @return true, value was append otherwise false.
+     */
+    public static <T> boolean appendIf(StringBuilder builder, T value, boolean condition) {
+        if(condition) {
+            appendValueForJoin(builder, value);
+        }
+        return condition;
+    }
+
+    /**
+     * Apply append method of StringBuilder if condition is true.
+     * @param builder target
+     * @param value value to be append
+     * @param condition condition
+     * @param <T> value type
+     * @return true, value was append otherwise false.
+     */
+    public static <T> boolean appendIf(StringBuilder builder, T value, Condition<T> condition) {
+        return appendIf(builder, value, condition.apply(value));
     }
     //endregion
 }

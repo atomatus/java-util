@@ -20,6 +20,7 @@ public final class GsonHelper {
     /**
      * GsonBuilder consumer callback.
      */
+    @FunctionalInterface
     public interface GsonConsumer {
         /**
          * Accept builder to allow set custom builder options.

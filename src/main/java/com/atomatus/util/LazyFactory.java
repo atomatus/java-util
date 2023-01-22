@@ -42,6 +42,7 @@ public final class LazyFactory {
      * Lazy callback no params
      * @param <Result> result type
      */
+    @FunctionalInterface
     public interface LazyNoParamFunction<Result> {
 
         /**
@@ -73,6 +74,7 @@ public final class LazyFactory {
      * @param <Param> input type
      * @param <Result> result type
      */
+    @FunctionalInterface
     public interface LazySingleParamFunction<Param, Result> {
 
         /**
@@ -107,6 +109,7 @@ public final class LazyFactory {
      * @param <Param1> second param type
      * @param <Result> result type
      */
+    @FunctionalInterface
     public interface LazyDoubleParamFunction<Param0, Param1, Result> {
 
         /**
@@ -144,6 +147,7 @@ public final class LazyFactory {
      * @param <Param2> third param type
      * @param <Result> result type
      */
+    @FunctionalInterface
     public interface LazyTripleParamFunction<Param0, Param1, Param2, Result> {
 
         /**
@@ -183,6 +187,7 @@ public final class LazyFactory {
      * @param <Param3> fourth param type
      * @param <Result> result type
      */
+    @FunctionalInterface
     public interface LazyQuadrupleParamFunction<Param0, Param1, Param2, Param3, Result> {
 
         /**

@@ -26,6 +26,7 @@ public final class XStreamHelper {
     /**
      * XStream consumer callback.
      */
+    @FunctionalInterface
     public interface XStreamConsumer {
         /**
          * Accept XStream set custom configurations.

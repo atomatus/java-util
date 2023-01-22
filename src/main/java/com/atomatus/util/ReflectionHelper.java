@@ -11,6 +11,7 @@ import java.util.Objects;
  */
 public final class ReflectionHelper {
 
+    @FunctionalInterface
     private interface CheckFieldFunction {
         boolean apply(Class<?> clazz, Field field);
     }

@@ -24,6 +24,7 @@ public class SensitiveBytes implements Iterable<Byte>, Destroyable, Closeable {
      */
     private static class SensitiveBytesIterator implements Iterator<Byte>, Destroyable {
 
+        @FunctionalInterface
         private interface DecryptCallback {
             byte[] apply(byte[] arr);
         }
