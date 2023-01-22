@@ -201,7 +201,7 @@ public final class StringUtils {
     //endregion
 
     //region join
-    private static <T> void appendValueForJoin(StringBuilder sb, T value) {
+    private static void appendValueForJoin(StringBuilder sb, Object value) {
         if(value == null) {
             sb.append("null");
         } else if(value.getClass().isPrimitive())  {
