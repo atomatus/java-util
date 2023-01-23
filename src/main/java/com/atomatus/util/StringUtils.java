@@ -1,5 +1,6 @@
 package com.atomatus.util;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,21 @@ public final class StringUtils {
          * @return true, filter, otherwise false.
          */
         boolean apply(T t);
+    }
+
+    /**
+     * Functional interface for solve input and produce output.
+     * @param <I> input type
+     * @param <O> output type
+     */
+    @FunctionalInterface
+    public interface Function<I, O> {
+        /**
+         * Apply function to convert Input type to Output type.
+         * @param i input element target.
+         * @return output element generated.
+         */
+        O apply(I i);
     }
 
     /**
@@ -600,6 +616,83 @@ public final class StringUtils {
      */
     public static <T> boolean appendIf(StringBuilder builder, T value, Condition<T> condition) {
         return appendIf(builder, value, condition.apply(value));
+    }
+
+    /**
+     * Apply append method of StringBuilder when condition is true.
+     * @param builder target
+     * @param function function to procude value to be append.
+     * @param condition condition
+     * @param value base value to be used in function as input.
+     * @param <T> input value type
+     * @param <R> output value type
+     * @return true, value was append otherwise false.
+     */
+    public static <T, R> boolean appendIf(StringBuilder builder, Function<T, R> function, Condition<T> condition, T value) {
+        boolean c = condition.apply(value);
+        if (c) appendValueForJoin(builder, function.apply(value));
+        return c;
+    }
+
+    /**
+     * Apply append method of StringBuilder when condition is true.
+     * @param builder target
+     * @param function function to procude value to be append.
+     * @param condition condition
+     * @param value base value to be used in function as input.
+     * @param <T> input value type
+     * @param <R> output value type
+     * @return true, value was append otherwise false.
+     */
+    public static <T, R> boolean appendIf(StringBuilder builder, Function<T, R> function, T value, boolean condition) {
+        if (condition) appendValueForJoin(builder, function.apply(value));
+        return condition;
+    }
+
+    /**
+     * Apply append method of StringBuilder when value is not null.
+     * @param builder target
+     * @param value value to be append
+     * @param <T> value type
+     * @return true, value was append otherwise false.
+     */
+    public static <T> boolean appendIfNonNull(StringBuilder builder, T value) {
+        return appendIf(builder, value, Objects::nonNull);
+    }
+
+    /**
+     * Apply append method of StringBuilder when value is not null.
+     * @param function function to procude value to be append.
+     * @param builder target
+     * @param value value to be append
+     * @param <T> value type
+     * @param <R> output value type
+     * @return true, value was append otherwise false.
+     */
+    public static <T, R> boolean appendIfNonNull(StringBuilder builder, Function<T, R> function, T value) {
+        return appendIf(builder, function, Objects::nonNull, value);
+    }
+
+    /**
+     * Apply append method of StringBuilder when value is not null and not empty.
+     * @param builder target
+     * @param value value to be append
+     * @return true, value was append otherwise false.
+     */
+    public static boolean appendIfNonNullNonEmpty(StringBuilder builder, CharSequence value) {
+        return appendIf(builder, value, v -> v != null && v.length() != 0);
+    }
+
+    /**
+     * Apply append method of StringBuilder when value is not null and not empty.
+     * @param function function to procude value to be append.
+     * @param builder target
+     * @param value value to be append
+     * @param <R> output value type
+     * @return true, value was append otherwise false.
+     */
+    public static <R> boolean appendIfNonNullNonEmpty(StringBuilder builder, Function<CharSequence, R> function, CharSequence value) {
+        return appendIf(builder, function, v -> v != null && v.length() != 0, value);
     }
     //endregion
 }
