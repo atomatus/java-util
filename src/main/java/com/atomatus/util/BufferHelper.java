@@ -9,7 +9,7 @@ import java.util.Objects;
  * <p>
  *     To help to buferring wrapper types to byte array.
  * </p>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class BufferHelper {
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 
 /**
  * Write data to socket (client/server)
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public interface OutputDataEvent extends BinderEvent{
 

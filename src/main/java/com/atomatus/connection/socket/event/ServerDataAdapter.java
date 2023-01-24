@@ -2,7 +2,7 @@ package com.atomatus.connection.socket.event;
 
 /**
  * {@link ServerListener} Adapter to I/O of simple datas (wrappers and byte array)
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public abstract class ServerDataAdapter implements ServerListener{
 

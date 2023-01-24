@@ -12,7 +12,7 @@ import java.util.Objects;
  * Sensitive Chars.<br>
  * Implements a bytes matrix manager encrypted using Cipher and DESede algorithm.<br>
  * Each sensitive bytes class instance will generate an unique private key.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  * @see SensitiveBytes
  * @see CharSequence
  */

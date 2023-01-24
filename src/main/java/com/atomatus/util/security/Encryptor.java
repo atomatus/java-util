@@ -28,7 +28,7 @@ import java.util.Objects;
  *         		.build();
  *     </code>
  * </pre>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public abstract class Encryptor {
 

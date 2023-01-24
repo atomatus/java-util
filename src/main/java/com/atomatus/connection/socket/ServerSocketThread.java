@@ -19,7 +19,7 @@ import com.atomatus.connection.socket.event.ServerListener;
 
 /**
  * Thread instanciada pelo {@link Server} para comunicacao com socket client.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  *
  */
 final class ServerSocketThread extends Thread {

@@ -2,7 +2,7 @@ package com.atomatus.connection.http.exception;
 
 /**
  * Http Connection Response Exception.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public class ResponseException extends URLConnectionException {
 

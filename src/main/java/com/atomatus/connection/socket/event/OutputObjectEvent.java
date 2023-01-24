@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * Write serialized object data to socket (client/server).<br>
  * <i>Warning: Object need implements Serializable</i>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public interface OutputObjectEvent extends BinderEvent{
 

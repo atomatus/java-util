@@ -5,7 +5,7 @@ import java.net.PasswordAuthentication;
 
 /**
  * Proxy Connection Authenticator.
- * @author Carlos Matoss
+ * @author Carlos Matos {@literal @chcmatos}
  */
 class ProxyAuthenticator extends Authenticator {
 

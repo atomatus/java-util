@@ -2,7 +2,7 @@ package com.atomatus.util;
 
 /**
  * Information when debugger connected.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class Debug {
 

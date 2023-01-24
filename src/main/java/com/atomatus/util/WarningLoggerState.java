@@ -10,7 +10,7 @@ import java.util.Objects;
  * java warning log displaying when building or testing your app using some
  * request not indicated, how like, in reflection to change access level of
  * some member, or it is deprecated.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class WarningLoggerState {
 

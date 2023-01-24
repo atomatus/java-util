@@ -64,7 +64,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *              </code>
  *         </li>
  *     </ul>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public abstract class CacheControl {
 

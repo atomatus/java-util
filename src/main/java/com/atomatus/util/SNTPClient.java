@@ -10,7 +10,7 @@ import java.util.Enumeration;
 
 /**
  * SNTP (Simple Network Time Protocol) client for online time requests.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  *
  */
 public final class SNTPClient {

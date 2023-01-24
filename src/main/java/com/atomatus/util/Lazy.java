@@ -1,6 +1,7 @@
 package com.atomatus.util;
 
 import javax.security.auth.Destroyable;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Objects;
  * </p>
  * @param <Param> callback input parameter type
  * @param <Result> callback result value type
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class Lazy<Param, Result> implements Destroyable {
 
@@ -36,7 +37,7 @@ public final class Lazy<Param, Result> implements Destroyable {
         OUT apply(IN[] args);
     }
 
-    private static final Object NO_VALUE;
+    private static final int UNSET_HASH = -1;
 
     private final LazyFunction<Param, Result> function;
     private final boolean isThreadSafe;
@@ -44,10 +45,7 @@ public final class Lazy<Param, Result> implements Destroyable {
 
     private volatile boolean destroyed;
     private transient Object value;
-
-    static {
-        NO_VALUE = new Object();
-    }
+    private transient int valueHash;
 
     /**
      * Constructs lazy loading.
@@ -58,7 +56,7 @@ public final class Lazy<Param, Result> implements Destroyable {
         this.locker         = new Object();
         this.function       = Objects.requireNonNull(function);
         this.isThreadSafe   = isThreadSafe;
-        this.value          = NO_VALUE;
+        this.valueHash      = UNSET_HASH;
     }
 
     //region value
@@ -78,7 +76,7 @@ public final class Lazy<Param, Result> implements Destroyable {
 
     private boolean isValueCreatedInternal() {
         requireNonDestroyed();
-        return value != NO_VALUE;
+        return valueHash != UNSET_HASH;
     }
 
     /**
@@ -100,7 +98,13 @@ public final class Lazy<Param, Result> implements Destroyable {
     @SuppressWarnings("unchecked")
     private Result valueInternal(Param[] args) {
         requireNonDestroyed();
-        return (Result) (value != NO_VALUE ? value : (value = function.apply(args)));
+        int hash = Objects.hash(value, Arrays.hashCode(args));
+        if(valueHash != UNSET_HASH && valueHash == hash) {
+            return (Result) value;
+        } else {
+            valueHash = hash;
+            return (Result) (value = function.apply(args));
+        }
     }
     //endregion
 
@@ -121,7 +125,8 @@ public final class Lazy<Param, Result> implements Destroyable {
 
     private void resetInternal() {
         requireNonDestroyed();
-        value = NO_VALUE;
+        value = null;
+        valueHash = UNSET_HASH;
     }
     //endregion
 
@@ -144,6 +149,7 @@ public final class Lazy<Param, Result> implements Destroyable {
         synchronized (locker) {
             if(!destroyed) {
                 value = null;
+                valueHash = UNSET_HASH;
                 destroyed = true;
             }
         }

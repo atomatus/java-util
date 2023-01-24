@@ -21,7 +21,7 @@ package com.atomatus.util;
  *     Notepad.exe creates ASCII text, or in MS Word you can save a file as 'text only'
  * </p>
  * <a href="http://www.asciitable.com/">see more in www.asciitable.com</a>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 @SuppressWarnings("unused")
 public enum AsciiTable {

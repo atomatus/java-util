@@ -2,7 +2,7 @@ package com.atomatus.connection.socket.event;
 
 /**
  * Use BinderEvent to transport data between {@link InputEvent} and {@link OutputEvent}.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  *
  */
 public interface BinderEvent {

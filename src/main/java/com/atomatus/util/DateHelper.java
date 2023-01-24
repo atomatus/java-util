@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  *     Allow to generate a string date, time, or date and time, following the locale
  *     format and time zone. So the same date or calendar can be formatted to Locale.US, Locale.UK, etc.
  * </p>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class DateHelper {
 

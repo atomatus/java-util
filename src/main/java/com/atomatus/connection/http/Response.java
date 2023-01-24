@@ -17,7 +17,7 @@ import java.util.Objects;
 
 /**
  * Response generated from request HttpConnection.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class Response extends ResponseParameter implements Closeable {
 

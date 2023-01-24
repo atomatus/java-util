@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 /**
  * Helper to analyze and convert wrapper or decimal types to BigDecimal, currency or decimal
  * by discover Locale automatically or locale set it.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class DecimalHelper {
 

@@ -31,7 +31,7 @@ import java.util.Objects;
  *      Lazy<Void, Result> ll1 = LazyFactory.create(this::callbackNoInputArgs);//no thread safe
  *     }
  * </pre>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  * @see Lazy
  */
 public final class LazyFactory {

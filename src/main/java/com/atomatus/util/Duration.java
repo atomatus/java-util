@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * An object that contains information about difference between two Dates.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class Duration {
 

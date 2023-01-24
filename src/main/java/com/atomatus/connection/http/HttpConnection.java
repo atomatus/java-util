@@ -23,7 +23,7 @@ import java.util.zip.InflaterInputStream;
 
 /**
  * Http Connection.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 @SuppressWarnings({"SpellCheckingInspection", "unused", "UnusedReturnValue"})
 public class HttpConnection {

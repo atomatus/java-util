@@ -12,7 +12,7 @@ import java.util.Date;
 
 /**
  * Convert xml node value to {@link Date}.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  *
  */
 public final class DateConverter implements Converter {

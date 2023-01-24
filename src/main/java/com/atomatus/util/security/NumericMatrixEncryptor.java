@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * Matrix numeric encryptor.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 @SuppressWarnings("unused")
 final class NumericMatrixEncryptor extends NumberEncryptor {

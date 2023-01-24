@@ -11,7 +11,7 @@ import java.util.Objects;
  * <p>
  *     Cache data container to binding data and id on cache control.
  * </p>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public abstract class CacheData {
 

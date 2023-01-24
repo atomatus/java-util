@@ -12,7 +12,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 /**
  * Convert xml node value to {@link BigDecimal}.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  *
  */
 public final class BigDecimalConverter implements Converter {

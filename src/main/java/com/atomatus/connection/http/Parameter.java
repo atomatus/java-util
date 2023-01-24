@@ -12,7 +12,7 @@ import java.nio.charset.Charset;
 
 /**
  * Request Parameter.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public class Parameter {
 

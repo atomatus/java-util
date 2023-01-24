@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Cipher (DESede/CBC/PKCS5Paddin) Encryptor.
  * @see Cipher
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 @SuppressWarnings("unused")
 final class Cipher3DES extends Encryptor {

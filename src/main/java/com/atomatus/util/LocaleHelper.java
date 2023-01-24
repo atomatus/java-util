@@ -6,7 +6,7 @@ import java.util.Properties;
 
 /**
  * Helper to get information about Locale.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class LocaleHelper {
 

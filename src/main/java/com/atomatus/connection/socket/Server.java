@@ -13,7 +13,7 @@ import com.atomatus.connection.socket.event.ServerObjectAdapter;
 
 /**
  * Socket Server connection.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public class Server implements Runnable, Closeable {
 

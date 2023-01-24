@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *     <li><a href="https://macvendors.com/api">macvendors.com/api</a>;</li>
  *     <li><a href="https://api.macaddress.io">api.macaddress.io</a></li>
  * </ul>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class MacVendors {
 

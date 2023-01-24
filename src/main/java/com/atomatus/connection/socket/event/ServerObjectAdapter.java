@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * Server Object Adapter for {@link ServerListener} I/O of serialized objects data (that implements {@link Serializable}).
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public abstract class ServerObjectAdapter implements ServerListener{
 

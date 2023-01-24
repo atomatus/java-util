@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 
 /**
  * Socket client to TCP/IP connection.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public class Client extends IOEvent implements Closeable {
 

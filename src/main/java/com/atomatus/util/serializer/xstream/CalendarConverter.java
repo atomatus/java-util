@@ -12,7 +12,7 @@ import java.util.Calendar;
 
 /**
  * Convert xml node value to {@link Calendar}.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  *
  */
 public final class CalendarConverter implements Converter {

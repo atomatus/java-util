@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 /**
  * Read serialized object data on socket.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public interface InputObjectEvent extends BinderEvent{
 

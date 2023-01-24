@@ -3,7 +3,7 @@ package com.atomatus.util.security;
 
 /**
  * Inverte uma Matriz.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 final class Inverse {
 		

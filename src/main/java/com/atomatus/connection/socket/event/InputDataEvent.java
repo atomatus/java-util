@@ -4,7 +4,7 @@ import java.io.IOException;
 
 /**
  * Read socket data
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public interface InputDataEvent extends BinderEvent{
 	

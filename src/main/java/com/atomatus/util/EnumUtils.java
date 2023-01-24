@@ -3,7 +3,7 @@ package com.atomatus.util;
 /**
  * Enumeration Utils to help
  * to parse, recovery and analyse input type to enum type.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class EnumUtils {
 

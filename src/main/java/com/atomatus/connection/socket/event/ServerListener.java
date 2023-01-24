@@ -16,7 +16,7 @@ import com.atomatus.connection.socket.Client;
  * 	    Tip: Use adapater ({@link ServerDataAdapter} or {@link ServerObjectAdapter}) to help you.
  * 	</i>
  * </p>
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public interface ServerListener {
 

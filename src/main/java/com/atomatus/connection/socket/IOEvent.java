@@ -13,7 +13,7 @@ import java.util.Arrays;
 /**
  * Implements {@link InputEvent} and {@link OutputEvent} for listeners ({@link ServerListener})
  * and is base class to {@link Client}.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 @SuppressWarnings("unused")
 class IOEvent implements InputEvent, OutputEvent, Closeable {

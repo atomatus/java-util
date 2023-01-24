@@ -11,7 +11,7 @@ import java.io.Writer;
 /**
  * Xml writer with CData specification.
  * Write as PrettyPrintWriter when debugging otherwise use CompactWriter.
- * @author Carlos Matos
+ * @author Carlos Matos {@literal @chcmatos}
  */
 public final class CDataStringPrintWriter extends PrettyPrintWriter {
 
