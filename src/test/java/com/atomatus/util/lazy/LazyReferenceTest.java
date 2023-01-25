@@ -2,14 +2,6 @@ package com.atomatus.util.lazy;
 
 import junit.framework.TestCase;
 
-/**
- * <p>
- *
- * </p>
- * <i>Created by chcmatos on 25, janeiro, 2023</i>
- *
- * @author Carlos Matos {@literal @chcmatos}
- */
 public class LazyReferenceTest extends TestCase {
 
     public void testSoft() {
