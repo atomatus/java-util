@@ -12,13 +12,10 @@ import java.util.Objects;
  *     the point at which it is needed. So, when developer request in first time the
  *     {@link #get} method this object will be loaded and keep in memory by soft or weak approach.
  * </p>
- *
- * <p>
- *     <ul>
- *         <li>{@link java.lang.ref.SoftReference}</li>
- *         <li>{@link java.lang.ref.WeakReference}</li>
- *     </ul>
- * </p>
+ * <ul>
+ *      <li>{@link java.lang.ref.SoftReference}</li>
+ *      <li>{@link java.lang.ref.WeakReference}</li>
+ * </ul>
  *
  * <i>Created by chcmatos (cmatos) on 04, march, 2022</i>
  *
