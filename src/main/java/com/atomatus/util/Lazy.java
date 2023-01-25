@@ -99,7 +99,7 @@ public final class Lazy<Param, Result> implements Destroyable {
     private Result valueInternal(Param[] args) {
         requireNonDestroyed();
         int hash = Objects.hash(value, Arrays.hashCode(args));
-        if(valueHash != UNSET_HASH && valueHash == hash) {
+        if(valueHash != UNSET_HASH && (args.length == 0 || valueHash == hash)) {
             return (Result) value;
         } else {
             valueHash = hash;
