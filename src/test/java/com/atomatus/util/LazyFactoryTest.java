@@ -6,7 +6,7 @@ public class LazyFactoryTest extends TestCase {
 
     private Object callbackDefault(String[] args) {
         return args.length == 2 && "Test".equalsIgnoreCase(args[0]) && "Default".equalsIgnoreCase(args[1]) ?
-                new Object() : new Object();
+                new Object() : null;
     }
 
     public void testCreateNullArgument() {
