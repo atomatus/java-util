@@ -26,6 +26,11 @@ import java.util.Objects;
 public interface LazyReference<T> {
 
     //region wrappers
+    /**
+     * Function Wrapper to encapsulate LazyFunction with args.
+     * @param <I> input type
+     * @param <O> output type
+     */
     final class FunctionWrapper<I, O> implements LazySupplier<O>, Destroyable {
 
         private I inputArg;
@@ -54,6 +59,12 @@ public interface LazyReference<T> {
         }
     }
 
+    /**
+     * BiFunction Wrapper to encapsulate LazyBiFunction with args.
+     * @param <I0> first input type
+     * @param <I1> second input type
+     * @param <O> output type
+     */
     final class BiFunctionWrapper<I0, I1, O> implements LazySupplier<O>, Destroyable {
 
         private I0 inputArg0;
@@ -86,36 +97,169 @@ public interface LazyReference<T> {
     //endregion
 
     //region soft
+    /**
+     * <p>
+     * Soft reference objects with Lazy-Loading Pattern, which are cleared at the discretion of the garbage
+     * collector in response to memory demand.
+     *
+     * <p> Suppose that the garbage collector determines at a certain point in time
+     * that an object is <a href="package-summary.html#reachability">softly
+     * reachable</a>.  At that time it may choose to clear atomically all soft
+     * references to that object and all soft references to any other
+     * softly-reachable objects from which that object is reachable through a chain
+     * of strong references.  At the same time or at some later time it will
+     * enqueue those newly-cleared soft references that are registered with
+     * reference queues.
+     *
+     * </p>
+     * @param data input data
+     * @param <J> input data type
+     * @return lazy reference.
+     */
     static <J> LazyReference<J> soft(J data) {
         return new LazyReferenceImplSoft<>(data);
     }
 
+    /**
+     * <p>
+     * Soft reference objects with Lazy-Loading Pattern, which are cleared at the discretion of the garbage
+     * collector in response to memory demand.
+     *
+     * <p> Suppose that the garbage collector determines at a certain point in time
+     * that an object is <a href="package-summary.html#reachability">softly
+     * reachable</a>.  At that time it may choose to clear atomically all soft
+     * references to that object and all soft references to any other
+     * softly-reachable objects from which that object is reachable through a chain
+     * of strong references.  At the same time or at some later time it will
+     * enqueue those newly-cleared soft references that are registered with
+     * reference queues.
+     * </p>
+     * @param supplier input supplier callback
+     * @param <J> input data type
+     * @return lazy reference.
+     */
     static <J> LazyReference<J> soft(LazySupplier<J> supplier) {
         return new LazyReferenceImplSoft<>(supplier);
     }
 
+    /**
+     * <p>
+     * Soft reference objects with Lazy-Loading Pattern, which are cleared at the discretion of the garbage
+     * collector in response to memory demand.
+     *
+     * <p> Suppose that the garbage collector determines at a certain point in time
+     * that an object is <a href="package-summary.html#reachability">softly
+     * reachable</a>.  At that time it may choose to clear atomically all soft
+     * references to that object and all soft references to any other
+     * softly-reachable objects from which that object is reachable through a chain
+     * of strong references.  At the same time or at some later time it will
+     * enqueue those newly-cleared soft references that are registered with
+     * reference queues.
+     * </p>
+     * @param input input data
+     * @param function function callback to produce output data
+     * @param <I> input type
+     * @param <O> output type
+     * @return lazy reference
+     */
     static <I, O> LazyReference<O> soft(I input, LazyFunction<I, O> function) {
         return soft(new FunctionWrapper<>(input, function));
     }
 
+    /**
+     * <p>
+     * Soft reference objects with Lazy-Loading Pattern, which are cleared at the discretion of the garbage
+     * collector in response to memory demand.
+     *
+     * <p> Suppose that the garbage collector determines at a certain point in time
+     * that an object is <a href="package-summary.html#reachability">softly
+     * reachable</a>.  At that time it may choose to clear atomically all soft
+     * references to that object and all soft references to any other
+     * softly-reachable objects from which that object is reachable through a chain
+     * of strong references.  At the same time or at some later time it will
+     * enqueue those newly-cleared soft references that are registered with
+     * reference queues.
+     * </p>
+     * @param arg0 first input argument
+     * @param arg1 second input argument
+     * @param function function callback to generate output
+     * @param <I0> first input type
+     * @param <I1> second input type
+     * @param <O> output type
+     * @return lazy reference
+     */
     static <I0, I1, O> LazyReference<O> soft(I0 arg0, I1 arg1, LazyBiFunction<I0, I1, O> function) {
         return soft(new BiFunctionWrapper<>(arg0, arg1, function));
     }
     //endregion
 
     //region weak
+    /**
+     * <p>
+     * Weak reference objects with LAZY-Loading Pattern,
+     * which do not prevent their referents from being made finalizable,
+     * finalized, and then reclaimed.
+     *
+     * Weak references are most often used to implement canonicalizing mappings.
+     * </p>
+     * @param data input data
+     * @param <J> input type
+     * @return lazy reference
+     */
     static <J> LazyReference<J> weak(J data) {
         return new LazyReferenceImplWeak<>(data);
     }
 
+    /**
+     * <p>
+     * Weak reference objects with LAZY-Loading Pattern,
+     * which do not prevent their referents from being made finalizable,
+     * finalized, and then reclaimed.
+     *
+     * Weak references are most often used to implement canonicalizing mappings.
+     * </p>
+     * @param supplier supplier callback to produce output value
+     * @param <J> output type
+     * @return lazy reference
+     */
     static <J> LazyReference<J> weak(LazySupplier<J> supplier) {
         return new LazyReferenceImplWeak<>(supplier);
     }
 
+    /**
+     * <p>
+     * Weak reference objects with LAZY-Loading Pattern,
+     * which do not prevent their referents from being made finalizable,
+     * finalized, and then reclaimed.
+     *
+     * Weak references are most often used to implement canonicalizing mappings.
+     * </p>
+     * @param input input data
+     * @param function function callback to produce output value
+     * @param <I> input type
+     * @param <O> output type
+     * @return lazy reference
+     */
     static <I, O> LazyReference<O> weak(I input, LazyFunction<I, O> function) {
         return weak(new FunctionWrapper<>(input, function));
     }
 
+    /**
+     * <p>
+     * Weak reference objects with LAZY-Loading Pattern,
+     * which do not prevent their referents from being made finalizable,
+     * finalized, and then reclaimed.
+     *
+     * Weak references are most often used to implement canonicalizing mappings.
+     * </p>
+     * @param arg0 first argument
+     * @param arg1 second argument
+     * @param function function callback to produce output value
+     * @param <I0> first input type
+     * @param <I1> second input type
+     * @param <O> output type
+     * @return lazy reference
+     */
     static <I0, I1, O> LazyReference<O> weak(I0 arg0, I1 arg1, LazyBiFunction<I0, I1, O> function) {
         return weak(new BiFunctionWrapper<>(arg0, arg1, function));
     }
