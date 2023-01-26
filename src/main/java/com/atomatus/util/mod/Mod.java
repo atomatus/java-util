@@ -284,7 +284,7 @@ public interface Mod {
      * Some bar code types and modifiers call for the calculation and presentation of check digits.
      * Check digits are a method of verifying data integrity during the bar coding reading process.
      * <br><br>
-     * <h4>Calculation of a checksum according to Modulo 43:</h4>
+     * <b>Calculation of a checksum according to Modulo 43:</b>
      * <p>
      * First, reference numbers are assigned to all characters of the code. These reference numbers are added to a total. This sum is divided by 43. The rest of this division corresponds to the checksum, which is then replaced by the character corresponding to the reference number is represented.
      * <br><br>
