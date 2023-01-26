@@ -8,7 +8,7 @@ import java.util.Stack;
  * <p>
  * Mod base implementation for each Mod derived.
  * </p>
- * <i>Created by chcmatos on 25, janeiro, 2023</i>
+ * <i>Created by chcmatos on 25, janeiro, 2022</i>
  *
  * @author Carlos Matos {@literal @chcmatos}
  * @see Mod
@@ -159,6 +159,9 @@ abstract class ModBase implements Mod {
         return (char) ('0' + i);
     }
 
+    /**
+     * OfInt stream to read each integer input value digit from left to right.
+     */
     private static class OfIntAsc extends Stack<Integer> implements PrimitiveIterator.OfInt {
 
         public OfIntAsc(long i) {
@@ -178,6 +181,9 @@ abstract class ModBase implements Mod {
         }
     }
 
+    /**
+     * OfInt stream to read each integer input value digit from right to left.
+     */
     private static class OfIntDesc implements PrimitiveIterator.OfInt {
 
         private static final int BASE_10 = 10;
@@ -200,6 +206,9 @@ abstract class ModBase implements Mod {
         }
     }
 
+    /**
+     * OfInt stream to read each CharSequence input value digit from left to right.
+     */
     private static class CharAsc implements PrimitiveIterator.OfInt {
 
         private final NumericFunction numericCallback;
@@ -232,6 +241,9 @@ abstract class ModBase implements Mod {
         }
     }
 
+    /**
+     * OfInt stream to read each CharSequence input value digit from right to left.
+     */
     private static class CharDesc implements PrimitiveIterator.OfInt {
 
         private final CharSequence seq;
@@ -263,6 +275,9 @@ abstract class ModBase implements Mod {
         }
     }
 
+    /**
+     * Calculate parameters to encapsulate input argument and avoid future code-smells.
+     */
     protected static class CalcParams {
         public final PrimitiveIterator.OfInt digits;
         public final ModWeight weight;

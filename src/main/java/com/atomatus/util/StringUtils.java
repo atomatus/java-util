@@ -1091,6 +1091,13 @@ public final class StringUtils {
     //endregon
 
     //region flat
+    /**
+     * Flat string array to a single joined string.
+     * @param arr target
+     * @param offset start index
+     * @param count elements count
+     * @return joined string.
+     */
     public static String flat(String[] arr, int offset, int count) {
         if(count > arr.length) {
             throw new ArrayIndexOutOfBoundsException("Invalid count!");
@@ -1103,10 +1110,20 @@ public final class StringUtils {
         return sb.toString();
     }
 
+    /**
+     * Flat string array to a single joined string.
+     * @param arr target
+     * @return joined string.
+     */
     public static String flat(String[] arr) {
         return flat(arr, 0, arr.length);
     }
 
+    /**
+     * Flat string array to a single joined string.
+     * @param args target
+     * @return joined string.
+     */
     public static String[] flatArray(String[]... args) {
         int total = 0;
         for(String[] arr : args) total += arr.length;
@@ -1125,6 +1142,11 @@ public final class StringUtils {
         }
     }
 
+    /**
+     * Flat string array to a single joined string.
+     * @param args target
+     * @return joined string.
+     */
     public static String flat(String[]... args) {
         if(args.length == 0) {
             return empty();

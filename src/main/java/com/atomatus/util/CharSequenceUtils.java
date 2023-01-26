@@ -16,10 +16,20 @@ public final class CharSequenceUtils {
     private CharSequenceUtils() {
     }
 
+    /**
+     * Check CharSequence is null or empty
+     * @param seq target CharSequence
+     * @return true, CharSequence is null or empty, otherwise false.
+     */
     public static boolean isNullOrEmpty(CharSequence seq) {
         return seq == null || seq.length() == 0;
     }
 
+    /**
+     * Check CharSequence is null or whitespace
+     * @param seq target CharSequence
+     * @return true, CharSequence is null or is only whitespace, otherwise false.
+     */
     public static boolean isNullOrWhitespace(CharSequence seq) {
         if (seq != null) {
             for (int i = 0, l = seq.length(); i < l; i++) {
@@ -31,6 +41,13 @@ public final class CharSequenceUtils {
         return true;
     }
 
+    /**
+     * Compare whether both CharSequence are equals
+     * @param seq0 comparable CharSequence
+     * @param seq1 comparable CharSequence
+     * @param ignoreCase true, ignore case sensitive, false otherwise.
+     * @return true, CharSequence values are equals, false otherwise
+     */
     private static boolean equals(CharSequence seq0, CharSequence seq1, boolean ignoreCase) {
         if (seq0 == seq1) {
             return true;
@@ -50,14 +67,31 @@ public final class CharSequenceUtils {
         return false;
     }
 
+    /**
+     * Compare whether both CharSequence are equals
+     * @param seq0 comparable CharSequence
+     * @param seq1 comparable CharSequence
+     * @return true, CharSequence values are equals, false otherwise
+     */
     public static boolean equals(CharSequence seq0, CharSequence seq1) {
         return equals(seq0, seq1, false);
     }
 
+    /**
+     * Compare whether both CharSequence are equals ignoring case
+     * @param seq0 comparable CharSequence
+     * @param seq1 comparable CharSequence
+     * @return true, CharSequence values are equals, false otherwise
+     */
     public static boolean equalsIgnoreCase(CharSequence seq0, CharSequence seq1) {
         return equals(seq0, seq1, true);
     }
 
+    /**
+     * Whether any character is upper case return true, otherwise false.
+     * @param seq target
+     * @return true some char is upper case, otherwie false.
+     */
     public static boolean containsUpperCase(CharSequence seq) {
         if (seq != null) {
             for (int i = 0, l = seq.length(); i < l; i++) {
@@ -69,6 +103,11 @@ public final class CharSequenceUtils {
         return false;
     }
 
+    /**
+     * Whether any character is lower case return true, otherwise false.
+     * @param seq target
+     * @return true some char is lower case, otherwie false.
+     */
     public static boolean containsLowerCase(CharSequence seq) {
         if (seq != null) {
             for (int i = 0, l = seq.length(); i < l; i++) {
@@ -80,6 +119,11 @@ public final class CharSequenceUtils {
         return false;
     }
 
+    /**
+     * Whether all characters is upper case return true, otherwise false.
+     * @param seq target
+     * @return true all is upper case.
+     */
     public static boolean isUpperCase(CharSequence seq) {
         if (seq != null) {
             for (int i = 0, l = seq.length(); i < l; i++) {
@@ -92,6 +136,11 @@ public final class CharSequenceUtils {
         return false;
     }
 
+    /**
+     * Whether all characters is lower case return true, otherwise false.
+     * @param seq target
+     * @return true all is lower case.
+     */
     public static boolean isLowerCase(CharSequence seq) {
         if (seq != null) {
             for (int i = 0, l = seq.length(); i < l; i++) {
@@ -104,6 +153,11 @@ public final class CharSequenceUtils {
         return false;
     }
 
+    /**
+     * Check all characters is ditis only
+     * @param seq target
+     * @return true all chars is digit only, false otherwise.
+     */
     public static boolean isDigits(CharSequence seq) {
         if (!isNullOrEmpty(seq)) {
             for(int i=0, l=seq.length(); i < l; i++) {
@@ -116,6 +170,11 @@ public final class CharSequenceUtils {
         return false;
     }
 
+    /**
+     * Check all characters is ditis or whitespace.
+     * @param seq target
+     * @return true all chars is digit or whitespace, false otherwise.
+     */
     public static boolean isDigitsOrWhitespace(CharSequence seq) {
         if (!isNullOrEmpty(seq)) {
             for(int i=0, l=seq.length(); i < l; i++) {
@@ -151,6 +210,7 @@ public final class CharSequenceUtils {
      * Tests if the substring of this string beginning at the
      * specified index starts with the specified prefix.
      *
+     * @param   seq       target
      * @param   prefix    the prefix.
      * @param   offset   where to begin looking in this string.
      * @return  {@code true} if the character sequence represented by the
@@ -180,10 +240,21 @@ public final class CharSequenceUtils {
         return true;
     }
 
+    /**
+     * Avoid null point exception when check length.
+     * @param seq target
+     * @return length or 0 when null.
+     */
     public static int getLengthNullSafe(CharSequence seq) {
         return seq == null ? 0 : seq.length();
     }
 
+    /**
+     * Require CharSequence non null or empty
+     * @param seq target CharSequence
+     * @return target CharSequence
+     * @exception NullPointerException throws when CharSequence is null or empty.
+     */
     public static CharSequence requireNonNullOrEmpty(CharSequence seq) {
         if (isNullOrEmpty(seq)) {
             throw new NullPointerException("CharSequence is null or empty!");
@@ -191,6 +262,12 @@ public final class CharSequenceUtils {
         return seq;
     }
 
+    /**
+     * Require CharSequence non null or is only whitespace
+     * @param seq target CharSequence
+     * @return target CharSequence
+     * @exception NullPointerException throws when CharSequence is null or is only whitespace.
+     */
     public static CharSequence requireNonNullOrWhitespace(CharSequence seq) {
         if (isNullOrWhitespace(seq)) {
             throw new NullPointerException("CharSequence is null, empty or whitespace only!");
@@ -198,30 +275,67 @@ public final class CharSequenceUtils {
         return seq;
     }
 
+    /**
+     * Char Sequence to string avoiding null point exception when it is null
+     * @param seq target
+     * @return to string or empty string when target is null.
+     */
     public static String toStringNullSafe(CharSequence seq) {
         return seq == null ? empty().toString() : seq.toString();
     }
 
+    /**
+     * Empty string
+     * @return empty string
+     */
     public static CharSequence empty() {
         return CharSeqForArray.empty();
     }
 
+    /**
+     * Converts CharSequence to upper case.
+     * @param seq target
+     * @return CharSequence in upper case.
+     */
     public static CharSequence toUpperCase(CharSequence seq) {
         return toUpperCase(seq, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Converts CharSequence to upper case.
+     * @param seq target
+     * @param locale locale case rule
+     * @return CharSequence in upper case.
+     */
     public static CharSequence toUpperCase(CharSequence seq, Locale locale) {
         return isNullOrEmpty(seq) ? empty() : seq.toString().toUpperCase(locale);
     }
 
+    /**
+     * Converts CharSequence to lower case.
+     * @param seq target
+     * @return CharSequence in lower case.
+     */
     public static CharSequence toLowerCase(CharSequence seq) {
         return toLowerCase(seq, LocaleHelper.getDefaultLocale());
     }
 
+    /**
+     * Converts CharSequence to lower case.
+     * @param seq target
+     * @param locale locale case rule
+     * @return CharSequence in lower case.
+     */
     public static CharSequence toLowerCase(CharSequence seq, Locale locale) {
         return isNullOrEmpty(seq) ? empty() : seq.toString().toLowerCase(locale);
     }
 
+    /**
+     * Join CharSequence with right arguments.
+     * @param separator target
+     * @param args arguments to join
+     * @return new char sequence within arguments.
+     */
     public static CharSequence join(CharSequence separator, Object... args) {
         StringBuilder sb = new StringBuilder(args.length);
         if (args.length > 0) {
@@ -272,6 +386,11 @@ public final class CharSequenceUtils {
         return ((st > 0) || (len < seq.length())) ? seq.subSequence(st, len) : seq;
     }
 
+    /**
+     * Add ellipsize in the end of Char sequence.
+     * @param seq target
+     * @return char sequence ellipsized.
+     */
     public static CharSequence ellipsize(CharSequence seq) {
         if (seq == null) {
             return empty();
@@ -280,6 +399,13 @@ public final class CharSequenceUtils {
         }
     }
 
+    /**
+     * Add ellipsize in the end of Char sequence.
+     * @param seq target
+     * @param start start index of returned char sequence
+     * @param end end index to be truncated and merged with ellipsize.
+     * @return char sequence ellipsized.
+     */
     public static CharSequence ellipsize(CharSequence seq, int start, int end) {
         if (seq == null) {
             return empty();
@@ -288,10 +414,20 @@ public final class CharSequenceUtils {
         }
     }
 
+    /**
+     * Create a copy of Char sequence.
+     * @param seq target
+     * @return copy.
+     */
     public static CharSequence copy(CharSequence seq) {
         return seq == null ? empty() : seq.subSequence(0, seq.length());
     }
 
+    /**
+     * Convert Char sequence to char array.
+     * @param seq target
+     * @return char array with char sequence content.
+     */
     public static char[] toCharArray(CharSequence seq) {
         if (seq == null) {
             return new char[0];
@@ -306,6 +442,11 @@ public final class CharSequenceUtils {
         }
     }
 
+    /**
+     * Convert char arguments to char sequence
+     * @param args arguments
+     * @return new char sequence within input arguments.
+     */
     public static CharSequence from(char... args) {
         return new CharSeqForArray(args, args.length);
     }
@@ -481,7 +622,7 @@ public final class CharSequenceUtils {
 
         static final char ELLIPSIS = '\u2026';//...
 
-            final CharSequence original;
+        final CharSequence original;
         final int originalLen;
         final int len;
 

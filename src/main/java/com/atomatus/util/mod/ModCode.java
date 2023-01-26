@@ -6,7 +6,7 @@ import com.atomatus.util.StringUtils;
  * <p>
  *
  * </p>
- * <i>Created by chcmatos on 25, janeiro, 2023</i>
+ * <i>Created by chcmatos on 25, janeiro, 2022</i>
  *
  * @author Carlos Matos {@literal @chcmatos}
  */
