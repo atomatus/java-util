@@ -1,5 +1,7 @@
 package com.atomatus.util;
 
+import com.atomatus.util.mod.Mod;
+
 import java.io.Closeable;
 import java.lang.reflect.*;
 import java.math.BigDecimal;
@@ -141,7 +143,11 @@ public abstract class Reflection {
      * @throws ReflectionException throw this exception when is not possible load class or instance it.
      */
     public static Object newInstance(Class<?> clazz, Object... args) {
-        Objects.requireNonNull(clazz);
+        if(Modifier.isAbstract(Objects.requireNonNull(clazz).getModifiers()) ||
+                Modifier.isInterface(clazz.getModifiers())) {
+            return null;//is not instantiable.
+        }
+
         try {
             int len = args.length;
             Constructor<?>[] cons = clazz.getDeclaredConstructors();
@@ -159,10 +165,10 @@ public abstract class Reflection {
                 if(found != null) {
                     try {
                         setAccessible(found);
+                        return found.newInstance();
                     } catch (Exception ignored) {
                         return null; //no one accessible.
                     }
-                    return found.newInstance();
                 } else {
                     return null; // no one accessible.
                 }
