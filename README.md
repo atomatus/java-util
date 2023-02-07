@@ -1,3 +1,5 @@
+![build](https://github.com/atomatus/java-util/actions/workflows/gradle-ci.yml/badge.svg)
+
 # ☕ java-util
 Set of utilities to help in project development.
 
