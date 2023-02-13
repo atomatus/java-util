@@ -2,14 +2,9 @@ package com.atomatus.util;
 
 import junit.framework.TestCase;
 
-/**
- * <p>
- *
- * </p>
- * <i>Created by chcmatos on 27, janeiro, 2023</i>
- *
- * @author Carlos Matos {@literal @chcmatos}
- */
+import java.io.IOException;
+import java.net.URISyntaxException;
+
 public class FileUtilsTest extends TestCase {
 
     public void testSizeUnits() {
@@ -27,6 +22,17 @@ public class FileUtilsTest extends TestCase {
                             + unit + " as \"" + n + " " + unit.symbol() + "\" " ,
                     size, unit.symbolCast(n));
         }
+    }
+
+    public void testResourceContent() throws IOException, URISyntaxException {
+        String str = "Lorem ipsum dolor sit amet";
+        String res = FileUtils.resourceContent("lorem_ipsum.txt");
+        assertTrue("Invalid resource content!", res.startsWith(str));
+    }
+
+    public void testFileSize() throws IOException, URISyntaxException {
+        String size = FileUtils.displayFileSize(FileUtils.resource("lorem_ipsum.txt"));
+        assertNotNull(size);
     }
 
 }

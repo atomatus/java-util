@@ -139,7 +139,7 @@ public class IOUtils {
         byte[] buffer = new byte[LARGE_BUFFER_SIZE];
         int read, offset = 0;
 
-        while((read = input.read(buffer, offset, buffer.length)) != EOF) {
+        while((read = input.read(buffer, offset, buffer.length - offset)) != EOF) {
             offset += read;
             if(offset == Integer.MAX_VALUE) {
                 throw new IOException("Size cannot be greater than Integer max value: " + offset);
@@ -252,7 +252,7 @@ public class IOUtils {
                     pos2 += count2;
                 }
 
-                if (Array.get(array1, index) != Array.get(array2, index)) {
+                if (!Objects.equals(Array.get(array1, index), Array.get(array2, index))) {
                     return false;
                 }
             }

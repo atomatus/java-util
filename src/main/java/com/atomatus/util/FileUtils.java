@@ -2,6 +2,9 @@ package com.atomatus.util;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Objects;
 
 /**
@@ -195,7 +198,7 @@ public final class FileUtils {
      * @throws IllegalArgumentException when an input is not a file.
      * @throws IOException If an I/O error occurs.
      */
-    public static boolean contentEquals(final File file1, final File file2) throws IOException {
+    public static boolean contentEquals(File file1, File file2) throws IOException {
         if (file1 == null && file2 == null) {
             return true;
         } else if (file1 == null || file2 == null) {
@@ -237,7 +240,7 @@ public final class FileUtils {
      * @throws IllegalArgumentException when an input is not a file.
      * @throws IOException in case of an I/O error.
      */
-    public static boolean contentEqualsIgnoreEOL(final File file1, final File file2, final String charsetName)
+    public static boolean contentEqualsIgnoreEOL(File file1, File file2, final String charsetName)
             throws IOException {
         if (file1 == null && file2 == null) {
             return true;
@@ -275,11 +278,64 @@ public final class FileUtils {
      *         other reason cannot be opened for reading.
      * @throws IOException if an I/O error occurs.
      */
-    public static byte[] toByteArray(final File file) throws IOException {
+    public static byte[] toByteArray(File file) throws IOException {
+        //noinspection IOStreamConstructor
         try (InputStream inputStream = new FileInputStream(file)) {
             final long fileLength = file.length();
             // file.length() may return 0 for system-dependent entities, treat 0 as unknown length - see IO-453
             return fileLength > 0 ? IOUtils.toByteArray(inputStream, fileLength) : IOUtils.toByteArray(inputStream);
         }
+    }
+
+    /**
+     * Reads the contents of an internal resouce file into a byte array.
+     * The file is always closed.
+     * @param resourceName resource name
+     * @return resource content as byte array.
+     * @throws FileNotFoundException throws when resource is not found.
+     * @throws URISyntaxException throws if is not possible convert resource path to URI.
+     */
+    public static byte[] resourceToByteArray(String resourceName) throws IOException, URISyntaxException {
+        return toByteArray(resource(resourceName));
+    }
+
+    /**
+     * Reads the contents of an internal resouce file.
+     * The file is always closed.
+     * @param resourceName resource name
+     * @param charset charset name
+     * @return resource content as string.
+     * @throws FileNotFoundException throws when resource is not found.
+     * @throws URISyntaxException throws if is not possible convert resource path to URI.
+     */
+    public static String resourceContent(String resourceName, Charset charset) throws IOException, URISyntaxException {
+        return new String(resourceToByteArray(resourceName), charset);
+    }
+
+    /**
+     * Reads the contents of an internal resouce file.
+     * The file is always closed.
+     * @param resourceName resource name
+     * @return resource content as string.
+     * @throws FileNotFoundException throws when resource is not found.
+     * @throws URISyntaxException throws if is not possible convert resource path to URI.
+     */
+    public static String resourceContent(String resourceName) throws IOException, URISyntaxException {
+        return new String(resourceToByteArray(resourceName));
+    }
+
+    /**
+     * Get an internal jar resource by name.
+     * @param resourceName resource name
+     * @return resource as file.
+     * @throws FileNotFoundException throws when resource is not found.
+     * @throws URISyntaxException throws if is not possible convert resource path to URI.
+     */
+    public static File resource(String resourceName) throws IOException, URISyntaxException {
+       URL url = Thread.currentThread().getContextClassLoader().getResource(resourceName);
+       if(url == null) {
+           throw new FileNotFoundException("Resource \"" + resourceName + "\" not found!");
+       }
+       return new File(url.toURI());
     }
 }
