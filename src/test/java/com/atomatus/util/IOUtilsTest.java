@@ -4,17 +4,12 @@ import junit.framework.TestCase;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class IOUtilsTest extends TestCase {
 
-    public void testToByteArray() {
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("lorem_ipsum.txt")) {
-            byte[] bytes = IOUtils.toByteArray(is);
-            assertEquals(bytes.length, 448);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void testToByteArray() throws IOException {
+        byte[] bytes = IOUtils.resourceToByteArray("lorem_ipsum.txt");
+        assertEquals(bytes.length, 448);
     }
 
     public void testContentEquals() {

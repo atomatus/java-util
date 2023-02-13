@@ -382,4 +382,38 @@ public class IOUtils {
     }
     //endregion
 
+    //region resource
+    /**
+     * Gets contents of an internal resource
+     * as {@link InputStream} into a {@code byte[]}.
+     *
+     * @param resourceName internal resource name.
+     * @return byte [] the requested byte array, of length {@code size}
+     * @throws IOException              if an I/O error occurs or {@link InputStream} length is less than {@code size}
+     * @throws IllegalArgumentException if size is less than zero or size is greater than Integer.MAX_VALUE
+     * @see IOUtils#toByteArray(InputStream)
+     * @see IOUtils#toByteArray(InputStream, int)
+     */
+    public static byte[] resourceToByteArray(String resourceName) throws IOException {
+        return toByteArray(resource(resourceName));
+    }
+
+    /**
+     * Returns an input stream for reading the specified resource.
+     *
+     * @param  resourceName
+     *         The resource name
+     *
+     * @return  An input stream for reading the resource; {@code null} if the
+     *          resource could not be found, the resource is in a package that
+     *          is not opened unconditionally, or access to the resource is
+     *          denied by the security manager.
+     *
+     * @throws  NullPointerException If {@code name} is {@code null}
+     */
+    public static InputStream resource(String resourceName) {
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+    }
+    //endregion
+
 }
