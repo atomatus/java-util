@@ -2,6 +2,7 @@ package com.atomatus.util;
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -409,10 +410,13 @@ public class IOUtils {
      *          is not opened unconditionally, or access to the resource is
      *          denied by the security manager.
      *
-     * @throws  NullPointerException If {@code name} is {@code null}
+     * @throws NullPointerException If {@code resourceName} is {@code null}
+     * @throws IOException If is not possible open stream.
      */
-    public static InputStream resource(String resourceName) {
-        return Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
+    public static InputStream resource(String resourceName) throws IOException {
+        URL url = Thread.currentThread().getContextClassLoader().getResource(resourceName);
+        if(url == null) throw new NullPointerException("resource not found!");
+        return url.openStream();
     }
     //endregion
 
