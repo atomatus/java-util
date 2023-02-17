@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Objects;
 
 /**
@@ -338,4 +339,128 @@ public final class FileUtils {
        }
        return new File(url.toURI());
     }
+
+    /**
+     * Create or update file content.
+     * @param file target file
+     * @param buffer new file content
+     * @param offset start index
+     * @param length data length.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(File file, byte[] buffer, int offset, int length) throws IOException {
+        try(FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(Objects.requireNonNull(buffer, "Buffer is null!"), offset, length);
+        }
+    }
+
+    /**
+     * Create or update file content.
+     * @param file target file
+     * @param buffer new file content
+     * @param length data length.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(File file, byte[] buffer, int length) throws IOException {
+        write(file, buffer, 0, length);
+    }
+
+    /**
+     * Create or update file content.
+     * @param file target file
+     * @param buffer new file content
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(File file, byte[] buffer) throws IOException {
+        write(file, Objects.requireNonNull(buffer, "Buffer is null!"), 0, buffer.length);
+    }
+
+    /**
+     * Create or update file content.
+     * @param filePath target file
+     * @param buffer new file content
+     * @param offset start index
+     * @param length data length.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(Path filePath, byte[] buffer, int offset, int length) throws IOException {
+        write(filePath.toFile(), buffer, offset, length);
+    }
+
+    /**
+     * Create or update file content.
+     * @param filePath target file
+     * @param buffer new file content
+     * @param length data length.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(Path filePath, byte[] buffer, int length) throws IOException {
+        write(filePath.toFile(), buffer, length);
+    }
+
+    /**
+     * Create or update file content.
+     * @param filePath target file
+     * @param buffer new file content
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(Path filePath, byte[] buffer) throws IOException {
+        write(filePath.toFile(), buffer);
+    }
+
+    /**
+     * Create or update file content.
+     * @param filePath target file path
+     * @param buffer new file content
+     * @param offset start index
+     * @param length data length.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(String filePath, byte[] buffer, int offset, int length) throws IOException {
+        write(new File(filePath), buffer, offset, length);
+    }
+
+    /**
+     * Create or update file content.
+     * @param filePath target file path
+     * @param buffer new file content
+     * @param length data length.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(String filePath, byte[] buffer, int length) throws IOException {
+        write(new File(filePath), buffer, length);
+    }
+
+    /**
+     * Create or update file content.
+     * @param filePath target file path
+     * @param buffer new file content
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(String filePath, byte[] buffer) throws IOException {
+        write(new File(filePath), buffer);
+    }
+
+    /**
+     * Create or update file content.
+     * @param file target file path
+     * @param is new file content.
+     * @param close true close stream connection, false otherwise.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(File file, InputStream is, boolean close) throws IOException {
+        //noinspection IOStreamConstructor
+        IOUtils.write(new FileOutputStream(file), is, close);
+    }
+
+    /**
+     * Create or update file content and close input stream.
+     * @param file target file path
+     * @param is new file content.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(File file, InputStream is) throws IOException {
+        write(file, is, true);
+    }
+
 }

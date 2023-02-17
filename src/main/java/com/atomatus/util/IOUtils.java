@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  *
  * @author Carlos Matos {@literal @chcmatos}
  */
-public class IOUtils {
+public final class IOUtils {
 
     /**
      * Stop byte function.
@@ -417,6 +417,63 @@ public class IOUtils {
         URL url = Thread.currentThread().getContextClassLoader().getResource(resourceName);
         if(url == null) throw new NullPointerException("resource not found!");
         return url.openStream();
+    }
+    //endregion
+
+    //region read
+    /**
+     * Gets the contents of an {@link InputStream} as a {@code byte[]}.
+     * <p>
+     * This method buffers the input internally, so there is no need to use a
+     * {@link BufferedInputStream}.
+     * </p>
+     *
+     * @param is the {@link InputStream} to read.
+     * @return the requested byte array.
+     * @throws NullPointerException if the InputStream is {@code null}.
+     * @throws IOException if an I/O error occurs or reading more than {@link Integer#MAX_VALUE} occurs.
+     */
+    public static byte[] read(InputStream is) throws IOException {
+        return toByteArray(is);
+    }
+    //endregion
+
+    //region write
+    /**
+     * Write input stream content to ouput stream.
+     * @param output output stream who receive the content.
+     * @param input input stream who give the content.
+     * @param close true, close streams connection, false otherwise
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(OutputStream output, InputStream input, boolean close) throws IOException {
+        Objects.requireNonNull(output, "OutputStream is null!");
+        Objects.requireNonNull(input, "InpustStream is null!");
+        try {
+            byte[] arr = new byte[LARGE_BUFFER_SIZE];
+            int read;
+            while ((read = input.read(arr)) != EOF) {
+                output.write(arr, 0, read);
+            }
+        } finally {
+            if(close) {
+                try {
+                    output.close();
+                } finally {
+                    input.close();
+                }
+            }
+        }
+    }
+
+    /**
+     * Write input stream content to ouput stream and close both connections.
+     * @param output output stream who receive the content.
+     * @param input input stream who give the content.
+     * @throws IOException throws any I/O exception.
+     */
+    public static void write(OutputStream output, InputStream input) throws IOException {
+        write(output, input, true);
     }
     //endregion
 
