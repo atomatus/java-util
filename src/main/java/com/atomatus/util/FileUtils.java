@@ -294,10 +294,9 @@ public final class FileUtils {
      * @param resourceName resource name
      * @return resource content as byte array.
      * @throws FileNotFoundException throws when resource is not found.
-     * @throws URISyntaxException throws if is not possible convert resource path to URI.
      */
-    public static byte[] resourceToByteArray(String resourceName) throws IOException, URISyntaxException {
-        return toByteArray(resource(resourceName));
+    public static byte[] resourceToByteArray(String resourceName) throws IOException {
+        return IOUtils.resourceToByteArray(resourceName);
     }
 
     /**
@@ -307,9 +306,8 @@ public final class FileUtils {
      * @param charset charset name
      * @return resource content as string.
      * @throws FileNotFoundException throws when resource is not found.
-     * @throws URISyntaxException throws if is not possible convert resource path to URI.
      */
-    public static String resourceContent(String resourceName, Charset charset) throws IOException, URISyntaxException {
+    public static String resourceContent(String resourceName, Charset charset) throws IOException {
         return new String(resourceToByteArray(resourceName), charset);
     }
 
@@ -319,9 +317,8 @@ public final class FileUtils {
      * @param resourceName resource name
      * @return resource content as string.
      * @throws FileNotFoundException throws when resource is not found.
-     * @throws URISyntaxException throws if is not possible convert resource path to URI.
      */
-    public static String resourceContent(String resourceName) throws IOException, URISyntaxException {
+    public static String resourceContent(String resourceName) throws IOException {
         return new String(resourceToByteArray(resourceName));
     }
 
@@ -329,6 +326,7 @@ public final class FileUtils {
      * Get an internal jar resource by name.
      * @param resourceName resource name
      * @return resource as file.
+     * @throws NullPointerException throws when resourceName is null.
      * @throws FileNotFoundException throws when resource is not found.
      * @throws URISyntaxException throws if is not possible convert resource path to URI.
      */
@@ -338,6 +336,73 @@ public final class FileUtils {
            throw new FileNotFoundException("Resource \"" + resourceName + "\" not found!");
        }
        return new File(url.toURI());
+    }
+
+    /**
+     * Extract internal resource to target file path.
+     * @param file target file.
+     * @param resourceName resource name.
+     * @return resorce extracted file.
+     * @throws IOException throws any I/O exception.
+     * @throws NullPointerException throws when file or resourceName is null.
+     */
+    public static File extractResource(File file, String resourceName) throws IOException {
+        write(file, IOUtils.resource(resourceName), true);
+        return file;
+    }
+
+    /**
+     * Extract internal resource to target temporary file created.
+     * @param tmpFileName temporary file name (only name).
+     * @param resourceName resource name.
+     * @return resorce extracted file.
+     * @throws IOException throws any I/O exception.
+     * @throws NullPointerException throws when tmpFileName or resourceName is null.
+     */
+    public static File extractResource(String tmpFileName, String resourceName) throws IOException {
+        File tmpDir = new File(System.getProperty("java.io.tmpdir"));
+        File tmpFile = new File(tmpDir, tmpFileName);
+        tmpFile.deleteOnExit();
+        write(tmpFile, IOUtils.resource(resourceName), true);
+        return tmpFile;
+    }
+
+    /**
+     * Extract internal resource to temporary directory named with pefix "res" and suffix ".tmp".
+     * @param resourceName resource name.
+     * @param deleteOnExit true, delete extracted file on app exit, otherwise false.
+     * @return resorce extracted temp file.
+     * @throws IOException throws any I/O exception.
+     * @throws NullPointerException throws when resourceName is null.
+     */
+    public static File extractResource(String resourceName, boolean deleteOnExit) throws IOException {
+        File file = File.createTempFile("res", ".tmp");
+        if(deleteOnExit) file.deleteOnExit();
+        return extractResource(file, resourceName);
+    }
+
+    /**
+     * Extract internal resource to temporary directory named with pefix "res" and suffix ".tmp",
+     * it will be deleted on app exit.
+     * @param resourceName resource temp name.
+     * @return resorce extracted file.
+     * @throws IOException throws any I/O exception.
+     * @throws NullPointerException throws when resourceName is null.
+     */
+    public static File extractResource(String resourceName) throws IOException {
+        return extractResource(resourceName, true);
+    }
+
+    /**
+     * Extract internal resource to temporary directory named with same name.
+     * It will be deleted on app exit.
+     * @param resourceName resource temp name.
+     * @return resorce extracted file.
+     * @throws IOException throws any I/O exception.
+     * @throws NullPointerException throws when resourceName is null.
+     */
+    public static File extractResourceKeepName(String resourceName) throws IOException {
+        return extractResource(resourceName, resourceName);
     }
 
     /**

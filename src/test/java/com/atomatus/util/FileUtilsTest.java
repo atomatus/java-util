@@ -2,6 +2,7 @@ package com.atomatus.util;
 
 import junit.framework.TestCase;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -24,7 +25,7 @@ public class FileUtilsTest extends TestCase {
         }
     }
 
-    public void testResourceContent() throws IOException, URISyntaxException {
+    public void testResourceContent() throws IOException {
         String str = "Lorem ipsum dolor sit amet";
         String res = FileUtils.resourceContent("lorem_ipsum.txt");
         assertTrue("Invalid resource content!", res.startsWith(str));
@@ -34,5 +35,16 @@ public class FileUtilsTest extends TestCase {
         String size = FileUtils.displayFileSize(FileUtils.resource("lorem_ipsum.txt"));
         assertNotNull(size);
     }
+
+    public void testExtractResouce() throws IOException {
+        File file = FileUtils.extractResource("lorem_ipsum.txt");
+        assertTrue(file.exists());
+    }
+
+    public void testExtractResouceKeepName() throws IOException {
+        File file = FileUtils.extractResourceKeepName("lorem_ipsum.txt");
+        assertTrue(file.exists());
+    }
+
 
 }
