@@ -9,7 +9,7 @@ A simple way to do REST actions like methods get, post, put patch or delete.
 
 Simple example of action GET with basic auth.
 
-```
+```java
 try(Response resp = new HttpConnection()
     .useBasicAuth()
     .setCredentials("username", "password")
@@ -30,7 +30,9 @@ try(Response resp = new HttpConnection()
 
 `` application/json ``
 
-`` { "id": 123, "name": "Example" } ``
+```json
+ { "id": 123, "name": "Example" } 
+```
 
 Example of action GET with URL parameter
 
