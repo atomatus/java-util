@@ -3,31 +3,31 @@
 # ☕ java-util: A Java Utility Library
 The java-util library is a comprehensive set of Java utilities designed to simplify common tasks in application development. It provides a wide range of features, including:
 
-- **HTTP Connection:** Simplifies HTTP and HTTPS operations, such as GET, POST, PUT, PATCH, and DELETE requests. It supports basic authentication and automatic parsing of response data into Java objects.
+- ***HTTP Connection:*** Simplifies HTTP and HTTPS operations, such as GET, POST, PUT, PATCH, and DELETE requests. It supports basic authentication and automatic parsing of response data into Java objects.
 
-- **Socket Connection:** Facilitates client-server communication via sockets, making it easy to create socket servers and clients.
+- ***Socket Connection:*** Facilitates client-server communication via sockets, making it easy to create socket servers and clients.
 
-- **MacVendors:** Quickly identifies device manufacturers based on MAC addresses, aiding in device recognition.
+- ***MacVendors:*** Quickly identifies device manufacturers based on MAC addresses, aiding in device recognition.
 
-- **Security:** Offers encryption and random key generation for data protection and security.
+- ***Security:*** Offers encryption and random key generation for data protection and security.
 
-- **Serialization:** Streamlines object serialization and deserialization in formats like Object Base64, BSON, JSON, and XML.
+- ***Serialization:*** Streamlines object serialization and deserialization in formats like Object Base64, BSON, JSON, and XML.
 
-- **ArrayHelper:** Provides powerful tools for analyzing, manipulating, and converting Java arrays.
+- ***ArrayHelper:*** Provides powerful tools for analyzing, manipulating, and converting Java arrays.
 
-- **Decimal Helper:** Helps with the conversion and manipulation of floating-point and numeric data types, simplifying decimal and monetary value formatting.
+- ***Decimal Helper:*** Helps with the conversion and manipulation of floating-point and numeric data types, simplifying decimal and monetary value formatting.
 
-- **Date Helper:** Simplifies date manipulation and formatting tasks in Java.
+- ***Date Helper:*** Simplifies date manipulation and formatting tasks in Java.
 
-- **Memory Info:** Provides memory usage information, including free, allocated, and total memory.
+- ***Memory Info:*** Provides memory usage information, including free, allocated, and total memory.
 
-- **SNTP Client:** Synchronizes the system clock with online time servers to obtain accurate date and time information.
+- ***SNTP Client:*** Synchronizes the system clock with online time servers to obtain accurate date and time information.
 
-- **String Utils:** Offers utilities for string manipulation, including checks for nullity, capitalization, string padding, and string joining.
+- ***String Utils:*** Offers utilities for string manipulation, including checks for nullity, capitalization, string padding, and string joining.
 
-- **Reflection:** Enables dynamic access and manipulation of Java objects at runtime, allowing for class inflation and method/field access.
+- ***Reflection:*** Enables dynamic access and manipulation of Java objects at runtime, allowing for class inflation and method/field access.
 
-- **Debug:** Provides a means to check if code is running in debug mode.
+- ***Debug:*** Provides a means to check if code is running in debug mode.
 
 The java-util library serves as a versatile toolset to accelerate Java application development by simplifying common tasks and offering advanced features for data manipulation and network communication.
 
