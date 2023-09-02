@@ -1,13 +1,15 @@
 ![build](https://github.com/atomatus/java-util/actions/workflows/gradle-ci.yml/badge.svg)
 
-# ☕ java-util
-Set of utilities to help in project development.
+# ☕ java-util: A Java Utility Library
+`java-util` is a versatile Java utility library that offers a range of features to streamline your project development.
 
 ## 🌐 Http Connection
-Fully class for http or https connections.
-A simple way to do REST actions like methods get, post, put patch or delete.
 
-Simple example of action GET with basic auth.
+### Performing HTTP Requests
+
+The `HttpConnection` class simplifies `HTTP` and `HTTPS` connections, enabling you to perform RESTful actions such as `GET`, `POST`, `PUT`, `PATCH`, and `DELETE`. Below is an example of a GET request with basic authentication:
+
+#### Java Example:
 
 ```java
 try(Response resp = new HttpConnection()
@@ -28,13 +30,16 @@ try(Response resp = new HttpConnection()
 }
 ```
 
-`` application/json ``
+#### Response Content (JSON):
 
 ```json
  { "id": 123, "name": "Example" } 
 ```
 
-Example of action GET with URL parameter
+### GET Request with URL Parameters
+You can also perform GET requests with URL parameters:
+
+#### Java Example:
 
 ```java
  try (Response resp = new HttpConnection()
@@ -51,8 +56,10 @@ Example of action GET with URL parameter
             }
 ```
 
-Example of action GET with URL Parameter, Query Parameter
+### GET Request with URL Parameters
+You can also perform GET requests with URL parameters:
 
+#### Java Example:
 ```java
  try (Response resp = new HttpConnection()
         .getContent("https://test.com/api/{0}/json",            
@@ -65,7 +72,10 @@ Example of action GET with URL Parameter, Query Parameter
 //url: https://test.com/api/urlParamExample/json?param=queryParamExample
 ```
 
-Example of action POST with URL Parameter, Query Parameter and Body Parameter
+### POST Request with Parameters
+Performing a POST request with URL parameters, query parameters, and a request body:
+
+#### Java Example:
 
 ```java
  try (Response resp = new HttpConnection()
@@ -80,7 +90,10 @@ Example of action POST with URL Parameter, Query Parameter and Body Parameter
 //url: https://test.com/api/urlParamExample/json?param=queryParamExample
 ```
 
-Example of action GET Cached
+### Caching Responses
+You can enable response caching to improve performance:
+
+#### Java Example:
 
 ```java
  try (Response resp = new HttpConnection()
@@ -99,9 +112,11 @@ Example of action GET Cached
 
 
 ## 🔌 Socket Connection
-Simple way for socket Client/Server connection.
 
-Example socket client/server for a serializable object.
+### Simplifying Socket Communication
+The java-util library provides a straightforward way to establish socket connections for both clients and servers.
+
+#### Java Example (Socket Client/Server for Serializable Object):
 
 ```java
 final Server s = new Server();
@@ -143,7 +158,11 @@ final Server s = new Server();
 
 
 ## 🤝 MacVendors
-The Fastest way to find vendors by macAddress
+
+### Find Vendors by Mac Address
+MacVendors offers a fast and efficient way to retrieve vendor information based on a MAC address.
+
+#### Java Example:
 
 ```java
 //example how to find a vendor (Apple Inc) informations from macAddress.
@@ -152,8 +171,13 @@ Vendor v = MacVendors.getInstance().find("BC:92:6B:FF:FF:FF");
 
 ## 🔒 Security
 
-### Encryptors  
-Encrypt and decrypt data ysing CIPHER, NUMERIC or NUMERIC_MATRIX.
+### Data Encryption and Protection
+The `java-util` library provides various tools for data encryption and protection.
+
+#### Encryptors
+Encrypt and decrypt data using CIPHER, NUMERIC, or NUMERIC_MATRIX encryption methods.
+
+#### Java Example:
 
 ```java
 //example encryptor build.
@@ -168,7 +192,9 @@ String original = e.decrypt(result);
 ```
 
 ### Key Generator
-Generate random key decimal, hexadecimal or alpha numeric. 
+Generate random keys in decimal, hexadecimal, alphabetic, or alphanumeric formats.
+
+#### Java Examples:
 
 ```java
 //random decimal.
@@ -194,8 +220,10 @@ System.out.println(KeyGenerator.generateRandomKeyAlphaNumeric())
 
 ### Sensitive Bytes
 Write data ciphered in memory to protect againt access violation,
-using SensitiveBytes, SentitiveChars or SensitiveData classes.
+using `SensitiveBytes`, `SentitiveChars` or `SensitiveData` classes.
 Keeping ciphered data in memory or storing in temp file to free memory.
+
+#### Java Example (Sensitive Bytes):
 
 ```java
 //Sensitive bytes
@@ -232,14 +260,15 @@ InputStream stream = sb0.stream();
 
 ```
 
-Storing large SensitiveBytes in temp file to free memory
+#### Java Example (Storing SensitiveBytes):
+Storing large SensitiveBytes in temp file to free memory.
 
 ```java
- byte[] script = new HttpConnection()
-                .getContent("https://raw.githubusercontent.com/chcmatos/nanodegree_py_analyze_srag/main/app/analyze.py")
-                .getContentBytes();
- SensitiveBytes sb = SensitiveBytes.of(script);
- File tmp = sb.store(); //create temp file in system temp dir.  
+byte[] script = new HttpConnection()
+        .getContent("https://raw.githubusercontent.com/chcmatos/nanodegree_py_analyze_srag/main/app/analyze.py")
+        .getContentBytes();
+SensitiveBytes sb = SensitiveBytes.of(script);
+File tmp = sb.store(); // Creates a temporary file in the system's temporary directory
 ```
 
 ```java
@@ -259,6 +288,7 @@ Storing large SensitiveBytes in temp file to free memory
  sb.stored(tmp);
 ```
 
+#### Java Example (Reading Stored Data without Reloading into Memory):
 To read content stored in temp file, but without reload back in memory.
 
 ```java
@@ -268,8 +298,11 @@ To read content stored in temp file, but without reload back in memory.
 ```
 
 ## 📝 Serializer
-Serialize and deserialize objects for Object Base64, BSON, JSON or XML.
 
+### Serialize and Deserialize Objects
+The Serializer class enables serialization and deserialization of objects into various formats, including Object Base64, BSON, JSON, or XML.
+
+#### Java Example:
 ```java
 Example ex1 = new Example();
 Serializer s = Serializer.getInstance(Serializer.Type.XML);
@@ -277,7 +310,7 @@ String xmlEx = s.serialize(ex1);
 ex1 = s.deserialize(xmlEx);
 ``` 
 
-Whether desire apply some particular rule for target class, use below code
+You can also apply custom serialization rules to specific classes using the Serializer.setupDefaultConfigurationXml() method.
 
 ```java
 Serializer.setupDefaultConfigurationXml(Example.class, x -> {
@@ -287,147 +320,75 @@ Serializer.setupDefaultConfigurationXml(Example.class, x -> {
 ```
 
 ## ⛓ 👊 ArrayHelper
-Helper to analyze, manipulate and convert array objects.
+
+### Array Manipulation and Analysis
+The `ArrayHelper` class provides a range of functions for manipulating and analyzing arrays.
+
+#### Java Examples:
 
 ```java
-//insert a new element at first index.
-
+// Insert a new element at the first index
 Integer[] arr = new Integer[] {1, 2, 3};
 ArrayHelper.push(arr, 0);
-//arr = [0, 1, 2, 3]
-```
 
-```java
-//insert a new element at last index.
-
+// Insert a new element at the last index
 Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.add(arr, 0);
-//arr = [1, 2, 3, 0]
-```
 
-```java
-//select array elements converting to new values.
-
+// Select array elements and convert them to new values
 Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.select(arr, e -> e * 2);
-//arr = [2, 4, 6]
-```
 
-```java
-//filter array elements.
-
+// Filter array elements
 Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.filter(arr, e -> e < 3);
-//arr = [1, 2]
 
-```
-```java
-//first element by condition.
-
+// Find the first element by condition
 Integer[] arr = new Integer[] {1, 2, 3};
 Integer i = ArrayHelper.first(arr, e -> e % 2 == 0);
-//i = 2
-```
 
-```java
-//distinct array elements.
-
+// Remove duplicate elements
 Integer[] arr = new Integer[] {1, 1, 2, 2, 3};
-Integer result = ArrayHelper.distinct(arr);
-//result = [1, 2, 3]
-```
+Integer[] result = ArrayHelper.distinct(arr);
 
-```java
-//reduce array elements.
-
+// Reduce array elements
 Integer[] arr = new Integer[] {1, 2, 3};
 Integer result = ArrayHelper.reduce(arr, (acc, curr) -> acc + curr);
-//result = 6
-```
 
-```java
-//Take a count of elements.
-
+// Take a count of elements
 Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.take(arr, 2);
-//arr = [1, 2]
-```
 
-```java
-//"Jump" (Ignore) a count of element.
-
+// Ignore a count of elements
 Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.jump(arr, 2);
-//arr = [3]
-```
 
-```java
-//Resize array
-
+// Resize array
 Integer[] arr = new Integer[] {1, 2, 3};
 arr = ArrayHelper.resize(arr, arr.length + 1);
-//arr = [1, 2, 3, null]
 
-arr = ArrayHelper.resize(arr, arr.length - 1);
-//arr = [1, 2]
-```
-
-```java
-//Reverse array
-
+// Reverse array
 Integer[] arr0 = new Integer[] {1, 2, 3};
 ArrayHelper.reverse(arr0);
-//arr0 = [3, 2, 1]
-```
 
-```java
-//Join array
+// Join arrays
 Integer[] arr0 = new Integer[] {0, 1};
 Integer[] arr1 = new Integer[] {2, 3, 4, 5};
 Integer[] arr2 = ArrayHelper.join(arr0, arr1);
-//arr2 = [0, 1, 2, 3, 4, 5]
-```
 
-```java
-//All condition array
-
+// Check conditions on arrays
 Integer[] arr = new Integer[] {1, 2, 3};
-boolean b = ArrayHelper.all(arr, i -> i % 2 == 0);
-//b = false
-```
-
-```java
-//Any condition array
-
-Integer[] arr = new Integer[] {1, 2, 3};
-boolean b = ArrayHelper.any(arr, i -> i % 2 == 0);
-//b = true
-```
-
-```java
-//Contains condition array
-
-Integer[] arr = new Integer[] {1, 2, 3};
-boolean b = ArrayHelper.contains(arr, 2);
-//b = true
-```
-
-```java
-//SequenceEquals condition array
-
-Integer[] arr0 = new Integer[] {1, 2, 3};
-Integer[] arr1 = new Integer[] {1, 2, 3};
-boolean b = ArrayHelper.sequenceEquals(arr0, arr1);
-//b = true
-```
-
-```
-//and more...
+boolean b1 = ArrayHelper.all(arr, i -> i % 2 == 0);
+boolean b2 = ArrayHelper.any(arr, i -> i % 2 == 0);
+boolean b3 = ArrayHelper.contains(arr, 2);
+boolean b4 = ArrayHelper.sequenceEquals(arr0, arr1);
 ```
 
 ## ∑ $ 👊 Decimal Helper
-Helper to analyze and convert wraper or decimal types to BigDecimal, currency or decimal
-by discover Locale automatically or locale set it.
+
+The DecimalHelper class assists in analyzing and converting wrapper or decimal types to BigDecimal, currency, or decimal format, automatically detecting the locale.
+
+### Java Examples:
 
 ```java
 //all examples will be converted to a bigDecimal of 12.40
