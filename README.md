@@ -36,7 +36,7 @@ try(Response resp = new HttpConnection()
 
 Example of action GET with URL parameter
 
-```
+```java
  try (Response resp = new HttpConnection()
         .changeReadTimeOut(8000/*8s*/)
         .setSecureProtocol(HttpConnection.SecureProtocols.SSL)
@@ -53,7 +53,7 @@ Example of action GET with URL parameter
 
 Example of action GET with URL Parameter, Query Parameter
 
-```
+```java
  try (Response resp = new HttpConnection()
         .getContent("https://test.com/api/{0}/json",            
             Parameter.buildQuery("urlParamExample"),
@@ -67,7 +67,7 @@ Example of action GET with URL Parameter, Query Parameter
 
 Example of action POST with URL Parameter, Query Parameter and Body Parameter
 
-```
+```java
  try (Response resp = new HttpConnection()
         .postContent("https://test.com/api/{0}/json",            
             Parameter.buildQuery("urlParamExample"),
@@ -82,7 +82,7 @@ Example of action POST with URL Parameter, Query Parameter and Body Parameter
 
 Example of action GET Cached
 
-```
+```java
  try (Response resp = new HttpConnection()
         .useCache()//enable cache
         .setCacheMaxAge(60L, TimeUnit.SECONDS)//cache data max age
@@ -103,7 +103,7 @@ Simple way for socket Client/Server connection.
 
 Example socket client/server for a serializable object.
 
-```
+```java
 final Server s = new Server();
             s.setServerObjectAdapter(new ServerObjectAdapter() {
                 @Override
@@ -145,7 +145,7 @@ final Server s = new Server();
 ## 🤝 MacVendors
 The Fastest way to find vendors by macAddress
 
-```
+```java
 //example how to find a vendor (Apple Inc) informations from macAddress.
 Vendor v = MacVendors.getInstance().find("BC:92:6B:FF:FF:FF");
 ```
@@ -155,7 +155,7 @@ Vendor v = MacVendors.getInstance().find("BC:92:6B:FF:FF:FF");
 ### Encryptors  
 Encrypt and decrypt data ysing CIPHER, NUMERIC or NUMERIC_MATRIX.
 
-```
+```java
 //example encryptor build.
 Encryptor e = Encryptor.builder()
           		.type(Type.CIPHER)//CIPHER, NUMERIC, NUMERIC_MATRIX
@@ -170,7 +170,7 @@ String original = e.decrypt(result);
 ### Key Generator
 Generate random key decimal, hexadecimal or alpha numeric. 
 
-````
+```java
 //random decimal.
 System.out.println(KeyGenerator.generateRandomKey(10 /*length, if not set, default value is 6.*/))
 
@@ -182,7 +182,7 @@ System.out.println(KeyGenerator.generateRandomKeyAlpha())
 
 //random alpha numeric chars.
 System.out.println(KeyGenerator.generateRandomKeyAlphaNumeric())
-````
+```
 
 ``2984751263``
 
@@ -197,7 +197,7 @@ Write data ciphered in memory to protect againt access violation,
 using SensitiveBytes, SentitiveChars or SensitiveData classes.
 Keeping ciphered data in memory or storing in temp file to free memory.
 
-```
+```java
 //Sensitive bytes
 byte[] str = "This is a sensitive string!".getBytes();
 SensitiveBytes sb0 = SensitiveBytes.of(str);//instance inputing bytes
@@ -234,7 +234,7 @@ InputStream stream = sb0.stream();
 
 Storing large SensitiveBytes in temp file to free memory
 
-```
+```java
  byte[] script = new HttpConnection()
                 .getContent("https://raw.githubusercontent.com/chcmatos/nanodegree_py_analyze_srag/main/app/analyze.py")
                 .getContentBytes();
@@ -242,17 +242,17 @@ Storing large SensitiveBytes in temp file to free memory
  File tmp = sb.store(); //create temp file in system temp dir.  
 ```
 
-```
+```java
  //or naming file
  File tmp = sb.store("filepath");
 ```
 
-```
+```java
  //or inputing file
  File file = new File("filepath");
  File tmp = sb.store(file);
 ```
-```
+```java
  //to recover data back
  sb.stored();
  //or inputing file
@@ -261,7 +261,7 @@ Storing large SensitiveBytes in temp file to free memory
 
 To read content stored in temp file, but without reload back in memory.
 
-```
+```java
    byte[] bytes = sb.peekStored(); //deciphered   
    //or as stream
    InputStream stream = sb.streamStored(); //deciphering stream when read
@@ -270,7 +270,7 @@ To read content stored in temp file, but without reload back in memory.
 ## 📝 Serializer
 Serialize and deserialize objects for Object Base64, BSON, JSON or XML.
 
-```
+```java
 Example ex1 = new Example();
 Serializer s = Serializer.getInstance(Serializer.Type.XML);
 String xmlEx = s.serialize(ex1);
@@ -279,7 +279,7 @@ ex1 = s.deserialize(xmlEx);
 
 Whether desire apply some particular rule for target class, use below code
 
-```
+```java
 Serializer.setupDefaultConfigurationXml(Example.class, x -> {
     //do not serialize to password field.
     x.omitField(Example.class, "password");
@@ -289,7 +289,7 @@ Serializer.setupDefaultConfigurationXml(Example.class, x -> {
 ## ⛓ 👊 ArrayHelper
 Helper to analyze, manipulate and convert array objects.
 
-```
+```java
 //insert a new element at first index.
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -297,7 +297,7 @@ ArrayHelper.push(arr, 0);
 //arr = [0, 1, 2, 3]
 ```
 
-```
+```java
 //insert a new element at last index.
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -305,7 +305,7 @@ arr = ArrayHelper.add(arr, 0);
 //arr = [1, 2, 3, 0]
 ```
 
-```
+```java
 //select array elements converting to new values.
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -313,7 +313,7 @@ arr = ArrayHelper.select(arr, e -> e * 2);
 //arr = [2, 4, 6]
 ```
 
-```
+```java
 //filter array elements.
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -321,7 +321,7 @@ arr = ArrayHelper.filter(arr, e -> e < 3);
 //arr = [1, 2]
 
 ```
-```
+```java
 //first element by condition.
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -329,7 +329,7 @@ Integer i = ArrayHelper.first(arr, e -> e % 2 == 0);
 //i = 2
 ```
 
-```
+```java
 //distinct array elements.
 
 Integer[] arr = new Integer[] {1, 1, 2, 2, 3};
@@ -337,7 +337,7 @@ Integer result = ArrayHelper.distinct(arr);
 //result = [1, 2, 3]
 ```
 
-```
+```java
 //reduce array elements.
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -345,7 +345,7 @@ Integer result = ArrayHelper.reduce(arr, (acc, curr) -> acc + curr);
 //result = 6
 ```
 
-```
+```java
 //Take a count of elements.
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -353,7 +353,7 @@ arr = ArrayHelper.take(arr, 2);
 //arr = [1, 2]
 ```
 
-```
+```java
 //"Jump" (Ignore) a count of element.
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -361,7 +361,7 @@ arr = ArrayHelper.jump(arr, 2);
 //arr = [3]
 ```
 
-```
+```java
 //Resize array
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -372,7 +372,7 @@ arr = ArrayHelper.resize(arr, arr.length - 1);
 //arr = [1, 2]
 ```
 
-```
+```java
 //Reverse array
 
 Integer[] arr0 = new Integer[] {1, 2, 3};
@@ -380,7 +380,7 @@ ArrayHelper.reverse(arr0);
 //arr0 = [3, 2, 1]
 ```
 
-```
+```java
 //Join array
 Integer[] arr0 = new Integer[] {0, 1};
 Integer[] arr1 = new Integer[] {2, 3, 4, 5};
@@ -388,7 +388,7 @@ Integer[] arr2 = ArrayHelper.join(arr0, arr1);
 //arr2 = [0, 1, 2, 3, 4, 5]
 ```
 
-```
+```java
 //All condition array
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -396,7 +396,7 @@ boolean b = ArrayHelper.all(arr, i -> i % 2 == 0);
 //b = false
 ```
 
-```
+```java
 //Any condition array
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -404,7 +404,7 @@ boolean b = ArrayHelper.any(arr, i -> i % 2 == 0);
 //b = true
 ```
 
-```
+```java
 //Contains condition array
 
 Integer[] arr = new Integer[] {1, 2, 3};
@@ -412,7 +412,7 @@ boolean b = ArrayHelper.contains(arr, 2);
 //b = true
 ```
 
-```
+```java
 //SequenceEquals condition array
 
 Integer[] arr0 = new Integer[] {1, 2, 3};
@@ -429,7 +429,7 @@ boolean b = ArrayHelper.sequenceEquals(arr0, arr1);
 Helper to analyze and convert wraper or decimal types to BigDecimal, currency or decimal
 by discover Locale automatically or locale set it.
 
-```
+```java
 //all examples will be converted to a bigDecimal of 12.40
 BigDecimal bd = DecimalHelper.toBigDecimal(12.4D);
 BigDecimal bd = DecimalHelper.toBigDecimal(12.4F);
@@ -439,7 +439,7 @@ BigDecimal bd = DecimalHelper.toBigDecimal("R$12,40");
 BigDecimal bd = DecimalHelper.toBigDecimal("$12.40");
 ```
 
-```
+```java
 String currency = DecimalHelper.toCurrency(bd);//default locale pt-BR
 //currency = R$ 12,40
 
@@ -447,7 +447,7 @@ String decimal = Decimal.Helper.toDecimal(bd);
 //decimal = 12,40
 ```
 
-```
+```java
 String currency = DecimalHelper.toCurrency(bd, Locale.US);
 //currency = $12.40
 
@@ -458,7 +458,7 @@ String decimal = Decimal.Helper.toDecimal(bd, Locale.US);
 ## 📅 👊 Date Helper
 Helper to parse and convert String date formatted to Date or Calendar.
 
-```
+```java
 Date date = DateHelper.getInstance().parseDate("19/11/2020 11:46");
 Date date = DateHelper.getInstance().parseDate("19/11/2020");
 Date date = DateHelper.getInstance().parseDate("11:46");
@@ -470,7 +470,7 @@ Date date = DateHelper.getInstance().parseDate("11:46");
 ## 🧠 Memory Info
 Information about memory, free, allocated, total...
 
-```
+```java
 MemoryInfo mi = MemoryInfo.getInstance();
 mi.getBytes(MemoryInfo.Amount.FREE); //free memory in bytes.
 mi.getKBytes(MemoryInfo.Amount.FREE); //free memory in KB.
@@ -480,7 +480,7 @@ mi.getMBytes(MemoryInfo.Amount.FREE); //free memory in MB.
 ## 🕑 SNTP Client
 Discovery current date time online for your location
 
-```
+```java
 SNTPClient sntp = new SNTPClient();
 //attempt to get global date time online.
 //default timeout is 5 seconds.
@@ -496,7 +496,7 @@ if(sntp.request(/*timeout in millis*/)) {
 ## ⛓ String Utils
 Join strings, check and request string input not empty or not whitespace.
 
-```
+```java
 //requires
 String str = null;
 str = StringUtils.requireNonNull(str);//throws exception
@@ -550,7 +550,7 @@ Access objects by reflection.<br>
 Inflate (create an instance or load access for static class) a class by fullName (included package path) 
 to try to manipulate and access it.
 
-```
+```java
 //if not found, throws exception.
 //inflating static class, set only full path.
 Reflection r = Reflection.inflate("android.os.Debug");
@@ -570,7 +570,7 @@ boolean b = Reflection.tryInflate("android.os.Debug")
     .method("isDebuggerConnected");
 ```
 
-```
+```java
 //cast object to access method and fields
 Object obj      = "simple test";
 Reflection r    = Reflection.cast(obj, "java.lang.String");
@@ -584,6 +584,6 @@ boolean found   = r.method("indexOf", "test").valueInt() > 0;
 ## 🔍 📋 Debug
 Check if current code is running in debug mode
 
-```
+```java
 Debug.isDebugMode()
 ```
