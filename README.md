@@ -579,4 +579,4 @@ Check if current code is running in debug mode
 Debug.isDebugMode()
 ```
 ----
-(c) Atomaus - All Rights Reserveds.
+© Atomatus - All Rights Reserveds.
