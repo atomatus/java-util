@@ -7,13 +7,14 @@ import java.nio.charset.Charset;
 
 /**
  * <p>
- * Serves as an intermediary that encapsulates a BOMStrategy.
- * It allows for simplified creation and usage of BOMStrategy based on the provided Charset.
+ *     Serves as an intermediary that encapsulates a BOMStrategy.
+ *     It allows for simplified creation and usage of BOMStrategy based on the provided Charset.
+ * </p>
  * <p>
- * BOM (Byte Order Mark) is a special character at the beginning of a text file to indicate character
- * encoding and byte order. It helps with encoding detection, endianness resolution, and preventing
- * character corruption.
- * <p>
+ *     BOM (Byte Order Mark) is a special character at the beginning of a text file to indicate character
+ *     encoding and byte order. It helps with encoding detection, endianness resolution, and preventing
+ *     character corruption.
+ * </p>
  * <h4>Usage Sample (File)</h4>
  * <pre>{@code
  *  BOMHelper
