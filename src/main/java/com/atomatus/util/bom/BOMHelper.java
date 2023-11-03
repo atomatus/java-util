@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
  *      .createBy(StandardCharsets.UTF_8)
  *      .writeIt(targetFile);
  * }</pre>
- * <h4>Usage Sample (OutputStream)</h4>
+ * <strong>Usage Sample (OutputStream)</strong>
  * <pre>{@code
  *  BOMHelper
  *      .createBy(StandardCharsets.UTF_8)
