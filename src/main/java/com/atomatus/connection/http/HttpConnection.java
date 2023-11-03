@@ -58,10 +58,9 @@ public class HttpConnection {
 	private final Object proxyLock, cookieLock;
 
 	private Charset charset;
-	private String username, password;
 	private String acceptType, acceptLanguage, acceptEncoding, contentType, userAgent;
-	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, useCache, isUseBasicAuth, useSecureContext;
-
+	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, useCache, useSecureContext;
+	private Auth auth, authProxy;
 	private int connectionTimeOut;
 	private int readTimeOut;
 	private int cacheId;
@@ -71,6 +70,24 @@ public class HttpConnection {
 	private StatusCode[] acceptRespCode;
 	private SecureProtocols protocol;
 	private SecureContextCredentials secureContextCredentials;
+
+	public interface Auth {
+		String auth(Charset charset);
+
+		static Auth basic(String username, String password) {
+			StringUtils.requireNonNullOrWhitespace(username, "Auth.basic: User name not set or invalid!");
+			StringUtils.requireNonNullOrEmpty(password, "Auth.basic: Password not set or invalid!");
+			return (charset) -> {
+				Authenticator.setDefault(new ProxyAuthenticator(username, password));
+				return "Basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes()), charset);
+			};
+		}
+
+		static Auth bearer(String token) {
+			StringUtils.requireNonNullOrWhitespace(token, "Auth.bearer: Invalid token!");
+			return (charset) -> "Bearer " + token;
+		}
+	}
 
 	/**
 	 * Http Status codes.
@@ -769,9 +786,10 @@ public class HttpConnection {
 	/**
 	 * Enable basic authentication Bearer.
 	 * @return current instance.
+	 * @deprecated Use {@link #setAuth(Auth)} instead it.
 	 */
+	@Deprecated
 	public HttpConnection useBasicAuth() {
-		this.isUseBasicAuth = true;
 		return this;
 	}
 
@@ -876,12 +894,70 @@ public class HttpConnection {
 	 * @param username user name.
 	 * @param password user password.
 	 * @return current instance.
+	 * @deprecated Use {@link #setAuth(Auth)} instead it.
 	 */
+	@Deprecated
 	public HttpConnection setCredentials(String username, String password) {
-		Authenticator.setDefault(new ProxyAuthenticator(
-				this.username = StringUtils.requireNonNullOrWhitespace(username, "Authentication: User name not set!"),
-				this.password = StringUtils.requireNonNullOrEmpty(password, "Authentication: Password not set!")));
+		return this.setAuth(Auth.basic(username, password));
+	}
+
+	/**
+	 * Authorization credentials.
+	 * @param auth auth mode.
+	 * @return current instance.
+	 */
+	public HttpConnection setAuth(Auth auth) {
+		this.auth = Objects.requireNonNull(auth);
 		return this;
+	}
+
+	/**
+	 * Basic Authentication credentials.
+	 * @param username username for basic auth.
+	 * @param password user password for basic auth.
+	 * @return current instance.
+	 */
+	public HttpConnection setAuthBasic(String username, String password) {
+		return this.setAuth(Auth.basic(username, password));
+	}
+
+	/**
+	 * Bearer authorization token.
+	 * @param token basic64 token.
+	 * @return current instance.
+	 */
+	public HttpConnection setAuthBearer(String token) {
+		return this.setAuth(Auth.bearer(token));
+	}
+
+	/**
+	 * Proxy Authorization credentials.
+	 * @param auth auth mode.
+	 * @return current instance.
+	 */
+	public HttpConnection setAuthProxy(Auth auth) {
+		this.authProxy = Objects.requireNonNull(auth);
+		this.useProxy = true;
+		return this;
+	}
+
+	/**
+	 * Basic Proxy Authentication credentials.
+	 * @param username username for basic auth.
+	 * @param password user password for basic auth.
+	 * @return current instance.
+	 */
+	public HttpConnection setAuthProxyBasic(String username, String password) {
+		return this.setAuthProxy(Auth.basic(username, password));
+	}
+
+	/**
+	 * Bearer Proxy authorization token.
+	 * @param token basic64 token.
+	 * @return current instance.
+	 */
+	public HttpConnection setAuthProxyBearer(String token) {
+		return this.setAuthProxy(Auth.bearer(token));
 	}
 
 	/**
@@ -1252,7 +1328,6 @@ public class HttpConnection {
 				if ((var = this.proxyHostAndPort(url.toString())) != null) {
 					PROXY_HOST = var[0];
 					PROXY_PORT = var[1];
-
 					System.setProperty("http.proxyHost", PROXY_HOST);
 					System.setProperty("http.proxyPort", String.valueOf(PROXY_PORT));
 				} else {
@@ -1289,10 +1364,6 @@ public class HttpConnection {
 				con.setRequestProperty(p.getName(), String.valueOf(p.getContent()));
 			}
 		}
-	}
-
-	private String getBase64Auth() {
-		return "basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes()), charset);
 	}
 
 	private void configSecureContext(HttpURLConnection con) throws SecureContextCredentialsException {
@@ -1333,7 +1404,6 @@ public class HttpConnection {
 		}
 
 		try {
-
 			configSecureContext(con);
 			con.setRequestProperty("User-Agent", getUserAgentOrDefault());
 			con.setRequestProperty("Accept-Encoding", getAcceptEncodingOrDefault());
@@ -1343,19 +1413,12 @@ public class HttpConnection {
 			con.setRequestProperty("Content-Type", this.contentType + "; charset=" + this.charset.name());
 			con.setRequestProperty("Connection", isKeepAlive ? "keep-alive" : "close");
 
-			if(isUseBasicAuth) {
-				StringUtils.requireNonNullOrWhitespace(username, "AuthBase64: User name not set or invalid!");
-				StringUtils.requireNonNullOrEmpty(password, "AuthBase64: User name not set or invalid!");
+			Optional.ofNullable(auth)
+					.ifPresent(a -> con.setRequestProperty("Authorization", a.auth(charset)));
 
-				String base64Auth = getBase64Auth();
-				con.setRequestProperty("Authorization", base64Auth);
-
-				if(useProxy) {
-					con.setRequestProperty("Proxy-Authorization", base64Auth);
-				}
-			}
-
-			if (useProxy) {
+			if(useProxy) {
+				Optional.ofNullable(Optional.ofNullable(authProxy).orElse(auth))
+						.ifPresent(a -> con.setRequestProperty("Proxy-Authorization", a.auth(charset)));
 				con.setRequestProperty("Proxy-Connection", isKeepAlive ? "keep-alive" : "close");
 			}
 
@@ -1390,12 +1453,7 @@ public class HttpConnection {
 			if (cookies == null) {
 				return;
 			}
-
-			StringBuilder allCookies = new StringBuilder();
-			for (String cookie : cookies) {
-				allCookies.append(cookie).append(";");
-			}
-			con.setRequestProperty("Cookie", allCookies.toString());
+			con.setRequestProperty("Cookie", String.join(";", cookies));
 		}
 	}
 
