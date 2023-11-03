@@ -71,9 +71,18 @@ public class HttpConnection {
 	private SecureProtocols protocol;
 	private SecureContextCredentials secureContextCredentials;
 
+	/**
+	 * Http connection authorization mode.
+	 */
 	public interface Auth {
 		String auth(Charset charset);
 
+		/**
+		 * Basic authorization
+		 * @param username user name
+		 * @param password user password
+		 * @return authorization instance.
+		 */
 		static Auth basic(String username, String password) {
 			StringUtils.requireNonNullOrWhitespace(username, "Auth.basic: User name not set or invalid!");
 			StringUtils.requireNonNullOrEmpty(password, "Auth.basic: Password not set or invalid!");
@@ -83,6 +92,11 @@ public class HttpConnection {
 			};
 		}
 
+		/**
+		 * Bearer authorization
+		 * @param token JWT token
+		 * @return authorization instance.
+		 */
 		static Auth bearer(String token) {
 			StringUtils.requireNonNullOrWhitespace(token, "Auth.bearer: Invalid token!");
 			return (charset) -> "Bearer " + token;
