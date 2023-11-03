@@ -18,6 +18,8 @@ import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -42,6 +44,8 @@ public class HttpConnection {
 	private static final int BUFFER_LENGTH;
 	private static final int DEFAULT_CACHE_MAX_AGE_IN_SEC;
 	private static final int CACHE_ID;
+	private static final float DEFAULT_ACEPT_TYPE_QUALITY;
+	private static final float DEFAULT_ACEPT_TYPE_QUALITY_OFFSET;
 
 	private static CookieManager cookieManager;
 
@@ -53,7 +57,7 @@ public class HttpConnection {
 
 	private Charset charset;
 	private String username, password;
-	private String contentType;
+	private String acceptType, contentType;
 	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, useCache, isUseBasicAuth, useSecureContext;
 
 	private int connectionTimeOut;
@@ -554,8 +558,10 @@ public class HttpConnection {
 				case BSON:
 					return Serializer.Type.BSON;
 				case JSON:
+				case TEXT_JSON:
 					return Serializer.Type.JSON;
 				case XML:
+				case TEXT_XML:
 					return Serializer.Type.XML;
 				case OCTET_STREAM:
 					return Serializer.Type.BASE64;
@@ -699,6 +705,8 @@ public class HttpConnection {
 		BUFFER_LENGTH = 2048;
 		DEFAULT_CACHE_MAX_AGE_IN_SEC = 3600;
 		CACHE_ID = UUID.randomUUID().hashCode();
+		DEFAULT_ACEPT_TYPE_QUALITY = .9f;
+		DEFAULT_ACEPT_TYPE_QUALITY_OFFSET = .1f;
 	}
 
 	{
@@ -939,6 +947,55 @@ public class HttpConnection {
 	}
 
 	/**
+	 * Set the accept content type
+	 * @param acceptType new content types
+	 * @return current http connection reference.
+	 */
+	public HttpConnection setAcceptType(String... acceptType) {
+		this.acceptType = contentQualityMerge(DEFAULT_ACEPT_TYPE_QUALITY, Arrays.stream(acceptType));
+		return this;
+	}
+
+	/**
+	 * Set the accept content type
+	 * @param aceptType new content types
+	 * @return current http connection reference.
+	 */
+	public HttpConnection setAcceptType(ContentType... aceptType) {
+		this.acceptType = null;
+		return addAcceptType(DEFAULT_ACEPT_TYPE_QUALITY, aceptType)
+				.addAcceptType(DEFAULT_ACEPT_TYPE_QUALITY - DEFAULT_ACEPT_TYPE_QUALITY_OFFSET);
+	}
+
+	/**
+	 * Set the accept content type merging by quality
+	 * @param quality content quality condition.
+	 * @param acceptType new content types
+	 * @return current http connection reference.
+	 */
+	public HttpConnection addAcceptType(float quality, ContentType... acceptType) {
+		this.acceptType = Optional.ofNullable(this.acceptType).map(e -> e + ", ").orElse("") +
+				contentQualityMerge(quality, Arrays.stream(acceptType).map(ContentType::getValue));
+		return this;
+	}
+
+	/**
+	 * Get custom or default accept types
+	 * @return request accept types.
+	 */
+	private String getAcceptTypeOrDefault() {
+		if(acceptType == null) {
+			setAcceptType(ContentType.values());
+		}
+		return acceptType;
+	}
+
+	private static String contentQualityMerge(float quality, Stream<String> types) {
+		String str = types.collect(Collectors.joining(", "));
+		return (StringUtils.isNullOrEmpty(str) ? "*/*" : str) + String.format(";q=%.1f", quality);
+	}
+
+	/**
 	 * Set charset by name.
 	 * @param charsetName charset name
 	 * @return current http connection reference.
@@ -1145,7 +1202,7 @@ public class HttpConnection {
 					+ "U; Android 2.2.1; en-us; Nexus One Build/FRG83) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1 "
 					+ (agent != null ? agent : ""));
 			con.setRequestProperty("Accept-Encoding", "gzip,deflate");
-			con.setRequestProperty("Accept", "application/xhtml+xml,application/xml,application/json,application/x-www-form-urlencoded,text/plain,text/html,text/xml,text/json,text/x-www-form-urlencoded;q=0.9,*/*;q=0.8");
+			con.setRequestProperty("Accept", getAcceptTypeOrDefault());
 			con.setRequestProperty("Accept-Language", "pt-br,pt;q=0.8,en-us;q=0.5,en;q=0.3");
 			con.setRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.8");
 			con.setRequestProperty("Content-Type", this.contentType + "; charset=" + this.charset.name());

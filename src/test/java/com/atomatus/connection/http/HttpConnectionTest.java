@@ -25,6 +25,7 @@ public class HttpConnectionTest extends TestCase {
         String key;
         try(Response resp = new HttpConnection()
                 .useBasicAuth()
+                .setAcceptType(HttpConnection.ContentType.HTML)
                 .setCredentials("test", "123456")
                 .postContent("https://httpbin.org/post",
                         Parameter.buildBody("param0", key = KeyGenerator.generateRandomKeyHex(10)))) {
