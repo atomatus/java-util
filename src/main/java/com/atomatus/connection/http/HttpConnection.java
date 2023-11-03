@@ -5,6 +5,7 @@ import com.atomatus.connection.http.exception.SecureContextCredentialsException;
 import com.atomatus.connection.http.exception.URLConnectionException;
 import com.atomatus.util.Base64;
 import com.atomatus.util.Debug;
+import com.atomatus.util.LocaleHelper;
 import com.atomatus.util.StringUtils;
 import com.atomatus.util.cache.CacheControl;
 import com.atomatus.util.serializer.Serializer;
@@ -15,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -44,8 +46,8 @@ public class HttpConnection {
 	private static final int BUFFER_LENGTH;
 	private static final int DEFAULT_CACHE_MAX_AGE_IN_SEC;
 	private static final int CACHE_ID;
-	private static final float DEFAULT_ACEPT_TYPE_QUALITY;
-	private static final float DEFAULT_ACEPT_TYPE_QUALITY_OFFSET;
+	private static final float DEFAULT_ACCEPT_QUALITY;
+	private static final float DEFAULT_ACCEPT_QUALITY_OFFSET;
 
 	private static CookieManager cookieManager;
 
@@ -57,7 +59,7 @@ public class HttpConnection {
 
 	private Charset charset;
 	private String username, password;
-	private String acceptType, contentType;
+	private String acceptType, acceptLanguage, acceptEncoding, contentType, userAgent;
 	private boolean isUseCookieBetweenRequest, isKeepAlive, useProxy, useCache, isUseBasicAuth, useSecureContext;
 
 	private int connectionTimeOut;
@@ -701,12 +703,43 @@ public class HttpConnection {
 		STORED
 	}
 
+	/**
+	 * Accept encoding types.
+	 */
+	public enum AcceptEncoding {
+
+		/** Indicates support for any encoding type (wildcard). */
+		ANY("*/*"),
+
+		/** Indicates support for the GZIP compression algorithm. */
+		GZIP("gzip"),
+
+		/** Indicates support for the Deflate compression algorithm. */
+		DEFLATE("deflate"),
+
+		/** Indicates support for the Brotli compression algorithm. */
+		BROTLI("br"),
+
+		/** Indicates no preference for encoding, i.e., identity encoding. */
+		IDENTITY("identity");
+
+		private final String value;
+
+		AcceptEncoding(String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+	}
+
 	static  {
 		BUFFER_LENGTH = 2048;
 		DEFAULT_CACHE_MAX_AGE_IN_SEC = 3600;
 		CACHE_ID = UUID.randomUUID().hashCode();
-		DEFAULT_ACEPT_TYPE_QUALITY = .9f;
-		DEFAULT_ACEPT_TYPE_QUALITY_OFFSET = .1f;
+		DEFAULT_ACCEPT_QUALITY = .9f;
+		DEFAULT_ACCEPT_QUALITY_OFFSET = .1f;
 	}
 
 	{
@@ -919,6 +952,31 @@ public class HttpConnection {
 	}
 
 	/**
+	 * Set up custom user agent.
+	 * @param userAgent user agent value
+	 * @return current http connection reference.
+	 */
+	public HttpConnection setUserAgent(String userAgent) {
+		this.userAgent = StringUtils.requireNonNullOrWhitespace(userAgent);
+		return this;
+	}
+
+	/**
+	 * Get custom or default user agent.
+	 * @return user agent value.
+	 */
+	private String getUserAgentOrDefault() {
+		String agent;
+		if (userAgent != null) {
+			return userAgent;
+		} else if (StringUtils.isNonNullAndNonWhitespace(agent = System.getProperty("http.agent"))) {
+			return agent;
+		} else {
+			return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299";
+		}
+	}
+
+	/**
 	 * Get current content type
 	 * @return content type
 	 */
@@ -952,7 +1010,7 @@ public class HttpConnection {
 	 * @return current http connection reference.
 	 */
 	public HttpConnection setAcceptType(String... acceptType) {
-		this.acceptType = contentQualityMerge(DEFAULT_ACEPT_TYPE_QUALITY, Arrays.stream(acceptType));
+		this.acceptType = contentQualityMerge(DEFAULT_ACCEPT_QUALITY, Arrays.stream(acceptType));
 		return this;
 	}
 
@@ -963,8 +1021,8 @@ public class HttpConnection {
 	 */
 	public HttpConnection setAcceptType(ContentType... aceptType) {
 		this.acceptType = null;
-		return addAcceptType(DEFAULT_ACEPT_TYPE_QUALITY, aceptType)
-				.addAcceptType(DEFAULT_ACEPT_TYPE_QUALITY - DEFAULT_ACEPT_TYPE_QUALITY_OFFSET);
+		return addAcceptType(DEFAULT_ACCEPT_QUALITY, aceptType)
+				.addAcceptType(DEFAULT_ACCEPT_QUALITY - DEFAULT_ACCEPT_QUALITY_OFFSET);
 	}
 
 	/**
@@ -990,8 +1048,88 @@ public class HttpConnection {
 		return acceptType;
 	}
 
+	/**
+	 * Set the accept content language.
+	 * @param locale new content language locale
+	 * @return current http connection reference.
+	 */
+	public HttpConnection setAcceptLanguage(Locale... locale) {
+		acceptLanguage = null;
+		return addAcceptLanguage(DEFAULT_ACCEPT_QUALITY, locale);
+	}
+
+	/**
+	 * Set the accept content language merging by quality
+	 * @param quality content quality condition.
+	 * @param locale new content language locale
+	 * @return current http connection reference.
+	 */
+	public HttpConnection addAcceptLanguage(float quality, Locale... locale) {
+		this.acceptLanguage = Optional.ofNullable(this.acceptLanguage).map(e -> e + ", ").orElse("") +
+				contentQualityMerge(quality, Arrays.stream(locale).map(Locale::toLanguageTag)).toLowerCase();
+		return this;
+	}
+
+	/**
+	 * Get custom or default accept language types
+	 * @return request accept language types.
+	 */
+	private String getAcceptLanguageOrDefault() {
+		if(acceptLanguage == null) {
+			addAcceptLanguage(DEFAULT_ACCEPT_QUALITY, LocaleHelper.getLocalesAsStream().limit(2).toArray(Locale[]::new))
+					.addAcceptLanguage(DEFAULT_ACCEPT_QUALITY - DEFAULT_ACCEPT_QUALITY_OFFSET, Locale.US, Locale.ENGLISH, new Locale("pt"));
+		}
+		return acceptLanguage;
+	}
+
+	/**
+	 * Get custom or default accept charset types
+	 * @return request accept charset types.
+	 */
+	private String getAcceptCharsetOrDefault() {
+        return String.join(", ",
+                contentQualityMerge(DEFAULT_ACCEPT_QUALITY, Stream.of(charset.name().toLowerCase())),
+                contentQualityMerge(DEFAULT_ACCEPT_QUALITY - DEFAULT_ACCEPT_QUALITY_OFFSET,
+                        Stream.of(StandardCharsets.UTF_8, StandardCharsets.ISO_8859_1).map(Charset::name).map(String::toLowerCase)),
+                contentQualityMerge(DEFAULT_ACCEPT_QUALITY - DEFAULT_ACCEPT_QUALITY_OFFSET * 2, Stream.empty()));
+	}
+
+	/**
+	 * Set the accept enconding type.
+	 * @param acceptEncoding new content encoding type
+	 * @return current http connection reference.
+	 */
+	public HttpConnection setAcceptEncoding(AcceptEncoding... acceptEncoding) {
+		this.acceptEncoding = null;
+		return addAcceptEncoding(DEFAULT_ACCEPT_QUALITY, acceptEncoding);
+	}
+
+	/**
+	 * Set the accept encoding type merging by quality
+	 * @param quality content quality condition.
+	 * @param acceptEncoding new accept encoding type
+	 * @return current http connection reference.
+	 */
+	public HttpConnection addAcceptEncoding(float quality, AcceptEncoding... acceptEncoding) {
+		this.acceptEncoding = Optional.ofNullable(this.acceptEncoding).map(e -> e + ", ").orElse("") +
+				contentQualityMerge(quality, Arrays.stream(acceptEncoding).map(AcceptEncoding::getValue)).toLowerCase();
+		return this;
+	}
+
+	/**
+	 * Get custom or default accept encoding types
+	 * @return request accept encoding types.
+	 */
+	private String getAcceptEncodingOrDefault() {
+		if(acceptEncoding == null) {
+			addAcceptEncoding(DEFAULT_ACCEPT_QUALITY, AcceptEncoding.GZIP, AcceptEncoding.DEFLATE)
+					.addAcceptEncoding(DEFAULT_ACCEPT_QUALITY - DEFAULT_ACCEPT_QUALITY_OFFSET);
+		}
+		return acceptEncoding;
+	}
+
 	private static String contentQualityMerge(float quality, Stream<String> types) {
-		String str = types.collect(Collectors.joining(", "));
+		String str = types.collect(Collectors.joining(","));
 		return (StringUtils.isNullOrEmpty(str) ? "*/*" : str) + String.format(";q=%.1f", quality);
 	}
 
@@ -1197,14 +1335,11 @@ public class HttpConnection {
 		try {
 
 			configSecureContext(con);
-			String agent = System.getProperty("http.agent");
-			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; pt-BR; rv:1.9.2.7; Linux; "
-					+ "U; Android 2.2.1; en-us; Nexus One Build/FRG83) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1 "
-					+ (agent != null ? agent : ""));
-			con.setRequestProperty("Accept-Encoding", "gzip,deflate");
+			con.setRequestProperty("User-Agent", getUserAgentOrDefault());
+			con.setRequestProperty("Accept-Encoding", getAcceptEncodingOrDefault());
 			con.setRequestProperty("Accept", getAcceptTypeOrDefault());
-			con.setRequestProperty("Accept-Language", "pt-br,pt;q=0.8,en-us;q=0.5,en;q=0.3");
-			con.setRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.8");
+			con.setRequestProperty("Accept-Language", getAcceptLanguageOrDefault());
+			con.setRequestProperty("Accept-Charset", getAcceptCharsetOrDefault());
 			con.setRequestProperty("Content-Type", this.contentType + "; charset=" + this.charset.name());
 			con.setRequestProperty("Connection", isKeepAlive ? "keep-alive" : "close");
 

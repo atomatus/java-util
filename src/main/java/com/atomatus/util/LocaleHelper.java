@@ -1,8 +1,9 @@
 package com.atomatus.util;
 
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Helper to get information about Locale.
@@ -65,6 +66,33 @@ public final class LocaleHelper {
      */
     public static Iterator<Locale> getLocalesAsIterator(Locale... args){
         return new PopularLocales(args);
+    }
+
+    /**
+     * Get more popular locales.
+     * @param args some locales pre-defined to insert on top of iterable.
+     * @return all popular locales
+     */
+    public static Stream<Locale> getLocalesAsStream(Locale... args) {
+        return StreamSupport.stream(getLocales(args).spliterator(), false);
+    }
+
+    /**
+     * Get more popular locales.
+     * @param args some locales pre-defined to insert on top of iterable.
+     * @return all popular locales
+     */
+    public static Locale[] getLocalesAsArray(Locale... args) {
+        return getLocalesAsStream(args).toArray(Locale[]::new);
+    }
+
+    /**
+     * Get more popular locales.
+     * @param args some locales pre-defined to insert on top of iterable.
+     * @return all popular locales
+     */
+    public static List<Locale> getLocalesAsList(Locale... args) {
+        return getLocalesAsStream(args).collect(Collectors.toList());
     }
 
     private static class PopularLocales implements Iterator<Locale> {
