@@ -4,6 +4,7 @@ import com.atomatus.connection.http.Parameter.ParameterType;
 import com.atomatus.connection.http.exception.SecureContextCredentialsException;
 import com.atomatus.connection.http.exception.URLConnectionException;
 import com.atomatus.util.Base64;
+import com.atomatus.util.Debug;
 import com.atomatus.util.StringUtils;
 import com.atomatus.util.cache.CacheControl;
 import com.atomatus.util.serializer.Serializer;
@@ -431,6 +432,26 @@ public class HttpConnection {
 		 * Content is a simple text plan.
 		 */
 		TEXT("text/plain"),
+
+		/**
+		 * Content is a simple text form urlenconded.
+		 */
+		TEXT_XWWW_FORM_URLENCODED("text/x-www-form-urlencoded"),
+
+		/**
+		 * Content is a simple text json.
+		 */
+		TEXT_JSON("text/json"),
+
+		/**
+		 * Content is a simple text xml.
+		 */
+		TEXT_XML("text/xml"),
+
+		/**
+		 * Content is html format.
+		 */
+		HTML("text/html"),
 
 		/**
 		 * Content is bson format.
@@ -1022,7 +1043,7 @@ public class HttpConnection {
 		url = url.replace(aux, "");
 		url = url.replaceAll("(http[s]?://|ftp://|url://)", "");
 
-		if (url.trim().length() > 0) {
+		if (!url.trim().isEmpty()) {
 			return url.trim().split(":");
 		}
 
@@ -1126,7 +1147,7 @@ public class HttpConnection {
 			con.setRequestProperty("Accept-Encoding", "gzip,deflate");
 			con.setRequestProperty("Accept", "application/xhtml+xml,application/xml,application/json,application/x-www-form-urlencoded,text/plain,text/html,text/xml,text/json,text/x-www-form-urlencoded;q=0.9,*/*;q=0.8");
 			con.setRequestProperty("Accept-Language", "pt-br,pt;q=0.8,en-us;q=0.5,en;q=0.3");
-			con.setRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
+			con.setRequestProperty("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.8");
 			con.setRequestProperty("Content-Type", this.contentType + "; charset=" + this.charset.name());
 			con.setRequestProperty("Connection", isKeepAlive ? "keep-alive" : "close");
 
@@ -1219,6 +1240,10 @@ public class HttpConnection {
 					}
 				}
 			} catch (Exception ex) {
+				if(Debug.isDebugMode()) {
+					throw ex;
+				}
+				//noinspection CallToPrintStackTrace
 				ex.printStackTrace();
 			}
 		}
@@ -1339,6 +1364,7 @@ public class HttpConnection {
 		this.updateCookies(con);
 	}
 
+	@SuppressWarnings("resource")
 	private Response.Builder getResponseBuilder() {
 		return new Response.Builder()
 				.useCharset(this.charset)
@@ -1355,6 +1381,7 @@ public class HttpConnection {
 				.build();
 	}
 
+	@SuppressWarnings("resource")
 	private Response getResponseCached(URL url,
 									   ResponseParameter.FunctionIO<URL, HttpURLConnection> conFun) {
 		return getResponseBuilder()

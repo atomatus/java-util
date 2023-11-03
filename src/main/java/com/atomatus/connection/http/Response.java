@@ -350,6 +350,26 @@ public final class Response extends ResponseParameter implements Closeable {
 	}
 
 	/**
+	 * Inform when current response in success contains a content.
+	 * @return true, response contains content, otherwise false.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
+	public boolean hasContent() throws URLConnectionException {
+		checkReadResponseFilling();
+		return success && contentBytes != null && contentBytes.length != 0;
+	}
+
+	/**
+	 * Inform when current response in error contains a content.
+	 * @return true, response in error contains content, otherwise false.
+	 * @throws URLConnectionException throws when is not possible get response.
+	 */
+	public boolean hasErrorContent() throws URLConnectionException {
+		checkReadResponseFilling();
+		return !success && errorBytesContent != null && errorBytesContent.length != 0;
+	}
+
+	/**
 	 * Parse and convert response content to target serializable type
 	 * using response content type serializer.
 	 * @param rootElement response content root element, usage for xml.

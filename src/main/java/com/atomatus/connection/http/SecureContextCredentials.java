@@ -5,21 +5,22 @@ import com.atomatus.connection.http.exception.SecureContextCredentialsException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
-import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.*;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
 final class SecureContextCredentials extends SecureContextCredentialsParams {
 
-    public static class Builder extends SecureContextCredentialsParams {
+    static class Builder extends SecureContextCredentialsParams {
 
         private String keystoreFile;
 
         private Builder checkInitFromFile() throws SecureContextCredentialsException {
             if(keystoreFile != null) {
-                try (InputStream in = new FileInputStream(keystoreFile)) {
+                try (InputStream in = Files.newInputStream(Paths.get(keystoreFile))) {
                     KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
                     keystore.load(in, password == null ? null : password.toCharArray());
                     keystoreFile = null;

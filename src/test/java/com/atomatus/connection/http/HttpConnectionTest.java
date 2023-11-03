@@ -15,7 +15,7 @@ public class HttpConnectionTest extends TestCase {
         try(Response resp = new HttpConnection()
                 .getContent("https://httpbin.org/get")) {
             assertTrue(resp.isSuccess());
-            assertTrue(resp.getContent().length() > 0);
+            assertTrue(resp.hasContent());
         } catch (URLConnectionException e) {
             throw new AssertionFailedError(e.getMessage());
         }
@@ -50,7 +50,7 @@ public class HttpConnectionTest extends TestCase {
                 .setCacheId(cacheId)
                 .getContent(url)) {
             assertTrue(resp0.isSuccess());
-            assertTrue((content = resp0.getContent()).length() > 0);
+            assertFalse((content = resp0.getContent()).isEmpty());
         } catch (URLConnectionException e) {
             throw new AssertionFailedError(e.getMessage());
         }
