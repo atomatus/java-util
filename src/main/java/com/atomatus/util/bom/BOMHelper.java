@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
  *     encoding and byte order. It helps with encoding detection, endianness resolution, and preventing
  *     character corruption.
  * </p>
- * <h4>Usage Sample (File)</h4>
+ * <strong>Usage Sample (File)<strong>
  * <pre>{@code
  *  BOMHelper
  *      .createBy(StandardCharsets.UTF_8)
