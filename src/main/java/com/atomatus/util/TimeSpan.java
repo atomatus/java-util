@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Represents a duration of time.
+ * @author Carlos Matos
  */
 public final class TimeSpan implements Comparable<TimeSpan>, Serializable {
 
@@ -42,6 +43,8 @@ public final class TimeSpan implements Comparable<TimeSpan>, Serializable {
 
     private static final long MAX_MILLISECONDS = Long.MAX_VALUE / TICKS_PER_MILLISECOND;
     private static final long MIN_MILLISECONDS = Long.MIN_VALUE / TICKS_PER_MILLISECOND;
+
+    private static final long TICKS_PER_TENTH_SECOND = TICKS_PER_MILLISECOND * 100L;
 
     private static final int BIT_SIGN_POSITION = Long.SIZE - 1;
 
@@ -171,15 +174,15 @@ public final class TimeSpan implements Comparable<TimeSpan>, Serializable {
      * Gets the total duration in milliseconds.
      * @return The total duration in milliseconds.
      */
-    public double getTotalMilliseconds() {
+    public long getTotalMilliseconds() {
         double temp = (double) ticks * MILLISECONDS_PER_TICK;
         if (temp > MAX_MILLISECONDS) {
-            return (double) MAX_MILLISECONDS;
+            return MAX_MILLISECONDS;
         }
         if (temp < MIN_MILLISECONDS) {
-            return (double) MIN_MILLISECONDS;
+            return MIN_MILLISECONDS;
         }
-        return temp;
+        return (long) temp;
     }
 
     /**
@@ -269,6 +272,126 @@ public final class TimeSpan implements Comparable<TimeSpan>, Serializable {
     }
 
     /**
+     * Multiplicates the specified TimeSpan from this TimeSpan.
+     * @param value The multiplier value.
+     * @return A new TimeSpan that represents the result of the multiplication.
+     * @throws ArithmeticException If the result is too long to be represented.
+     */
+    public TimeSpan multiply(long value) {
+        return new TimeSpan(ticks * value);
+    }
+
+    /**
+     * Multiplicates the specified TimeSpan from this TimeSpan.
+     * @param value The multiplier value.
+     * @return A new TimeSpan that represents the result of the multiplication.
+     * @throws ArithmeticException If the result is too long to be represented.
+     */
+    public TimeSpan multiply(double value) {
+        return new TimeSpan((long) (ticks * value));
+    }
+
+    /**
+     * Divide the specified TimeSpan from this TimeSpan.
+     * @param value The divisor value.
+     * @return A new TimeSpan that represents the result of the division.
+     * @throws ArithmeticException If the result is too long to be represented.
+     */
+    public TimeSpan divide(long value) {
+        return new TimeSpan(ticks / value);
+    }
+
+    /**
+     * Divide the specified TimeSpan from this TimeSpan.
+     * @param value The divisor value.
+     * @return A new TimeSpan that represents the result of the division.
+     * @throws ArithmeticException If the result is too long to be represented.
+     */
+    public TimeSpan divide(double value) {
+        return new TimeSpan((long) (ticks / value));
+    }
+
+    /**
+     * Returns a new TimeSpan that removes the days component from the current TimeSpan.
+     * @return A new TimeSpan with the days component removed.
+     */
+    public TimeSpan purgeDays() {
+        return subtract(fromDays(getDays()));
+    }
+
+    /**
+     * Returns a new TimeSpan that removes the hours component from the current TimeSpan.
+     * @return A new TimeSpan with the hours component removed.
+     */
+    public TimeSpan purgeHours() {
+        return subtract(fromHours(getHours()));
+    }
+
+    /**
+     * Returns a new TimeSpan that removes the minutes component from the current TimeSpan.
+     * @return A new TimeSpan with the minutes component removed.
+     */
+    public TimeSpan purgeMinutes() {
+        return subtract(fromMinutes(getMinutes()));
+    }
+
+    /**
+     * Returns a new TimeSpan that removes the seconds component from the current TimeSpan.
+     * @return A new TimeSpan with the seconds component removed.
+     */
+    public TimeSpan purgeSeconds() {
+        return subtract(fromSeconds(getSeconds()));
+    }
+
+    /**
+     * Returns a new TimeSpan that removes the milliseconds component from the current TimeSpan.
+     * @return A new TimeSpan with the milliseconds component removed.
+     */
+    public TimeSpan purgeMillis() {
+        return subtract(fromMillis(getMilliseconds()));
+    }
+
+    /**
+     * Returns a new TimeSpan representing the minimum time of the day (00:00:00.000).
+     * Removes the hours, seconds and milliseconds components to set them to zero.
+     * @return A new TimeSpan representing the minimum time of the day.
+     */
+    public TimeSpan minOfDay() {
+        return purgeHours().purgeMinutes().purgeSeconds().purgeMillis();
+    }
+
+    /**
+     * Returns a new TimeSpan representing the maximum time of the day (23:59:59.999).
+     * Adds the remaining hours, seconds and milliseconds to reach the end of the day.
+     * @return A new TimeSpan representing the maximum time of the day.
+     */
+    public TimeSpan maxOfDay() {
+        return add(TimeSpan.fromHours(23L - getHours()))
+                .add(TimeSpan.fromMinutes(59L - getMinutes()))
+                .add(TimeSpan.fromSeconds(59L - getSeconds()))
+                .add(TimeSpan.fromMillis(999L - getMilliseconds()));
+    }
+
+    /**
+     * Returns a new TimeSpan representing the minimum time (hh:mm:00.000).
+     * Removes the seconds and milliseconds components to set them to zero.
+     * @return A new TimeSpan representing the minimum time of the day.
+     */
+    public TimeSpan minOfTime() {
+        return purgeSeconds().purgeMillis();
+    }
+
+    /**
+     * Returns a new TimeSpan representing the maximum time (hh:mm:59.999).
+     * Adds the remaining seconds and milliseconds to reach the end of the day.
+     * @return A new TimeSpan representing the maximum time of the day.
+     */
+    public TimeSpan maxOfTime() {
+        return add(TimeSpan.fromSeconds(59L - getSeconds()))
+                .add(TimeSpan.fromMillis(999L - getMilliseconds()));
+    }
+
+    /**
      * Converts a time represented in hours, minutes, and seconds into ticks.
      * @param hour The hours component.
      * @param minute The minutes component.
@@ -283,6 +406,32 @@ public final class TimeSpan implements Comparable<TimeSpan>, Serializable {
         }
         return totalSeconds * TICKS_PER_SECOND;
     }
+
+    /**
+     * Formats the TimeSpan using the provided format.
+     *
+     * @param format The format string with placeholders "DD" for total days, "HH" for total hours,
+     *               "MM" for total minutes "SS" for total seconds and "TT" for total millis;
+     *               "dd" for days, "hh" for hours, "mm" for minutes, "ss" for seconds, "tt" for millis;
+     * @return The formatted TimeSpan as a string.
+     */
+    public String format(String format) {
+        return TimeSpanFormatter.format(this, format);
+    }
+
+    /**
+     * Convert back a formatted time span string to TimeSpan object.
+     * @param value formatted value
+     * @param format base format that genered string.
+     *               The format string with placeholders "DD" for total days, "HH" for total hours,
+     *               "MM" for total minutes "SS" for total seconds and "TT" for total millis;
+     *               "dd" for days, "hh" for hours, "mm" for minutes, "ss" for seconds, "tt" for millis;
+     * @return The time span from formatted value.
+     */
+    public static TimeSpan fromFormat(String value, String format) {
+        return TimeSpanFormatter.fromFormat(value, format);
+    }
+
     /**
      * Creates a TimeSpan from a specified numeric value scaled by a given factor.
      *
@@ -293,7 +442,7 @@ public final class TimeSpan implements Comparable<TimeSpan>, Serializable {
      */
     private static TimeSpan interval(double value, int scale) {
         double tmp = value * scale;
-        double millis = tmp + (value >= 0 ? 0.5D : -0.5D);
+        double millis = tmp + (scale > 1 ? (value >= 0 ? 0.00005D : -0.00005D) : 0);
 
         if ((millis > ((double) Long.MAX_VALUE / TICKS_PER_MILLISECOND)) || (millis < ((double) Long.MIN_VALUE / TICKS_PER_MILLISECOND))) {
             throw new ArithmeticException("The duration of the TimeSpan result is too long to be represented.");
