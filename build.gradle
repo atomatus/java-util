@@ -52,4 +52,5 @@ dependencies {
         exclude group: 'xpp3', module: 'xpp3_min'
     }
     implementation 'org.mongodb:bson:4.1.1'
+    implementation 'org.apache.commons:commons-compress:1.24.0'
 }
