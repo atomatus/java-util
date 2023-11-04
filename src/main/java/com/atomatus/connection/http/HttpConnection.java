@@ -3,12 +3,11 @@ package com.atomatus.connection.http;
 import com.atomatus.connection.http.Parameter.ParameterType;
 import com.atomatus.connection.http.exception.SecureContextCredentialsException;
 import com.atomatus.connection.http.exception.URLConnectionException;
+import com.atomatus.util.*;
 import com.atomatus.util.Base64;
-import com.atomatus.util.Debug;
-import com.atomatus.util.LocaleHelper;
-import com.atomatus.util.StringUtils;
 import com.atomatus.util.cache.CacheControl;
 import com.atomatus.util.serializer.Serializer;
+import org.apache.commons.compress.compressors.brotli.BrotliCompressorInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
@@ -42,6 +41,11 @@ public class HttpConnection {
 	 * Https protocol scheme.
 	 */
 	public static final String SCHEME_HTTPS = "https://";
+
+	private static final byte COMPRESS_MAGIC_BYTE_1;
+	private static final byte COMPRESS_MAGIC_BYTE_2;
+
+	private static final int INVALID_INDEX;
 
 	private static final int BUFFER_LENGTH;
 	private static final int DEFAULT_CACHE_MAX_AGE_IN_SEC;
@@ -568,8 +572,8 @@ public class HttpConnection {
 			if(!StringUtils.isNullOrWhitespace(name)) {
 				int fIndex = name.indexOf('/');
 				int lIndex = name.indexOf(';');
-				String part = fIndex != -1 ? name.substring(fIndex + 1,
-						lIndex != -1 ? lIndex : name.length() - 1) : null;
+				String part = fIndex != INVALID_INDEX ? name.substring(fIndex + 1,
+						lIndex != INVALID_INDEX ? lIndex : name.length() - 1) : null;
 				for(ContentType type : values()) {
 					String value = type.getValue();
 					if(value.equalsIgnoreCase(name) ||
@@ -752,7 +756,10 @@ public class HttpConnection {
 		BROTLI("br"),
 
 		/** Indicates no preference for encoding, i.e., identity encoding. */
-		IDENTITY("identity");
+		IDENTITY("identity"),
+
+		/** Indicates no preference for encoding, i.e., compress encoding. */
+		COMPRESS("compress");
 
 		private final String value;
 
@@ -763,9 +770,49 @@ public class HttpConnection {
 		public String getValue() {
 			return value;
 		}
+
+		private InputStream resolveInputStream(InputStream in) throws IOException {
+			switch (this) {
+				case GZIP:
+					return new GZIPInputStream(in);
+				case DEFLATE:
+					return new InflaterInputStream(in, new Inflater(true));
+				case BROTLI:
+					return new BrotliCompressorInputStream(in);
+				case COMPRESS:
+					byte[] headerBytes = new byte[2];
+					if (in.read(headerBytes) != INVALID_INDEX &&
+							headerBytes[0] == COMPRESS_MAGIC_BYTE_1 &&
+							headerBytes[1] == COMPRESS_MAGIC_BYTE_2) {
+						return new InflaterInputStream(in, new Inflater(true));
+					} else {
+						throw new IOException("Formato de compress desconhecido");
+					}
+				case IDENTITY:
+					return in;
+				default:
+					throw new UnsupportedOperationException("Encoding não implementado: " + this.name());
+			}
+		}
+
+		static InputStream resolveContentEncoding(HttpURLConnection con, InputStream in) throws IOException {
+			String contentEncoding = con.getContentEncoding();
+			if (contentEncoding != null) {
+				for (AcceptEncoding e : AcceptEncoding.values()) {
+					if (e.value.equalsIgnoreCase(contentEncoding)) {
+						return e.resolveInputStream(in);
+					}
+				}
+			}
+			return in;
+		}
+
 	}
 
 	static  {
+		COMPRESS_MAGIC_BYTE_1 = (byte) 0x1F;
+		COMPRESS_MAGIC_BYTE_2 = (byte) 0x8B;
+		INVALID_INDEX = -1;
 		BUFFER_LENGTH = 2048;
 		DEFAULT_CACHE_MAX_AGE_IN_SEC = 3600;
 		CACHE_ID = UUID.randomUUID().hashCode();
@@ -1561,7 +1608,7 @@ public class HttpConnection {
 			String pName = "{" + (hasName ? p.getName() : i ) + "}";
 			int j = urlStr.indexOf(pName);
 
-			if (j != -1) /*URL Parameter*/ {
+			if (j != INVALID_INDEX) /*URL Parameter*/ {
 				urlStr = urlStr.replace(pName, p.getContentURLEncoded());
 			} else if(hasName) /*Query Parameter*/ {
 				if (queryParams == null) {
@@ -1595,19 +1642,9 @@ public class HttpConnection {
 		return builder.toString();
 	}
 
-	private InputStream resolveContentEncoding(String contentEncoding, InputStream in) throws IOException {
-		if("gzip".equalsIgnoreCase(contentEncoding)) {
-			return new GZIPInputStream(in);
-		} else if("deflate".equalsIgnoreCase(contentEncoding)) {
-			return new InflaterInputStream(in, new Inflater(true));
-		} else {
-			return in;
-		}
-	}
-
 	private InputStream resolveInputStream(HttpURLConnection con) throws URLConnectionException {
 		try {
-			return resolveContentEncoding(con.getContentEncoding(), con.getInputStream());
+			return AcceptEncoding.resolveContentEncoding(con, con.getInputStream());
 		} catch (IOException e) {
 			throw new URLConnectionException(
 					"An error occurred while attempt to access the page content:\n" + e.getMessage());
@@ -1616,7 +1653,7 @@ public class HttpConnection {
 
 	private InputStream resolveErrorStream(HttpURLConnection con) throws URLConnectionException {
 		try {
-			return resolveContentEncoding(con.getContentEncoding(), con.getErrorStream());
+			return AcceptEncoding.resolveContentEncoding(con, con.getErrorStream());
 		} catch (IOException e) {
 			throw new URLConnectionException(
 					"An error occurred while attempt to access the page content:\n" + e.getMessage());
