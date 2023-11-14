@@ -26,6 +26,10 @@ final class BOMStrategyFactory {
             return createForUTF16BigEndian();
         } else if (charset.equals(StandardCharsets.UTF_16LE)) {
             return createForUTF16LittleEndian();
+        } else if (charset.displayName().equalsIgnoreCase("UTF-32BE")) {
+            return createForUTF32BigEndian(); // UTF-32BE, not commonly used in Java.
+        } else if (charset.displayName().equalsIgnoreCase("UTF-32LE")) {
+            return createForUTF32LittleEndian(); // UTF-32LE, not commonly used in Java.
         } else if (charset.displayName().contains("UTF-32")) {
             return createForUTF32(); // UTF-32, not commonly used in Java.
         } else {
